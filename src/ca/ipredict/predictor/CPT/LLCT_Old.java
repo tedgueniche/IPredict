@@ -166,6 +166,7 @@ public class LLCT_Old implements Predictor {
 		//For each line (sequence) in file
 		for(Sequence curSeq : mTrainingSequences) {
 		
+			//resetting the current node to the root (top of the tree)
 			PredictionTree curNode = Root;
 			
 			//for each item in this sequence
