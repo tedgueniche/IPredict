@@ -1,0 +1,47 @@
+BMS		(50 000)
+		DG	LLCT	1st Order Markov	
+Success   	35.6	38.15	30.3
+Failure   	64.4	61.85	69.7
+No Match  	0.55	00.00	00.00
+Too Small	74.7	74.7	74.7
+Overall   	8.81	9.65	7.67
+
+Memory history: 30 19 334 
+Max memory used: 334mb
+Execution time: 3 seconds
+
+Kosarak	(50 000)
+		DG	LLCT	1st Order Markov	
+Success   	40.18	43.26	37.97
+Failure   	59.82	56.74	62.03
+No Match  	0.7	0.38	2.2
+Too Small	35.56	35.56	35.56
+Overall   	25.61	27.71	23.63
+
+Memory history: 30 19 334 423 178 314 
+Max memory used: 423mb
+Execution time: 162 seconds
+
+FIFA	(50 000)
+		DG	LLCT	1st Order Markov	
+Success   	35.43	2.61	31.89
+Failure   	64.57	97.39	68.11
+No Match  	0.39	0.07	0.1
+Too Small	2.02	2.02	2.02
+Overall   	34.58	2.56	31.21
+
+Memory history: 30 19 334 423 178 314 577 660 871 
+Max memory used: 871mb
+Execution time: 1229 seconds
+
+MSNBC	(50 000)
+		DG	LLCT	1st Order Markov	
+Success   	73.47	7.45	73.47
+Failure   	26.53	92.55	26.53
+No Match  	00.00	00.00	00.00
+Too Small	52.45	52.45	52.45
+Overall   	34.93	3.54	34.93
+
+Memory history: 30 19 334 423 178 314 577 660 871 931 943 1255 
+Max memory used: 1255mb
+Execution time: 42 seconds
