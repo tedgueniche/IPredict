@@ -54,7 +54,7 @@ public class PredictionTree {
 		return null;
 	}
 
-	// PHIL08 : for debugging
+
 	public int getChildrenCount() {
 		return Children.size();
 	}

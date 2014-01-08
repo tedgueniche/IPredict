@@ -2,6 +2,7 @@ package ca.ipredict.predictor.CPT;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import ca.ipredict.database.Item;
 import ca.ipredict.database.Sequence;
@@ -25,6 +26,31 @@ public class NewCPTHelper {
 		return result;
 	}
 
+
+	/**
+	 * Return a bitvector representing the set of similar sequence of the 
+	 * specified sequence
+	 * @param sequence The sequence to used to find similar sequences
+	 * @param II The inverted index containing the bitvectors
+	 * @return The similar sequences as a bitvector, where each bit indicate whether a sequence is similar or not
+	 */
+	public static Bitvector getSimilarSequences(Item[] sequence, Map<Integer, Bitvector> II) {
+		if(sequence.length == 0) {
+			return new Bitvector();
+		}
+		//firt item as the inital bitset
+		Bitvector intersection = II.get(sequence[0].val);
+		
+		//for each item in the sequence; do the intersection of their bitset
+		for(int i = 0 ; i < sequence.length ; i++) {
+			intersection.and(II.get(sequence[i].val));
+		}
+		
+		return intersection;
+	}
+	
+	
+	
 	
 	public static void main(String[] args){
 		
