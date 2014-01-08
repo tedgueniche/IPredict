@@ -1,5 +1,6 @@
 package ca.ipredict.predictor.CPT;
 
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -49,7 +50,57 @@ public class NewCPTHelper {
 		return intersection;
 	}
 	
+	/**
+	 * Return a list of sequence containing less item than the original sequence.
+	 * The items removed a considered noise, at level c , it removes c items.
+	 * The returned sequences are all the possible combinations when removing c items;
+	 * @param level The level of noise to remove
+	 */
+	public static List<Item[]> noiseRemover(Item[] sequence, int level) {
+		
+		if(level < 1 || level > 2) {
+			System.err.println("Level of "+ level +" not supported in noiseRemover()");
+			return null;
+		}
+		/*
+		List<Item[]> results = new ArrayList<Item[]>();
+		int offset = 0;
+		for(int i = 0 ; i < sequence.length ; i++) {
+			
+			Item[] newSeq = new Item[sequence.length - level];
+			
+			for(int j = 0 ; j < level; j++) {
+				
+			}
+			
+			offset++;
+		}
+		
+		
+		
+		return results;
+		*/
+		return null;
+	}
 	
+	public static List<Item[]> noiseRemover(Item[] sequence) {
+		
+		List<Item[]> results = new ArrayList<Item[]>();
+		for(Item toHide : sequence) {
+			Item[] newSeq = new Item[sequence.length - 1];
+			
+			int index = 0;
+			for(Item it : sequence) {
+				if(it != toHide) {
+					newSeq[index] = it;
+					index++;
+				}
+			}
+			results.add(newSeq);
+		}
+		
+		return results;
+	}
 	
 	
 	public static void main(String[] args){
@@ -60,7 +111,17 @@ public class NewCPTHelper {
 		a.addItem(new Item(3));
 		a.addItem(new Item(4));
 		
-		Sequence b = keepLastItems(a, 15);
-		System.out.println(b.toString());
+//		Sequence b = keepLastItems(a, 15);
+//		System.out.println(b.toString());
+		
+		Item[] aa = new Item[4];
+		aa[0] = new Item(0);
+		aa[1] = new Item(1);
+		aa[2] = new Item(2);
+		aa[3] = new Item(3);
+		List<Item[]> results = noiseRemover(aa);
+		
+		System.out.println(results);
+		
 	}
 }
