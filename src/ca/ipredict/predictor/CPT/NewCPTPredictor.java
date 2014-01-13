@@ -120,7 +120,7 @@ public class NewCPTPredictor implements Predictor {
 
 	@Override
 	public String getTAG() {
-		return "CPT";
+		return "newCPT";
 	}
 
 	@Override

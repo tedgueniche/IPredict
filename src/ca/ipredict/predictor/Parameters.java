@@ -12,8 +12,8 @@ public class Parameters {
 	public static int sequenceMinSize = 10; //min sequence size in the dataset
 	public static int sequenceMaxSize = 999;  //max sequence size in the dataset
 	public static int removeDuplicatesMethod = 1;  // 0 for none, 1 for consecutive duplicates, 2 for all duplicates
-	public static int consequentSize = 3; //suffix-size for prediction
-	public static int windowSize = 7; //prefix size for prediction
+	public static int consequentSize = 1; //suffix-size for prediction
+	public static int windowSize = 2; //prefix size for prediction
 
 	//LLCT
 	//Training
@@ -26,7 +26,7 @@ public class Parameters {
 	
 	//best prediction from the count table
 	public static int firstVote = 1; //1 for confidence, 2 for lift
-	public static int secondVote = 2; //0 for none, 1 for support, 2 for lift
+	public static int secondVote = 0; //0 for none, 1 for support, 2 for lift
 	public static double voteTreshold = 0.0; //confidence threshold to validate firstVote, else it uses the secondVote 
 	
 	//Countable weight system

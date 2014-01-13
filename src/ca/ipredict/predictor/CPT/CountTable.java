@@ -1,8 +1,10 @@
 package ca.ipredict.predictor.CPT;
 
+import java.util.Collections;
 import java.util.Map.Entry;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 import ca.ipredict.database.Item;
@@ -82,6 +84,9 @@ public class CountTable {
 		int id = 0;
 		for(int i = 0 ; i < ids.cardinality() ; i++) {
 			id = ids.nextSetBit(i);
+			if(id == -1) {
+				break;
+			}
 			
 			if(branchVisited.add(id) == false) {
 				continue;
@@ -144,8 +149,15 @@ public class CountTable {
 		
 		//Filling a sequence with the best |count| items
 		Sequence seq = new Sequence(-1);
-		for(Entry<Double, Integer> entry : bestOfCT.entrySet()) {
-			seq.addItem(new Item(entry.getValue()));
+		int i = 0;
+		for(Entry<Double, Integer> entry : bestOfCT.descendingMap().entrySet()) {
+			if(i < count) {
+				seq.addItem(new Item(entry.getValue()));
+				i++;
+			} else {
+				break;
+			}
+			
 		}
 		
 		return seq;
