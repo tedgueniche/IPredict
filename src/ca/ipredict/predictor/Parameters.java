@@ -18,11 +18,11 @@ public class Parameters {
 	//LLCT
 	//Training
 	public static int splitMethod = 0; //0 for no split, 1 for basicSplit, 2 for complexSplit
-	public static int splitLength = 100; // max tree height
+	public static int splitLength = 99; // max tree height
 	
 	//Prediction
-	public static int recursiveDividerMin = 3;//default to 1 //should be >= 0 and < recursiveDividerMax 
-	public static int recursiveDividerMax = 99; //should be > recusiveDividerMax and < windowSize
+	public static int recursiveDividerMin = 1;//default to 1 //should be >= 0 and < recursiveDividerMax 
+	public static int recursiveDividerMax = 2; //should be > recusiveDividerMax and < windowSize
 	
 	//best prediction from the count table
 	public static int firstVote = 1; //1 for confidence, 2 for lift

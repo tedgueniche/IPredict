@@ -2,14 +2,18 @@ package ca.ipredict.predictor.CPT;
 
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import ca.ipredict.database.Item;
 import ca.ipredict.database.Sequence;
 
+/**
+ * Best friend of COT
+ * @author Ted
+ *
+ */
 public class NewCPTHelper {
-
 
 	/**
 	 * Return the last Length items
@@ -27,63 +31,88 @@ public class NewCPTHelper {
 		return result;
 	}
 
-
 	/**
-	 * Return a bitvector representing the set of similar sequence of the 
-	 * specified sequence
+	 * Return a bit vector representing the set of similar sequence of the specified sequence
 	 * @param sequence The sequence to used to find similar sequences
-	 * @param II The inverted index containing the bitvectors
-	 * @return The similar sequences as a bitvector, where each bit indicate whether a sequence is similar or not
+	 * @param II The inverted index containing the bit vectors
+	 * @return The similar sequences as a bit vector, where each bit indicate whether a sequence is similar or not
 	 */
-	public static Bitvector getSimilarSequences(Item[] sequence, Map<Integer, Bitvector> II) {
+	public static Bitvector getSimilarSequencesIds(NewCPTPredictor predictor, Item[] sequence) {
 		if(sequence.length == 0) {
 			return new Bitvector();
 		}
-		//firt item as the inital bitset
-		Bitvector intersection = II.get(sequence[0].val);
-		
+
 		//for each item in the sequence; do the intersection of their bitset
+		Bitvector intersection = null;
 		for(int i = 0 ; i < sequence.length ; i++) {
-			intersection.and(II.get(sequence[i].val));
+			if(intersection == null) {
+				intersection = predictor.II.get(sequence[i].val);
+			}
+			else {
+				Bitvector other = predictor.II.get(sequence[i].val);
+				if(other != null) {
+					intersection.and(predictor.II.get(sequence[i].val));
+				}
+			}
 		}
 		
 		return intersection;
 	}
 	
 	/**
-	 * Return a list of sequence containing less item than the original sequence.
-	 * The items removed a considered noise, at level c , it removes c items.
-	 * The returned sequences are all the possible combinations when removing c items;
-	 * @param level The level of noise to remove
+	 * Return a sequence in sequential order from the Prediction Tree given its unique id
+	 * @param id Id of the sequence to extract
+	 * @return The full sequence matching the id
 	 */
-	public static List<Item[]> noiseRemover(Item[] sequence, int level) {
+	public static Item[] getSequenceFromId(NewCPTPredictor predictor, Integer id) {
 		
-		if(level < 1 || level > 2) {
-			System.err.println("Level of "+ level +" not supported in noiseRemover()");
-			return null;
-		}
-		/*
-		List<Item[]> results = new ArrayList<Item[]>();
-		int offset = 0;
-		for(int i = 0 ; i < sequence.length ; i++) {
-			
-			Item[] newSeq = new Item[sequence.length - level];
-			
-			for(int j = 0 ; j < level; j++) {
-				
-			}
-			
-			offset++;
+		List<Item> sequence = new ArrayList<Item>();
+		PredictionTree curNode = predictor.LT.get(id);
+		
+		//Reading the whole branch from bottom to top
+		sequence.add(curNode.Item);
+		while(curNode.Parent != null) {
+			curNode = curNode.Parent;
+			sequence.add(curNode.Item);
 		}
 		
+		//Reversing the sequence so that the leaf item is last and 
+		//the item closer to the root be first
+		Collections.reverse(sequence);
 		
-		
-		return results;
-		*/
-		return null;
+		//Returning the sequence as an array
+		return sequence.toArray(new Item[0]);
 	}
 	
-	public static List<Item[]> noiseRemover(Item[] sequence) {
+	/**
+	 * Recursively remove one item at the time from the sequence S and use it to update the countTable
+	 * @param sequence Sequence to remove item from
+	 * @param minSize Minimum size of the sequence (stop removing items when it reaches that size)
+	 * @param ct The CountTable to update
+	 * @param initialSequenceSize Initial size of the sequence to predict (use for the weighting function in CountTable)
+	 */
+	public static void recursiveDivider(NewCPTPredictor predictor, Item[] sequence, int minSize, CountTable ct, int initialSequenceSize) {
+		
+		//Exit recursion condition
+		int size = sequence.length;
+		if(size < minSize) {
+			return;
+		}
+		
+		//Updating the count table with the current sequence
+		ct.update(predictor, sequence, initialSequenceSize);
+		
+		//Recursive call on all subsequence of size (sequence.size() - 1)
+		List<Item[]> sequences = noiseRemover(sequence);
+		for(Item[] seq : sequences) {
+			recursiveDivider(predictor, seq, minSize, ct, initialSequenceSize);
+		}
+	}
+	
+	/**
+	 * Return a list of all possible subsequence of size (sequence.size() - 1)
+	 */
+	private static List<Item[]> noiseRemover(Item[] sequence) {
 		
 		List<Item[]> results = new ArrayList<Item[]>();
 		for(Item toHide : sequence) {
@@ -98,7 +127,6 @@ public class NewCPTHelper {
 			}
 			results.add(newSeq);
 		}
-		
 		return results;
 	}
 	

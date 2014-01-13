@@ -22,6 +22,7 @@ import ca.ipredict.predictor.Predictor;
 import ca.ipredict.predictor.CPT.CPTPredictor;
 import ca.ipredict.predictor.CPT.LLCT_Old;
 import ca.ipredict.predictor.CPT.LossLessCompactPredictor;
+import ca.ipredict.predictor.CPT.NewCPTPredictor;
 import ca.ipredict.predictor.DG.DGPredictor;
 import ca.ipredict.predictor.Markov.MarkovAllKPredictor;
 import ca.ipredict.predictor.Markov.MarkovFirstOrderPredictor;
@@ -485,8 +486,8 @@ public class Controller {
 			Controller controller = new Controller();
 		
 			//Loading data sets
-//			controller.addDataset(Format.BMS, 		10000);
-			controller.addDataset(Format.SIGN, 		8000);  // AJOUT PHILIPPE
+			controller.addDataset(Format.BMS, 		1);
+//			controller.addDataset(Format.SIGN, 		8000);  // AJOUT PHILIPPE
 //			controller.addDataset(Format.CANADARM1, 10000);  // AJOUT PHILIPPE
 //			controller.addDataset(Format.CANADARM2, 10000);  // AJOUT PHILIPPE
 //			controller.addDataset(Format.KOSARAK,	15000);
@@ -500,31 +501,13 @@ public class Controller {
 			//Loading predictors
 			controller.addPredictor(new DGPredictor());
 //			controller.addPredictor(new LossLessCompactPredictor());
+			controller.addPredictor(new NewCPTPredictor());
 			controller.addPredictor(new CPTPredictor());
 //			controller.addPredictor(new LLCT_Old());
-			controller.addPredictor(new MarkovFirstOrderPredictor());
+//			controller.addPredictor(new MarkovFirstOrderPredictor());
 //			controller.addPredictor(new MarkovAllKPredictor());
 			
-			// PHILIPPE : J'ai ajouté trois nouveaux predictors pour faire des tests,
-			// mais la performance n'est pas bonne.  Il a 3 à 10 % de taux de succès pour Sign
-			// et le "preload" est TRÈS TRÈS lent (environ 10 séquences / s ).  
-			// Peut-être que je ne l'utilise pas correctement.
-			// D'ailleurs, je ne suis pas certain que je choisi bien les paramètres.
-			// De plus, le DCTW predictor génère parfois des erreurs. 
-			// C'est peut-être à cause des paramètres.
-			// Un exemple de l'utilisation des Predictor se trouve dans: 
-			//      /vmm/MainTestVMMPredictors.java
-			// Pour les utiliser dans notre projet, je suis obligé de convertir les items en char
-			// car ces predictor sont fait pour traiter des strings.
-			//controller.addPredictor(new DCTWPredictorVMM(500, 5)); 
-	//		controller.addPredictor(new BinaryCTWPredictorVMM(500, 5)); 
-	//		controller.addPredictor(new PPMCPredictorVMM(500, 5)); 
-			
 
-//			Parameters.splitLength = i;
-//			Parameters.windowSize = i;
-//			Parameters.sequenceMinSize = Parameters.windowSize + 1;
-//			Parameters.recursiveDividerMin = (Parameters.windowSize > 2) ? Parameters.windowSize - 2 : 1;
 			controller.Start(KFOLD, 12, true);    // PHILIPPE AJOUT DU TROISIÈME PARAMÈTRE
 //			controller.Start(HOLDOUT, 0.75f, true);    // PHILIPPE AJOUT DU TROISIÈME PARAMÈTRE
 			

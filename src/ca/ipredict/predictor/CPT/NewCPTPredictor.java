@@ -10,16 +10,17 @@ import ca.ipredict.predictor.Parameters;
 import ca.ipredict.predictor.Predictor;
 
 /**
- * 
+ * Predictor based on a 3 main structures
+ * a prediction tree, an inverted index and a lookup table
  * @author Ted Gueniche
  *
  */
 public class NewCPTPredictor implements Predictor {
 
 	//The three data structure
-	private PredictionTree Root; 				//Prediction Tree
-	private Map<Integer, PredictionTree> LT; 	//Lookup Table
-	private Map<Integer, Bitvector> II; 		//Inverted Index
+	public PredictionTree Root; 				//Prediction Tree
+	public Map<Integer, PredictionTree> LT; 	//Lookup Table
+	public Map<Integer, Bitvector> II; 		//Inverted Index
 	
 	private long nodeNumber; 					//number of node in the prediction tree (used for size())
 	private List<Sequence> trainingSequences; 	//list of sequences to test
@@ -29,6 +30,7 @@ public class NewCPTPredictor implements Predictor {
 		Root = new PredictionTree();
 		LT = new HashMap<Integer, PredictionTree>();
 		II = new HashMap<Integer, Bitvector>();
+		nodeNumber = 0;
 	}
 	
 	@Override
@@ -81,13 +83,39 @@ public class NewCPTPredictor implements Predictor {
 			seqId++; //increment sequence id number
 		}
 		
+		System.out.println(getTAG());
+		System.out.println("II size: "+ II.size());
+		System.out.println("Root size: "+ nodeNumber);
+		System.out.println("LT size: "+ LT.size());
+		
 		return true;
 	}
 
 	@Override
 	public Sequence Predict(Sequence target) {
-		// TODO Auto-generated method stub
-		return null;
+		
+		//Empty predicted sequence
+		Sequence predicted = new Sequence(-1);
+		
+		//For every step of the recursive divider
+		//from recursiveDividerMin to recursiveDividerMax
+		int recursion = Parameters.recursiveDividerMin;
+		while(predicted.size() == 0 && recursion < Parameters.recursiveDividerMax ) {
+			
+			//Call recursive divider to update the countable
+			CountTable ct = new CountTable();
+			
+			int minSize = target.size() - recursion;
+			Item[] targetArray = target.getItems().toArray(new Item[0]);
+			NewCPTHelper.recursiveDivider(this, targetArray, minSize, ct,target.size());
+			
+			//Extract prediction from the CountTable
+			predicted = ct.getBestSequence(1, II);
+			
+			recursion++;
+		}
+		
+		return predicted;
 	}
 
 	@Override
