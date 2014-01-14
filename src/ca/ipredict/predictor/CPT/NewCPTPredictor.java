@@ -1,6 +1,7 @@
 package ca.ipredict.predictor.CPT;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -93,6 +94,21 @@ public class NewCPTPredictor implements Predictor {
 
 	@Override
 	public Sequence Predict(Sequence target) {
+		
+		//remove items that were never seen before from the Target sequence before LLCT try to make a prediction
+		//If set to false, those items will be still ignored later on (in updateCountTable())
+		if(Parameters.removeUnknownItemsForPrediction){
+			Iterator<Item> iter = target.getItems().iterator();
+			while (iter.hasNext()) {
+				Item item = (Item) iter.next();
+				// if there is no bitset for that item (we have never seen it)
+				if(II.get(item.val) == null){
+					// then remove it from target.
+					iter.remove();  
+				}
+			}
+		}
+		
 		
 		//Empty predicted sequence
 		Sequence predicted = new Sequence(-1);
