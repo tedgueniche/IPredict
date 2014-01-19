@@ -46,7 +46,7 @@ public class NewCPTHelper {
 		Bitvector intersection = null;
 		for(int i = 0 ; i < sequence.length ; i++) {
 			if(intersection == null) {
-				intersection = predictor.II.get(sequence[i].val);
+				intersection = (Bitvector) predictor.II.get(sequence[i].val).clone();
 			}
 			else {
 				Bitvector other = predictor.II.get(sequence[i].val);

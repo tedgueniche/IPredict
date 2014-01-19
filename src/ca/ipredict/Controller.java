@@ -486,13 +486,13 @@ public class Controller {
 			Controller controller = new Controller();
 		
 			//Loading data sets
-			controller.addDataset(Format.BMS, 		1000);
+//			controller.addDataset(Format.BMS, 		1000);
 //			controller.addDataset(Format.SIGN, 		8000);  // AJOUT PHILIPPE
 //			controller.addDataset(Format.CANADARM1, 10000);  // AJOUT PHILIPPE
 //			controller.addDataset(Format.CANADARM2, 10000);  // AJOUT PHILIPPE
 //			controller.addDataset(Format.KOSARAK,	15000);
 //			controller.addDataset(Format.FIFA, 		10000);
-//			controller.addDataset(Format.MSNBC, 	20);
+			controller.addDataset(Format.MSNBC, 	20);
 //			controller.addDataset(Format.BIBLE_CHAR, 	5000);
 //			controller.addDataset(Format.BIBLE_WORD, 	5000);
 //			controller.addDataset(Format.KORAN_WORD, 	5000);

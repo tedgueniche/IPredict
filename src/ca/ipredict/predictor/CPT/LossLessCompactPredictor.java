@@ -134,7 +134,7 @@ public class LossLessCompactPredictor implements Predictor {
 	
 					//Update the countable with the right weight and value
 					float curValue = (Parameters.countTableWeightDivided == 0) ? 1f : 1f /((float)indexes.size());
-					CountTable.put(branch.get(i).val, oldValue + weight /((float)indexes.size()) );
+					CountTable.put(branch.get(i).val, oldValue + weight / curValue );
 					
 					hashSidVisited.add(index); 
 				}
@@ -170,6 +170,7 @@ public class LossLessCompactPredictor implements Predictor {
 	 * @return The highest rated sequence or an empty one if the CountTable is empty
 	 */
 	private Sequence getBestSequenceFromCountTable(Map<Integer, Float> CountTable, boolean useLift) {
+		String debug = "";
 		
 		//Looking for the item with the highest count in the CountTable
 		double maxValue = -1;
@@ -191,8 +192,14 @@ public class LossLessCompactPredictor implements Predictor {
 			else if (score > secondMaxValue) {
 				secondMaxValue = score; //updating the second best value
 			}
+			
+			debug += it.getKey() + ": "+ it.getValue() + "\t";
 		}
 
+		System.out.println();
+		System.out.println("LossLessCompact");
+		System.out.println(debug);
+		
 		Sequence predicted = new Sequence(-1);
 		
 

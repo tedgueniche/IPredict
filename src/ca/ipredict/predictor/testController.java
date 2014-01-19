@@ -55,8 +55,8 @@ public class testController {
 		Sequence testing1 = new Sequence(1);
 		testing1.addItem(new Item(1));
 		testing1.addItem(new Item(2));
+		testing1.addItem(new Item(2));
 		testing1.addItem(new Item(3));
-//		testing1.addItem(new Item(5));
 		
 		List<Sequence> testing = new ArrayList<Sequence>();
 		testing.add(testing1);

@@ -130,6 +130,8 @@ public class CountTable {
 	 */
 	public Sequence getBestSequence(int count, Map<Integer, Bitvector> II) {
 		
+		String debug = "";
+		
 		//Iterating through the CountTable to sort the items by score
 		TreeMap<Double, Integer> bestOfCT = new TreeMap<Double, Integer>();
 		for(Entry<Integer, Float> it : table.entrySet()) {
@@ -144,10 +146,16 @@ public class CountTable {
 			
 			double score = (Parameters.firstVote == 1) ? confidence : lift; //Use confidence or lift, depending on Parameter.firstVote
 			
+			debug += it.getKey() + ": "+ it.getValue() + "\t";
+			
 			if(! bestOfCT.containsKey(score)) {
 				bestOfCT.put(score, it.getKey());
 			}
 		}
+		
+		System.out.println();
+		System.out.println("New CPT");
+		System.out.println(debug);
 		
 		//Filling a sequence with the best |count| items
 		Sequence seq = new Sequence(-1);
