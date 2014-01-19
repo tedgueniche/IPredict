@@ -486,12 +486,7 @@ public class CPTPredictor implements Predictor {
 		
 		//Logging memory usage
 		MemoryLogger.addUpdate();
-		
-		System.out.println(getTAG());
-		System.out.println("II size: "+ II.size());
-		System.out.println("Root size: "+ nodeNumber);
-		System.out.println("LT size: "+ LT.size());
-		
+
 		return true;
 	}
 	

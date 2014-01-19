@@ -39,16 +39,24 @@ public class testController {
 		training3.addItem(new Item(6));
 		training3.addItem(new Item(5));
 		
+		Sequence training4 = new Sequence(4);
+		training4.addItem(new Item(1));
+		training4.addItem(new Item(2));
+		training4.addItem(new Item(4));
+		training4.addItem(new Item(6));
+		training4.addItem(new Item(7));
+		
 		List<Sequence> training = new ArrayList<Sequence>();
 		training.add(training1);
-//		training.add(training2);
-//		training.add(training3);
+		training.add(training2);
+		training.add(training3);
+		training.add(training4);
 		
 		Sequence testing1 = new Sequence(1);
 		testing1.addItem(new Item(1));
 		testing1.addItem(new Item(2));
 		testing1.addItem(new Item(3));
-		testing1.addItem(new Item(4));
+//		testing1.addItem(new Item(5));
 		
 		List<Sequence> testing = new ArrayList<Sequence>();
 		testing.add(testing1);
@@ -58,10 +66,10 @@ public class testController {
 		newcpt.Preload();
 		System.out.println(newcpt.Predict(testing1));
 		
-//		CPTPredictor oldcpt = new CPTPredictor();
-//		oldcpt.setTrainingSequences(training);
-//		oldcpt.Preload();
-//		System.out.println(oldcpt.Predict(testing1));
+		CPTPredictor oldcpt = new CPTPredictor();
+		oldcpt.setTrainingSequences(training);
+		oldcpt.Preload();
+		System.out.println(oldcpt.Predict(testing1));
 		
 		LossLessCompactPredictor regcpt = new LossLessCompactPredictor();
 		regcpt.setTrainingSequences(training);

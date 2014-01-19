@@ -46,9 +46,14 @@ public class NewCPTPredictor implements Predictor {
 	 * @return True on success
 	 */
 	public Boolean Preload() {
+		Root = new PredictionTree();
+		LT = new HashMap<Integer, PredictionTree>();
+		II = new HashMap<Integer, Bitvector>();
+		nodeNumber = 0;
+		
 		int seqId = 0;
 		PredictionTree curNode;
-		
+
 		//for each training sequence
 		for(Sequence seq : trainingSequences) {
 			
@@ -59,7 +64,7 @@ public class NewCPTPredictor implements Predictor {
 			
 			//resetting node pointer to root node
 			curNode = Root;
-			
+
 			//for each item in the sequence
 			for(Item item : seq.getItems()) {
 			
@@ -82,13 +87,8 @@ public class NewCPTPredictor implements Predictor {
 			//adding the sequence id in the Lookup Table
 			LT.put(seqId, curNode); //adding <sequence id, last node in sequence>
 			seqId++; //increment sequence id number
+
 		}
-		
-		System.out.println(getTAG());
-		System.out.println("II size: "+ II.size());
-		System.out.println("Root size: "+ nodeNumber);
-		System.out.println("LT size: "+ LT.size());
-		
 		return true;
 	}
 

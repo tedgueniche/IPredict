@@ -340,13 +340,12 @@ public class LossLessCompactPredictor implements Predictor {
 			}		
 		}
 		mTrainingSequences = newTrainingSet;
-		
-		
+
 		//For each line (sequence) in file
 		for(Sequence curSeq : mTrainingSequences) {
 			
 			PredictionTree curNode = Root;
-			
+
 			//for each item in this sequence
 			for(Item it : curSeq.getItems()) {
 				
