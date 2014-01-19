@@ -78,6 +78,13 @@ public class Bitvector {
 		bitset.set(i);
 		cardinality++;
 	}
+
+	public void setBit(int i) {
+		if(bitset.get(i) == false) {
+			bitset.set(i);
+			cardinality++;
+		}
+	}
 	
 	// FOR DEBUGGING
 	public String toString(){

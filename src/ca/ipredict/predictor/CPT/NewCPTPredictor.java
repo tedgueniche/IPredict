@@ -1,5 +1,6 @@
 package ca.ipredict.predictor.CPT;
 
+import java.util.BitSet;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -73,8 +74,11 @@ public class NewCPTPredictor implements Predictor {
 					Bitvector tmpBitset = new Bitvector();
 					II.put(item.val, tmpBitset);
 				}
+
 				//updating Inverted Index with seqId for this Item
-				II.get(item.val).setBitAndIncrementCardinality(seqId);
+				II.get(item.val).setBit(seqId);
+				
+				
 				
 				//adding the item in the Prediction Tree if needed
 				if(curNode.hasChild(item) == false) {

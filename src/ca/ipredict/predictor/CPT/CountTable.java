@@ -146,7 +146,7 @@ public class CountTable {
 			
 			double score = (Parameters.firstVote == 1) ? confidence : lift; //Use confidence or lift, depending on Parameter.firstVote
 			
-			debug += it.getKey() + ": "+ it.getValue() + "\t";
+			debug += it.getKey() + ": "+ it.getValue() + " -- " + II.get(it.getKey()) +"\n";
 			
 			if(! bestOfCT.containsKey(score)) {
 				bestOfCT.put(score, it.getKey());

@@ -193,7 +193,7 @@ public class LossLessCompactPredictor implements Predictor {
 				secondMaxValue = score; //updating the second best value
 			}
 			
-			debug += it.getKey() + ": "+ it.getValue() + "\t";
+			debug += it.getKey() + ": "+ it.getValue() + " -- " + II.get(it.getKey()) + " cardinality : "+ II.get(it.getKey()).cardinality() +"\n";
 		}
 
 		System.out.println();

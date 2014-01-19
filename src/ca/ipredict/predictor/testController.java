@@ -19,7 +19,7 @@ public class testController {
 		Sequence training1 = new Sequence(1);
 		training1.addItem(new Item(1));
 		training1.addItem(new Item(2));
-		training1.addItem(new Item(1));
+		training1.addItem(new Item(3));
 		training1.addItem(new Item(2));
 		training1.addItem(new Item(3));
 		
@@ -58,6 +58,12 @@ public class testController {
 		testing1.addItem(new Item(2));
 		testing1.addItem(new Item(3));
 		
+		Sequence testing2 = new Sequence(1);
+		testing2.addItem(new Item(1));
+		testing2.addItem(new Item(2));
+//		testing2.addItem(new Item(2));
+		testing2.addItem(new Item(3));
+		
 		List<Sequence> testing = new ArrayList<Sequence>();
 		testing.add(testing1);
 		
@@ -75,7 +81,6 @@ public class testController {
 		regcpt.setTrainingSequences(training);
 		regcpt.Preload();
 		System.out.println(regcpt.Predict(testing1));
-		
 		
 	}
 
