@@ -71,7 +71,7 @@ public class NewCPTHelper {
 		
 		//Reading the whole branch from bottom to top
 		sequence.add(curNode.Item);
-		while(curNode.Parent != null) {
+		while(curNode.Parent != null && curNode.Parent != predictor.Root) {
 			curNode = curNode.Parent;
 			sequence.add(curNode.Item);
 		}
@@ -101,6 +101,11 @@ public class NewCPTHelper {
 		
 		//Updating the count table with the current sequence
 		ct.update(predictor, sequence, initialSequenceSize);
+		
+		//Return if no possible child
+		if(size == minSize) {
+			return;
+		}
 		
 		//Recursive call on all subsequence of size (sequence.size() - 1)
 		List<Item[]> sequences = noiseRemover(sequence);

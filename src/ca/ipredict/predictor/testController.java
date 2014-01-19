@@ -17,17 +17,17 @@ public class testController {
 		
 		Sequence training1 = new Sequence(1);
 		training1.addItem(new Item(1));
+		training1.addItem(new Item(2));
 		training1.addItem(new Item(3));
 		training1.addItem(new Item(3));
-		training1.addItem(new Item(4));
 		training1.addItem(new Item(5));
 		
-		Sequence training2 = new Sequence(2);
-		training2.addItem(new Item(1));
-		training2.addItem(new Item(2));
-		training2.addItem(new Item(3));
-		training2.addItem(new Item(5));
-		training2.addItem(new Item(6));
+//		Sequence training2 = new Sequence(2);
+//		training2.addItem(new Item(1));
+//		training2.addItem(new Item(2));
+//		training2.addItem(new Item(3));
+//		training2.addItem(new Item(5));
+//		training2.addItem(new Item(6));
 		
 //		Sequence training3 = new Sequence(3);
 //		training3.addItem(new Item(1));

@@ -114,7 +114,7 @@ public class CountTable {
 					float score = calculateScore(sequence.length, initialSequenceSize, ids.cardinality());
 					push(item.val, score);
 				}
-				if(toAvoid.contains(item)) {
+				else if(toAvoid.contains(item)) {
 					toAvoid.remove(item);
 				}
 			}			
@@ -144,7 +144,9 @@ public class CountTable {
 			
 			double score = (Parameters.firstVote == 1) ? confidence : lift; //Use confidence or lift, depending on Parameter.firstVote
 			
-			bestOfCT.put(score, it.getKey());
+			if(! bestOfCT.containsKey(score)) {
+				bestOfCT.put(score, it.getKey());
+			}
 		}
 		
 		//Filling a sequence with the best |count| items
@@ -157,7 +159,6 @@ public class CountTable {
 			} else {
 				break;
 			}
-			
 		}
 		
 		return seq;

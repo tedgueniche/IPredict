@@ -1,0 +1,6 @@
+Bugs:
+
+--NewCPTHelper.getSequenceFromId return a sequence starting with -1
+--CountTable.update() in the last loop it should be an if...else and not an if...if
+CountTable.getBestSequence() if two items have the same score, only one will be returned
+--NewCPTHelper.recursiveDivider just before noiseRemover() exit method if (strlen(seq)) == minSize
