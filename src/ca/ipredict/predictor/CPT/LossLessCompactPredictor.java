@@ -108,7 +108,7 @@ public class LossLessCompactPredictor implements Predictor {
 			if(Parameters.branchTraversalTopToBottom) {
 				//Transform this branch in a list
 				List<Item> branch = new ArrayList<Item>();
-				while(curNode.Parent != Root) {
+				while(curNode != Root) {
 					
 					branch.add(curNode.Item);
 					
@@ -205,7 +205,8 @@ public class LossLessCompactPredictor implements Predictor {
 		} 
 		//-If the secondVote is set to 0 , and their is a best and a second best, then
 		else if (Parameters.secondVote == 0 && maxItem != -1 && secondMaxValue != -1 && diff <= Parameters.voteTreshold) {
-			
+			Item predictedItem = new Item(maxItem);
+			predicted.addItem(predictedItem);
 		}
 		//-If there is no second best value, then the best one is the winner
 		//-If there is a max item (at least one item in the CountTable)

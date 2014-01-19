@@ -109,7 +109,6 @@ public class NewCPTPredictor implements Predictor {
 			}
 		}
 		
-		
 		//Empty predicted sequence
 		Sequence predicted = new Sequence(-1);
 		
@@ -127,7 +126,6 @@ public class NewCPTPredictor implements Predictor {
 			
 			//Extract prediction from the CountTable
 			predicted = ct.getBestSequence(1, II);
-			
 			recursion++;
 		}
 		

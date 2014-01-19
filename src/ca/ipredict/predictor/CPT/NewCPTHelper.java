@@ -9,7 +9,7 @@ import ca.ipredict.database.Item;
 import ca.ipredict.database.Sequence;
 
 /**
- * Best friend of COT
+ * Best friend of CPT
  * @author Ted
  *
  */

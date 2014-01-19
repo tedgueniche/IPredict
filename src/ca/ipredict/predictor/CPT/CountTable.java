@@ -1,10 +1,8 @@
 package ca.ipredict.predictor.CPT;
 
-import java.util.Collections;
 import java.util.Map.Entry;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeMap;
 
 import ca.ipredict.database.Item;
@@ -88,7 +86,7 @@ public class CountTable {
 				break;
 			}
 			
-			if(branchVisited.add(id) == false) {
+			if(Parameters.useHashSidVisited && branchVisited.contains(id)) {
 				continue;
 			}
 			
@@ -113,6 +111,8 @@ public class CountTable {
 					//calculating the score for this item
 					float score = calculateScore(sequence.length, initialSequenceSize, ids.cardinality());
 					push(item.val, score);
+					
+					branchVisited.add(id);
 				}
 				else if(toAvoid.contains(item)) {
 					toAvoid.remove(item);

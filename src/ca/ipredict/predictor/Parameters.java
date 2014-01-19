@@ -9,7 +9,7 @@ package ca.ipredict.predictor;
 public class Parameters {
 	
 	//Preprocessing
-	public static int sequenceMinSize = 10; //min sequence size in the dataset
+	public static int sequenceMinSize = 3; //min sequence size in the dataset
 	public static int sequenceMaxSize = 999;  //max sequence size in the dataset
 	public static int removeDuplicatesMethod = 1;  // 0 for none, 1 for consecutive duplicates, 2 for all duplicates
 	public static int consequentSize = 1; //suffix-size for prediction
@@ -30,11 +30,11 @@ public class Parameters {
 	public static double voteTreshold = 0.0; //confidence threshold to validate firstVote, else it uses the secondVote 
 	
 	//Countable weight system
-	public static int countTableWeightMultiplier = 2; // 0 for no weight (1), 1 for 1/targetSize, 2 for level/targetSize
-	public static int countTableWeightDivided = 1; // 0 for no divider, 1 for x/(#ofBranches for this sequence)
+	public static int countTableWeightMultiplier = 0; // 0 for no weight (1), 1 for 1/targetSize, 2 for level/targetSize
+	public static int countTableWeightDivided = 0; // 0 for no divider, 1 for x/(#ofBranches for this sequence)
 	
 	//Others
-	public static boolean useHashSidVisited = true;
+	public static boolean useHashSidVisited = false;
 	public static boolean branchTraversalTopToBottom = true; //used for branches with duplicates, set to true to allow with duplicates
 	public static boolean removeUnknownItemsForPrediction = true; //remove items that were never seen before from the Target sequence before LLCT try to make a prediction
 	//public static boolean dontRemoveLastItemFromTargetByRecursiveDivider = false; //to test

@@ -500,15 +500,15 @@ public class Controller {
 			
 			//Loading predictors
 			controller.addPredictor(new DGPredictor());
-//			controller.addPredictor(new LossLessCompactPredictor());
+			controller.addPredictor(new LossLessCompactPredictor());
 			controller.addPredictor(new NewCPTPredictor());
 			controller.addPredictor(new CPTPredictor());
-//			controller.addPredictor(new LLCT_Old());
+			controller.addPredictor(new LLCT_Old());
 //			controller.addPredictor(new MarkovFirstOrderPredictor());
 //			controller.addPredictor(new MarkovAllKPredictor());
 			
 
-			controller.Start(KFOLD, 12, true);    // PHILIPPE AJOUT DU TROISIÈME PARAMÈTRE
+			controller.Start(KFOLD, 14, true);    // PHILIPPE AJOUT DU TROISIÈME PARAMÈTRE
 //			controller.Start(HOLDOUT, 0.75f, true);    // PHILIPPE AJOUT DU TROISIÈME PARAMÈTRE
 			
 			System.out.println();
