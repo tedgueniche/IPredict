@@ -486,7 +486,7 @@ public class Controller {
 			Controller controller = new Controller();
 		
 			//Loading data sets
-			controller.addDataset(Format.BMS, 		1000);
+			controller.addDataset(Format.BMS, 		5000);
 //			controller.addDataset(Format.SIGN, 		8000);  // AJOUT PHILIPPE
 //			controller.addDataset(Format.CANADARM1, 10000);  // AJOUT PHILIPPE
 //			controller.addDataset(Format.CANADARM2, 10000);  // AJOUT PHILIPPE

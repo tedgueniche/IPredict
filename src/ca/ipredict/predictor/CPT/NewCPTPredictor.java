@@ -75,10 +75,9 @@ public class NewCPTPredictor implements Predictor {
 					II.put(item.val, tmpBitset);
 				}
 
+				//TODO: possible improvement: use setBitAndIncrementCardinality() instead of setBit()
 				//updating Inverted Index with seqId for this Item
 				II.get(item.val).setBit(seqId);
-				
-				
 				
 				//adding the item in the Prediction Tree if needed
 				if(curNode.hasChild(item) == false) {

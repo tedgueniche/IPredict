@@ -86,7 +86,7 @@ public class LossLessCompactPredictor implements Predictor {
 	private void UpdateCountTable(Sequence target, float weight, Map<Integer, Float> CountTable, HashSet<Integer> hashSidVisited) {
 
 		List<Integer> indexes = getMatchingSequences(target); 
-		
+
 		//creating an HashMap of the target's item (for O(1) search time)
 		HashSet<Integer> hashTarget = new HashSet<Integer>();
 		for(Item it : target.getItems()) {
@@ -116,7 +116,7 @@ public class LossLessCompactPredictor implements Predictor {
 					curNode = curNode.Parent;
 				}
 				Collections.reverse(branch);
-				
+
 				HashSet<Integer> hashTargetTMP = new HashSet<Integer>(hashTarget);
 				int i = 0;
 				for(i = 0 ; i < branch.size() && hashTargetTMP.size() > 0; i++ ) {
@@ -170,8 +170,7 @@ public class LossLessCompactPredictor implements Predictor {
 	 * @return The highest rated sequence or an empty one if the CountTable is empty
 	 */
 	private Sequence getBestSequenceFromCountTable(Map<Integer, Float> CountTable, boolean useLift) {
-		String debug = "";
-		
+
 		//Looking for the item with the highest count in the CountTable
 		double maxValue = -1;
 		double secondMaxValue = -1;
@@ -192,13 +191,7 @@ public class LossLessCompactPredictor implements Predictor {
 			else if (score > secondMaxValue) {
 				secondMaxValue = score; //updating the second best value
 			}
-			
-			debug += it.getKey() + ": "+ it.getValue() + " -- " + II.get(it.getKey()) + " cardinality : "+ II.get(it.getKey()).cardinality() +"\n";
 		}
-
-		System.out.println();
-		System.out.println("LossLessCompact");
-		System.out.println(debug);
 		
 		Sequence predicted = new Sequence(-1);
 		

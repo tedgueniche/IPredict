@@ -77,14 +77,9 @@ public class CountTable {
 	public void update(NewCPTPredictor predictor, Item[] sequence, int initialSequenceSize) {
 		
 		Bitvector ids = NewCPTHelper.getSimilarSequencesIds(predictor, sequence);
-		
+
 		//For each sequence similar of the given sequence
-		int id = 0;
-		for(int i = 0 ; i < ids.cardinality() ; i++) {
-			id = ids.nextSetBit(i);
-			if(id == -1) {
-				break;
-			}
+		for(int id = ids.nextSetBit(0); id >= 0 ; id = ids.nextSetBit(id + 1)) {
 			
 			if(Parameters.useHashSidVisited && branchVisited.contains(id)) {
 				continue;
@@ -130,8 +125,6 @@ public class CountTable {
 	 */
 	public Sequence getBestSequence(int count, Map<Integer, Bitvector> II) {
 		
-		String debug = "";
-		
 		//Iterating through the CountTable to sort the items by score
 		TreeMap<Double, Integer> bestOfCT = new TreeMap<Double, Integer>();
 		for(Entry<Integer, Float> it : table.entrySet()) {
@@ -146,16 +139,10 @@ public class CountTable {
 			
 			double score = (Parameters.firstVote == 1) ? confidence : lift; //Use confidence or lift, depending on Parameter.firstVote
 			
-			debug += it.getKey() + ": "+ it.getValue() + " -- " + II.get(it.getKey()) +"\n";
-			
 			if(! bestOfCT.containsKey(score)) {
 				bestOfCT.put(score, it.getKey());
 			}
 		}
-		
-		System.out.println();
-		System.out.println("New CPT");
-		System.out.println(debug);
 		
 		//Filling a sequence with the best |count| items
 		Sequence seq = new Sequence(-1);
