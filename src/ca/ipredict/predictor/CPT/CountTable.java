@@ -2,7 +2,6 @@ package ca.ipredict.predictor.CPT;
 
 import java.util.Map.Entry;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.TreeMap;
 
 import ca.ipredict.database.Item;
@@ -20,39 +19,26 @@ public class CountTable {
 	 */
 	private TreeMap<Integer, Float> table;
 	private HashSet<Integer> branchVisited;
+	private NewCPTPredictor predictor;
 	
 	/**
 	 * Basic controller
 	 */
-	public CountTable() {
+	public CountTable(NewCPTPredictor predictor) {
 		table = new TreeMap<Integer, Float>();
 		branchVisited = new HashSet<Integer>();
+		this.predictor = predictor;
 	}
 
 	/**
-	 * Push a value to the CountTable, if a key already exists then
-	 * the given value is added to the old one
-	 */
-	public void push(Integer key, float value) {
-
-		Float oldVal = table.get(key);
-		if(oldVal == null) {
-			table.put(key, value);
-		}
-		else {
-			table.put(key, oldVal + value);
-		}		
-	}
-	
-	/**
-	 * Calculate the score for an item
+	 * Calculate the score for an item and push the score to the CountTable, 
+	 * if a key already exists then the given value is added to the old one
 	 * @param curSeqLength Size of the sequence that contains the item
 	 * @param fullSeqLength Size of the sequence before calling recursive divider
 	 * @param numberOfSeqSameLength Number of similar sequence with the same size
-	 * @return The score
 	 */
-	public float calculateScore(int curSeqLength, int fullSeqLength, int numberOfSeqSameLength) {
-		
+	public void push(Integer key, int curSeqLength, int fullSeqLength, int numberOfSeqSameLength) {
+
 		//Setting up the weight multiplier for the countTable
 		float weight = 1f;		
 		if(Parameters.countTableWeightMultiplier == 1)
@@ -60,12 +46,19 @@ public class CountTable {
 		else if(Parameters.countTableWeightMultiplier == 2)
 			weight = (float)curSeqLength / fullSeqLength;
 		
-		
 		//Update the countable with the right weight and value
 		float curValue = (Parameters.countTableWeightDivided == 0) ? 1f : 1f /((float)numberOfSeqSameLength);
 		
-		return (curValue * weight);
+		
+		Float oldVal = table.get(key);
+		if(oldVal == null) {
+			table.put(key, (curValue * weight));
+		}
+		else {
+			table.put(key, oldVal + (curValue * weight));
+		}		
 	}
+
 	
 	/**
 	 * Update this CountTable with a sequence S, it finds the similar sequence SS of S
@@ -74,9 +67,9 @@ public class CountTable {
 	 * @param sequence Sequence to use to update the CountTable
 	 * @param initialSequenceSize The initial size of the sequence to predict (used for weighting)
 	 */
-	public void update(NewCPTPredictor predictor, Item[] sequence, int initialSequenceSize) {
+	public void update(Item[] sequence, int initialSequenceSize) {
 		
-		Bitvector ids = NewCPTHelper.getSimilarSequencesIds(predictor, sequence);
+		Bitvector ids = NewCPTHelper.getSimilarSequencesIds(sequence);
 
 		//For each sequence similar of the given sequence
 		for(int id = ids.nextSetBit(0); id >= 0 ; id = ids.nextSetBit(id + 1)) {
@@ -86,7 +79,7 @@ public class CountTable {
 			}
 			
 			//extracting the sequence from the PredictionTree
-			Item[] seq = NewCPTHelper.getSequenceFromId(predictor, id);
+			Item[] seq = NewCPTHelper.getSequenceFromId(id);
 			
 			//Generating a set of all the items from sequence
 			HashSet<Item> toAvoid = new HashSet<Item>();
@@ -104,9 +97,7 @@ public class CountTable {
 			for(Item item : seq) {
 				if(toAvoid.size() == 0) {
 					//calculating the score for this item
-					float score = calculateScore(sequence.length, initialSequenceSize, ids.cardinality());
-					push(item.val, score);
-					
+					push(item.val, sequence.length, initialSequenceSize, ids.cardinality());
 					branchVisited.add(id);
 				}
 				else if(toAvoid.contains(item)) {
@@ -123,7 +114,7 @@ public class CountTable {
 	 * @param II The inverted index corresponding
 	 * @return The sequence containing the |count| best items sorted from the CountTable
 	 */
-	public Sequence getBestSequence(int count, Map<Integer, Bitvector> II) {
+	public Sequence getBestSequence(int count) {
 		
 		//Iterating through the CountTable to sort the items by score
 		TreeMap<Double, Integer> bestOfCT = new TreeMap<Double, Integer>();
@@ -133,7 +124,7 @@ public class CountTable {
 			//CONFIDENCE : |X -> Y|
 			//LIFT: CONFIDENCE(X -> Y) / (|Y|)
 			//Calculate score based on lift or confidence
-			double support = II.get(it.getKey()).cardinality();
+			double support = predictor.II.get(it.getKey()).cardinality();
 			double lift = it.getValue() / support;
 			double confidence = it.getValue();
 			

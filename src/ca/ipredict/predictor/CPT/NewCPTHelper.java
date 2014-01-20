@@ -15,6 +15,9 @@ import ca.ipredict.database.Sequence;
  */
 public class NewCPTHelper {
 
+	
+	public static NewCPTPredictor predictor;
+	
 	/**
 	 * Return the last Length items
 	 * @param sequence the sequence to slice
@@ -37,7 +40,7 @@ public class NewCPTHelper {
 	 * @param II The inverted index containing the bit vectors
 	 * @return The similar sequences as a bit vector, where each bit indicate whether a sequence is similar or not
 	 */
-	public static Bitvector getSimilarSequencesIds(NewCPTPredictor predictor, Item[] sequence) {
+	public static Bitvector getSimilarSequencesIds(Item[] sequence) {
 		if(sequence.length == 0) {
 			return new Bitvector();
 		}
@@ -64,7 +67,7 @@ public class NewCPTHelper {
 	 * @param id Id of the sequence to extract
 	 * @return The full sequence matching the id
 	 */
-	public static Item[] getSequenceFromId(NewCPTPredictor predictor, Integer id) {
+	public static Item[] getSequenceFromId(Integer id) {
 		
 		List<Item> sequence = new ArrayList<Item>();
 		PredictionTree curNode = predictor.LT.get(id);
@@ -91,7 +94,7 @@ public class NewCPTHelper {
 	 * @param ct The CountTable to update
 	 * @param initialSequenceSize Initial size of the sequence to predict (use for the weighting function in CountTable)
 	 */
-	public static void recursiveDivider(NewCPTPredictor predictor, Item[] sequence, int minSize, CountTable ct, int initialSequenceSize) {
+	public static void recursiveDivider(Item[] sequence, int minSize, CountTable ct, int initialSequenceSize) {
 		
 		//Exit recursion condition
 		int size = sequence.length;
@@ -100,7 +103,7 @@ public class NewCPTHelper {
 		}
 		
 		//Updating the count table with the current sequence
-		ct.update(predictor, sequence, initialSequenceSize);
+		ct.update(sequence, initialSequenceSize);
 		
 		//Return if no possible child
 		if(size == minSize) {
@@ -110,7 +113,7 @@ public class NewCPTHelper {
 		//Recursive call on all subsequence of size (sequence.size() - 1)
 		List<Item[]> sequences = noiseRemover(sequence);
 		for(Item[] seq : sequences) {
-			recursiveDivider(predictor, seq, minSize, ct, initialSequenceSize);
+			recursiveDivider(seq, minSize, ct, initialSequenceSize);
 		}
 	}
 	
@@ -138,23 +141,6 @@ public class NewCPTHelper {
 	
 	public static void main(String[] args){
 		
-		Sequence a = new Sequence(0);
-		a.addItem(new Item(1));
-		a.addItem(new Item(2));
-		a.addItem(new Item(3));
-		a.addItem(new Item(4));
-		
-//		Sequence b = keepLastItems(a, 15);
-//		System.out.println(b.toString());
-		
-		Item[] aa = new Item[4];
-		aa[0] = new Item(0);
-		aa[1] = new Item(1);
-		aa[2] = new Item(2);
-		aa[3] = new Item(3);
-		List<Item[]> results = noiseRemover(aa);
-		
-		System.out.println(results);
 		
 	}
 }

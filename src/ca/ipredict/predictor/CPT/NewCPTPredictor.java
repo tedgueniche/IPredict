@@ -98,6 +98,8 @@ public class NewCPTPredictor implements Predictor {
 	@Override
 	public Sequence Predict(Sequence target) {
 		
+		NewCPTHelper.predictor = this;
+		
 		//remove items that were never seen before from the Target sequence before LLCT try to make a prediction
 		//If set to false, those items will be still ignored later on (in updateCountTable())
 		if(Parameters.removeUnknownItemsForPrediction){
@@ -121,14 +123,14 @@ public class NewCPTPredictor implements Predictor {
 		while(predicted.size() == 0 && recursion < Parameters.recursiveDividerMax ) {
 			
 			//Call recursive divider to update the countable
-			CountTable ct = new CountTable();
+			CountTable ct = new CountTable(this);
 			
 			int minSize = target.size() - recursion;
 			Item[] targetArray = target.getItems().toArray(new Item[0]);
-			NewCPTHelper.recursiveDivider(this, targetArray, minSize, ct,target.size());
+			NewCPTHelper.recursiveDivider(targetArray, minSize, ct,target.size());
 			
 			//Extract prediction from the CountTable
-			predicted = ct.getBestSequence(1, II);
+			predicted = ct.getBestSequence(1);
 			recursion++;
 		}
 		

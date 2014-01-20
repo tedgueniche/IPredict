@@ -481,6 +481,14 @@ public class Controller {
 	
 	public static void main(String[] args){
 		
+		
+		try {
+			Thread.sleep(10000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		System.out.println("Started");
+		
 		for(int i = 1 ; i < 2; i+= 1) {
 			
 			Controller controller = new Controller();
