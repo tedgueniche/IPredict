@@ -1,4 +1,4 @@
-package ca.ipredict.predictor;
+package ca.ipredict;
 
 import java.util.ArrayList;
 import java.util.List;

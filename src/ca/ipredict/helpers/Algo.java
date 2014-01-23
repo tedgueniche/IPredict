@@ -6,7 +6,7 @@ import java.util.List;
 public class Algo {
 	
 	//a algo as a list of step or only 1 step
-		//each step has a bunch of stats and their value
+	//each step has a bunch of stats and their value
 	
 
 	public String name;

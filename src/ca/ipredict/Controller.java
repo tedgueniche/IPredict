@@ -11,6 +11,8 @@ import java.util.List;
 import vmm.algs.BinaryCTWPredictor;
 import vmm.algs.DCTWPredictor;
 
+import ca.ipredict.database.DatabaseHelper;
+import ca.ipredict.database.DatabaseHelper.Format;
 import ca.ipredict.database.Item;
 import ca.ipredict.database.Sequence;
 import ca.ipredict.database.SequenceDatabase;
@@ -39,11 +41,7 @@ public class Controller {
 	//Sampling type
 	public final static int HOLDOUT = 0;
 	public final static int KFOLD = 1;
-	public final static int RANDOMSAMPLING = 2;
-	
-	//Data sets
-	static enum Format{BMS, KOSARAK, FIFA, MSNBC, SIGN, CANADARM1, CANADARM2, SNAKE, BIBLE_CHAR, BIBLE_WORD, KORAN_WORD, LEVIATHAN_WORD};  
-	// PHIL08: J'ai ajouté les formats KORAN_WORDS et LEVIATHAN_WORDS
+	public final static int RANDOMSAMPLING = 2; 
 	
 	//statistics
 	private long startTime;
@@ -51,13 +49,12 @@ public class Controller {
 	private long testingSetSize;
 	
 	//Database
-	private SequenceDatabase _database;
+	private DatabaseHelper database;
 	
 	//public Stats stats;
 	public StatsLogger stats;
 	public List<StatsLogger> experiements;
 	
-	// PHILIPPE: I added another list to store the max count separately from the database format
 	public List<Format> datasets;  
 	public List<Integer> datasetsMaxCount;  
 	
@@ -68,6 +65,7 @@ public class Controller {
 		predictors = new ArrayList<Predictor>();
 		datasets = new ArrayList<Format>();
 		datasetsMaxCount = new ArrayList<Integer>();
+		database = new DatabaseHelper();
 	}
 	
 	/**
@@ -108,7 +106,7 @@ public class Controller {
 		
 			int maxCount = datasetsMaxCount.get(i);
 			Format format = datasets.get(i);
-			loadDataset(format, maxCount, true); // PHILIPPE: AJOUT DU TROISIÈME PARAMÈTRE
+			database.loadDataset(format, maxCount, true); // PHILIPPE: AJOUT DU TROISIÈME PARAMÈTRE
 			
 			//Creating the statsLogger
 			stats = new StatsLogger(statsColumns, predictorNames, false);
@@ -149,90 +147,7 @@ public class Controller {
 		datasetsMaxCount.add(maxCount);
 	}
 	
-	/**
-	 * Load the dataset used for the training and the testing
-	 * This method must be called before starting the controller
-	 * @param format 1: BMS , 2: Kosarak, 3: FIFA
-	 * @param showDatasetStats show statistics about the dataset
-	 * @param count Max number of sequence to get
-	 */
-	public void loadDataset(Format format, int maxCount, boolean showDatasetStats) {
-		
-		//Creating or resetting the database
-		if(_database == null) {
-			_database = new SequenceDatabase();
-		}
-		else 
-			_database.clear();
-		
-		//Loading the specified dataset (according to the format)
-		try {
-			switch(format) {
-			case BMS:
-				_database.loadFileBMSFormat(fileToPath("BMS.dat"), maxCount, Parameters.sequenceMinSize, Parameters.sequenceMaxSize);
-				break;
-			case KOSARAK:
-				_database.loadFileKosarakFormat(fileToPath("kosarak.dat"), maxCount, Parameters.sequenceMinSize, Parameters.sequenceMaxSize);
-				break;
-			case FIFA:
-				_database.loadFileFIFAFormat(fileToPath("FIFA.dat"), maxCount, Parameters.sequenceMinSize, Parameters.sequenceMaxSize);
-				break;
-			case MSNBC:
-				_database.loadFileMsnbsFormat(fileToPath("msnbc.seq"), maxCount, Parameters.sequenceMinSize, Parameters.sequenceMaxSize);
-				break;
-			case SIGN:
-				_database.loadFileSignLanguage(fileToPath("sign_language.txt"), maxCount, Parameters.sequenceMinSize, Parameters.sequenceMaxSize);
-				break;
-			case CANADARM1:
-				_database.loadFileSPMFFormat(fileToPath("Canadarm1_actions.txt"), maxCount, Parameters.sequenceMinSize, Parameters.sequenceMaxSize);
-				break;
-			case CANADARM2:
-				_database.loadFileSPMFFormat(fileToPath("Canadarm2_states.txt"), maxCount, Parameters.sequenceMinSize, Parameters.sequenceMaxSize);
-				break;
-			case SNAKE:
-				_database.loadSnakeDataset(fileToPath("snake.dat"), maxCount, Parameters.sequenceMinSize, Parameters.sequenceMaxSize);
-				break;
-			case BIBLE_CHAR:
-				_database.loadFileLargeTextFormatAsCharacter(fileToPath("Bible.txt"), maxCount, Parameters.sequenceMinSize, Parameters.sequenceMaxSize);
-				break;
-			case BIBLE_WORD:
-				_database.loadFileLargeTextFormatAsWords(fileToPath("Bible.txt"), maxCount, Parameters.sequenceMinSize, Parameters.sequenceMaxSize, true);
-				break;
-			case KORAN_WORD:
-				_database.loadFileLargeTextFormatAsWords(fileToPath("koran.txt"), maxCount, Parameters.sequenceMinSize, Parameters.sequenceMaxSize, false);
-				break;
-			case LEVIATHAN_WORD:
-				_database.loadFileLargeTextFormatAsWords(fileToPath("leviathan.txt"), maxCount, Parameters.sequenceMinSize, Parameters.sequenceMaxSize, false);
-				break;
-			default:
-				System.out.println("Could not load dataset, unknown format.");
-			}
 
-			if(showDatasetStats){
-				System.out.println();
-				SequenceStatsGenerator.prinStats(_database, format.name());
-			}
-			
-			Collections.shuffle(_database.getSequences()); //shuffle
-		
-		} catch (IOException e) {
-			System.out.println("Could not load dataset, IOExeption");
-			e.printStackTrace();
-		}
-	}
-	
-	
-	/**
-	 * Return the path for the specified data set file
-	 * @param filename Name of the data set file
-	 * @throws UnsupportedEncodingException 
-	 */
-	public static String fileToPath(String filename)
-			throws UnsupportedEncodingException {
-		String parentPath = new File(SequenceDatabase.class.getResource("SequenceDatabase.class").getPath()).getParent();
-		String newPath = parentPath + File.separator + "datasets" + File.separator + filename;
-		return java.net.URLDecoder.decode(newPath, "UTF-8");
-	}
 	
 	/**
 	 * Holdout method
@@ -476,7 +391,7 @@ public class Controller {
 	}
 	
 	private List<Sequence> getDatabaseCopy() {
-		return new ArrayList<Sequence>(_database.getSequences().subList(0, _database.size()));
+		return new ArrayList<Sequence>(database.getDatabase().getSequences().subList(0, database.getDatabase().size()));
 	}
 	
 	public static void main(String[] args){
@@ -494,7 +409,7 @@ public class Controller {
 			Controller controller = new Controller();
 		
 			//Loading data sets
-			controller.addDataset(Format.BMS, 		5000);
+			controller.addDataset(Format.BMS, 		1000);
 //			controller.addDataset(Format.SIGN, 		8000);  // AJOUT PHILIPPE
 //			controller.addDataset(Format.CANADARM1, 10000);  // AJOUT PHILIPPE
 //			controller.addDataset(Format.CANADARM2, 10000);  // AJOUT PHILIPPE
