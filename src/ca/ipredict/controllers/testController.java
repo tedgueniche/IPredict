@@ -1,4 +1,4 @@
-package ca.ipredict;
+package ca.ipredict.controllers;
 
 import java.util.ArrayList;
 import java.util.List;

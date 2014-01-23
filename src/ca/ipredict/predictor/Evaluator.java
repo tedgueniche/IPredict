@@ -1,4 +1,4 @@
-package ca.ipredict;
+package ca.ipredict.predictor;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,8 +19,6 @@ import ca.ipredict.database.SequenceDatabase;
 import ca.ipredict.database.SequenceStatsGenerator;
 import ca.ipredict.helpers.MemoryLogger;
 import ca.ipredict.helpers.StatsLogger;
-import ca.ipredict.predictor.Parameters;
-import ca.ipredict.predictor.Predictor;
 import ca.ipredict.predictor.CPT.CPTPredictor;
 import ca.ipredict.predictor.CPT.LLCT_Old;
 import ca.ipredict.predictor.CPT.LossLessCompactPredictor;
@@ -34,7 +32,7 @@ import ca.ipredict.predictor.Markov.MarkovFirstOrderPredictor;
  * @author Ted Gueniche
  *
  */
-public class Controller {
+public class Evaluator {
 
 	private List<Predictor> predictors; //list of predictors
 	
@@ -58,10 +56,8 @@ public class Controller {
 	public List<Format> datasets;  
 	public List<Integer> datasetsMaxCount;  
 	
-	//PUBLIC INTERFACE
-	//
 	
-	public Controller() {
+	public Evaluator() {
 		predictors = new ArrayList<Predictor>();
 		datasets = new ArrayList<Format>();
 		datasetsMaxCount = new ArrayList<Integer>();
@@ -74,6 +70,16 @@ public class Controller {
 	 */
 	public void addPredictor(Predictor predictor) {
 		predictors.add(predictor);
+	}
+	
+	/**
+	 * Adds a dataset to the experiment
+	 * @param format Format of the Dataset
+	 * @param maxCount Maximum number of sequence to read in the dataset
+	 */
+	public void addDataset(Format format, int maxCount) {
+		datasets.add(format);
+		datasetsMaxCount.add(maxCount);
 	}
 
 	/**
@@ -141,14 +147,6 @@ public class Controller {
 		}
 	}
 
-	
-	public void addDataset(Format format, int maxCount) {
-		datasets.add(format);
-		datasetsMaxCount.add(maxCount);
-	}
-	
-
-	
 	/**
 	 * Holdout method
 	 * Data are randomly partitioned into two sets (a training set and a test set) using a ratio.
@@ -207,10 +205,6 @@ public class Controller {
 		int absoluteRatio = (int) (dataSet.size() * relativeRatio);
 		testingSetSize = dataSet.size();
 		
-		//DEBUG
-		//System.out.println("Dataset size: "+ database.size());
-		//System.out.println("K = "+ k + ", Fold size: "+ absoluteRatio);
-		
 		//For each fold, it does training and testing
 		for(int i = 0 ; i < k ; i++) {
 
@@ -241,10 +235,7 @@ public class Controller {
 			}
 			//
 			//End of Partitioning
-			
-			//DEBUG
-			//System.out.println("---------------------");
-			//System.out.println("FOLD "+ i);
+		
 			PrepareClassifier(trainingSequences, classifierId); //training (preparing) classifier	
 			StartClassifier(testSequences, classifierId); //classification of the test sequence
 			
@@ -254,8 +245,10 @@ public class Controller {
 		
 	}
 	
-	
-	
+	/**
+	 * Display the stats for the experiment
+	 * @param showExecutionStats
+	 */
 	public void displayStats(boolean showExecutionStats) {
 		double size = testingSetSize; //data size according to the stats
 		
@@ -302,7 +295,6 @@ public class Controller {
 		}
 	}
 	
-
 	/**
 	 * Tell whether the predicted sequence match the consequent sequence
 	 */
@@ -326,8 +318,9 @@ public class Controller {
 		return (hasError == false);
 	}
 	
-	//Private methods
-	//
+
+	
+	
 	
 	private void PrepareClassifier(List<Sequence> trainingSequences, int classifierId) {
 		long start = System.currentTimeMillis(); //Training starting time
@@ -397,16 +390,11 @@ public class Controller {
 	public static void main(String[] args){
 		
 		
-		try {
-			Thread.sleep(10000);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
 		System.out.println("Started");
 		
 		for(int i = 1 ; i < 2; i+= 1) {
 			
-			Controller controller = new Controller();
+			Evaluator controller = new Evaluator();
 		
 			//Loading data sets
 			controller.addDataset(Format.BMS, 		1000);

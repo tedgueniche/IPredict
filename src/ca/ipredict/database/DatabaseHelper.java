@@ -16,11 +16,17 @@ public class DatabaseHelper {
 	//Database
 	private SequenceDatabase _database;
 
-	
+	/**
+	 * Main constructor, instantiate an empty database
+	 */
 	public DatabaseHelper() {
 		_database = new SequenceDatabase();
 	}
 	
+	/**
+	 * Return an instance of the database
+	 * @return
+	 */
 	public SequenceDatabase getDatabase() {
 		return _database;
 	}
