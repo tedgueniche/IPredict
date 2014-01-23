@@ -1,34 +1,18 @@
 package ca.ipredict.predictor;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-
-import vmm.algs.BinaryCTWPredictor;
-import vmm.algs.DCTWPredictor;
 
 import ca.ipredict.database.DatabaseHelper;
 import ca.ipredict.database.DatabaseHelper.Format;
 import ca.ipredict.database.Item;
 import ca.ipredict.database.Sequence;
-import ca.ipredict.database.SequenceDatabase;
-import ca.ipredict.database.SequenceStatsGenerator;
 import ca.ipredict.helpers.MemoryLogger;
 import ca.ipredict.helpers.StatsLogger;
-import ca.ipredict.predictor.CPT.CPTPredictor;
-import ca.ipredict.predictor.CPT.LLCT_Old;
-import ca.ipredict.predictor.CPT.LossLessCompactPredictor;
-import ca.ipredict.predictor.CPT.NewCPTPredictor;
-import ca.ipredict.predictor.DG.DGPredictor;
-import ca.ipredict.predictor.Markov.MarkovAllKPredictor;
-import ca.ipredict.predictor.Markov.MarkovFirstOrderPredictor;
 
 /**
- * Controls the predictors
+ * Evaluation framework
  * @author Ted Gueniche
  *
  */
@@ -44,7 +28,6 @@ public class Evaluator {
 	//statistics
 	private long startTime;
 	private long endTime;
-	private long testingSetSize;
 	
 	//Database
 	private DatabaseHelper database;
@@ -90,7 +73,6 @@ public class Evaluator {
 	 */
 	public void Start(int samplingType, float param, boolean showDatasetStats) {
 	
-		//TODO: compress/move the creation of the stats logger
 		//Setting statsLogger
 		List<String> statsColumns = new ArrayList<String>();
 		statsColumns.add("Success");
@@ -157,7 +139,6 @@ public class Evaluator {
 		
 		List<Sequence> trainingSequences = getDatabaseCopy();
 		List<Sequence> testSequences = splitList(trainingSequences, ratio);
-		testingSetSize = testSequences.size();
 		
 		//DEBUG
 		//System.out.println("Dataset size: "+ (trainingSequences.size() + testSequences.size()));
@@ -203,7 +184,6 @@ public class Evaluator {
 		//calculating absolute ratio
 		double relativeRatio = 1/(double)k;
 		int absoluteRatio = (int) (dataSet.size() * relativeRatio);
-		testingSetSize = dataSet.size();
 		
 		//For each fold, it does training and testing
 		for(int i = 0 ; i < k ; i++) {
@@ -250,7 +230,6 @@ public class Evaluator {
 	 * @param showExecutionStats
 	 */
 	public void displayStats(boolean showExecutionStats) {
-		double size = testingSetSize; //data size according to the stats
 		
 		//For each predictor, updates the stats
 		for(Predictor predictor : predictors) {
@@ -320,8 +299,6 @@ public class Evaluator {
 	
 
 	
-	
-	
 	private void PrepareClassifier(List<Sequence> trainingSequences, int classifierId) {
 		long start = System.currentTimeMillis(); //Training starting time
 		
@@ -387,47 +364,4 @@ public class Evaluator {
 		return new ArrayList<Sequence>(database.getDatabase().getSequences().subList(0, database.getDatabase().size()));
 	}
 	
-	public static void main(String[] args){
-		
-		
-		System.out.println("Started");
-		
-		for(int i = 1 ; i < 2; i+= 1) {
-			
-			Evaluator controller = new Evaluator();
-		
-			//Loading data sets
-			controller.addDataset(Format.BMS, 		1000);
-//			controller.addDataset(Format.SIGN, 		8000);  // AJOUT PHILIPPE
-//			controller.addDataset(Format.CANADARM1, 10000);  // AJOUT PHILIPPE
-//			controller.addDataset(Format.CANADARM2, 10000);  // AJOUT PHILIPPE
-//			controller.addDataset(Format.KOSARAK,	15000);
-//			controller.addDataset(Format.FIFA, 		10000);
-//			controller.addDataset(Format.MSNBC, 	15);
-//			controller.addDataset(Format.BIBLE_CHAR, 	5000);
-//			controller.addDataset(Format.BIBLE_WORD, 	5000);
-//			controller.addDataset(Format.KORAN_WORD, 	5000);
-//			controller.addDataset(Format.LEVIATHAN_WORD, 	5000);
-			
-			//Loading predictors
-			controller.addPredictor(new DGPredictor());
-			controller.addPredictor(new LossLessCompactPredictor());
-			controller.addPredictor(new NewCPTPredictor());
-			controller.addPredictor(new CPTPredictor());
-			controller.addPredictor(new LLCT_Old());
-//			controller.addPredictor(new MarkovFirstOrderPredictor());
-//			controller.addPredictor(new MarkovAllKPredictor());
-			
-
-			controller.Start(KFOLD, 14, true);    // PHILIPPE AJOUT DU TROISIÈME PARAMÈTRE
-//			controller.Start(HOLDOUT, 0.75f, true);    // PHILIPPE AJOUT DU TROISIÈME PARAMÈTRE
-			
-			System.out.println();
-			System.out.print(Parameters.tostring());
-		}
-	}
-
-	
-	
-
 }
