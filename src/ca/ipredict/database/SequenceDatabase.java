@@ -1,9 +1,7 @@
 package ca.ipredict.database;
 import java.io.BufferedReader;
-import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -49,7 +47,6 @@ public class SequenceDatabase {
 		try {
 			FileInputStream fin = new FileInputStream(new File(filepath));
 			myInput = new BufferedReader(new InputStreamReader(fin));
-			int realID = 0;
 			int lastId = 0;
 			
 			int count = 0;
@@ -63,7 +60,6 @@ public class SequenceDatabase {
 				if(lastId != id){ //if new sequence
 					if(lastId !=0 && sequence.size() >= minSize && sequence.size() <= maxSize ){  //adding last sequence to sequences list
 						sequences.add(sequence);
-						realID++;
 						count++;
 					}
 					sequence = new Sequence(id); //creating new sequence with current id

@@ -1,6 +1,5 @@
 package ca.ipredict.predictor.CPT;
 
-import java.util.BitSet;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;

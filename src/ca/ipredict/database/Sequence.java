@@ -74,7 +74,7 @@ public class Sequence {
 			// BECAUSE BY DEFAULT SUBLIST MAKE POINTERS TO THE ORIGINAL LIST AND IF 
 			// WE MODIFY THE LIST WE MAY GET A CONCURRENT ACCESS EXCEPTION (I was getting one!)
 //		    //  new ArrayList(...)
-			List<Item> truncatedList = new ArrayList(items.subList( 0, size ));
+			List<Item> truncatedList = new ArrayList<Item>(items.subList( 0, size ));
 			truncatedSequence.setItems(truncatedList);
 		}
 		else {
@@ -83,7 +83,7 @@ public class Sequence {
 			// BECAUSE BY DEFAULT SUBLIST MAKE POINTERS TO THE ORIGINAL LIST AND IF 
 			// WE MODIFY THE LIST WE MAY GET A CONCURRENT ACCESS EXCEPTION (I was getting one!)
 			//  new ArrayList(...)
-			List<Item> truncatedList = new ArrayList(items.subList( (size - length), (size) ));
+			List<Item> truncatedList = new ArrayList<Item>(items.subList( (size - length), (size) ));
 			truncatedSequence.setItems(truncatedList);
 		}
 		

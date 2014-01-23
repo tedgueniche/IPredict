@@ -1,6 +1,5 @@
 package ca.ipredict.predictor.Markov;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -17,8 +16,7 @@ public class MarkovFirstOrderPredictor implements Predictor {
 	private HashMap<Integer, MarkovState> mDictionary; //contains a list of unique items and their state in the Markov model
 	
 	private List<Sequence> mTrainingSequences; //list of sequences to test
-	
-	private int count;
+
 	
 	@Override
 	public void setTrainingSequences(List<Sequence> trainingSequences) {
@@ -27,7 +25,6 @@ public class MarkovFirstOrderPredictor implements Predictor {
 
 	@Override
 	public Boolean Preload() {
-		count = 0;
 		mDictionary = new HashMap<Integer, MarkovState>();
 		
 		//for each sequence in the training set
@@ -82,54 +79,4 @@ public class MarkovFirstOrderPredictor implements Predictor {
 	public long size() {
 		return mDictionary.keySet().size();
 	}
-	
-	public static void main(String[] args) {
-		
-		
-		MarkovFirstOrderPredictor predictor = new MarkovFirstOrderPredictor();
-		
-		//Training sequences
-		List<Sequence> training = new ArrayList<Sequence>();
-		//1 2 3
-		Sequence seq1 = new Sequence(-1);
-		seq1.addItem(new Item(1));
-		seq1.addItem(new Item(2));
-		seq1.addItem(new Item(3));
-		training.add(seq1);
-		
-		//1 3 4
-		Sequence seq2 = new Sequence(-1);
-		seq2.addItem(new Item(1));
-		seq2.addItem(new Item(3));
-		seq2.addItem(new Item(4));
-		training.add(seq2);
-		
-		//2 3 4
-		Sequence seq3 = new Sequence(-1);
-		seq3.addItem(new Item(2));
-		seq3.addItem(new Item(3));
-		seq3.addItem(new Item(4));
-		training.add(seq3);
-		
-		//4 3 1
-		Sequence seq4 = new Sequence(-1);
-		seq4.addItem(new Item(4));
-		seq4.addItem(new Item(3));
-		seq4.addItem(new Item(1));
-		training.add(seq4);
-		
-		predictor.setTrainingSequences(training);
-		predictor.Preload();
-		
-		//Testing
-		Sequence seqT = new Sequence(-1);
-		seqT.addItem(new Item(8));
-		seqT.addItem(new Item(3));
-		
-		Sequence result = predictor.Predict(seqT);
-		
-		System.out.println(result.toString());
-	}
-	
-	
 }

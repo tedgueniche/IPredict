@@ -2,8 +2,7 @@ package ca.ipredict.predictor.Markov;
 
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.Map.Entry;
 
 public class MarkovState {
 
@@ -38,14 +37,14 @@ public class MarkovState {
 		Integer highestCount = 0;
 		Integer highestValue = null;
 		
-		Iterator it = transitions.entrySet().iterator();
+		Iterator<Entry<Integer, Integer>> it = transitions.entrySet().iterator();
 		while(it.hasNext()) {
 			
-			Map.Entry pairs = (Map.Entry)it.next();
+			Entry<Integer, Integer> pairs = it.next();
 			
-			if((Integer)(pairs.getValue()) > highestCount) {
-				highestCount = (Integer)(pairs.getValue());
-				highestValue = (Integer)(pairs.getKey());
+			if((pairs.getValue()) > highestCount) {
+				highestCount = (pairs.getValue());
+				highestValue = (pairs.getKey());
 			}
 			
 		}
@@ -56,9 +55,9 @@ public class MarkovState {
 	
 	public String toString() {
 		String output = "";
-		Iterator it = transitions.entrySet().iterator();
+		Iterator<Entry<Integer, Integer>> it = transitions.entrySet().iterator();
 		while(it.hasNext()) {
-			Map.Entry pairs = (Map.Entry)it.next();
+			Entry<Integer, Integer> pairs = it.next();
 			output += pairs.getKey() + "("+ pairs.getValue() + ") ";
 		}
 		return output;

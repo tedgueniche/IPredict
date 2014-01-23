@@ -177,7 +177,6 @@ public class LossLessCompactPredictor implements Predictor {
 		for(Map.Entry<Integer, Float> it : CountTable.entrySet()) {
 			
 			double lift = it.getValue() / II.get(it.getKey()).cardinality();
-			double support = II.get(it.getKey()).cardinality();
 			double confidence = it.getValue();
 			
 			double score = (Profile.firstVote == 1) ? confidence : lift; //Use confidence or lift, depending on Parameter.firstVote
