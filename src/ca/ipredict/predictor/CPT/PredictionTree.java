@@ -4,7 +4,9 @@ import java.util.List;
 
 import ca.ipredict.database.Item;
 
-
+/**
+ * Represent the prediction tree for CPT
+ */
 public class PredictionTree {
 
 	public int Support; //support count

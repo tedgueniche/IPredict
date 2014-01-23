@@ -6,7 +6,7 @@ import java.util.TreeMap;
 
 import ca.ipredict.database.Item;
 import ca.ipredict.database.Sequence;
-import ca.ipredict.predictor.CPT.NewCPTHelper;
+import ca.ipredict.predictor.CPT.CPTHelper;
 import ca.ipredict.predictor.profile.Profile;
 
 /**
@@ -19,12 +19,12 @@ public class CountTable {
 	 */
 	private TreeMap<Integer, Float> table;
 	private HashSet<Integer> branchVisited;
-	private NewCPTPredictor predictor;
+	private CPTPredictor predictor;
 	
 	/**
 	 * Basic controller
 	 */
-	public CountTable(NewCPTPredictor predictor) {
+	public CountTable(CPTPredictor predictor) {
 		table = new TreeMap<Integer, Float>();
 		branchVisited = new HashSet<Integer>();
 		this.predictor = predictor;
@@ -69,7 +69,7 @@ public class CountTable {
 	 */
 	public void update(Item[] sequence, int initialSequenceSize) {
 		
-		Bitvector ids = NewCPTHelper.getSimilarSequencesIds(sequence);
+		Bitvector ids = CPTHelper.getSimilarSequencesIds(sequence);
 
 		//For each sequence similar of the given sequence
 		for(int id = ids.nextSetBit(0); id >= 0 ; id = ids.nextSetBit(id + 1)) {
@@ -79,7 +79,7 @@ public class CountTable {
 			}
 			
 			//extracting the sequence from the PredictionTree
-			Item[] seq = NewCPTHelper.getSequenceFromId(id);
+			Item[] seq = CPTHelper.getSequenceFromId(id);
 			
 			//Generating a set of all the items from sequence
 			HashSet<Item> toAvoid = new HashSet<Item>();

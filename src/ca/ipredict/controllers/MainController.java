@@ -2,7 +2,7 @@ package ca.ipredict.controllers;
 
 import ca.ipredict.database.DatabaseHelper.Format;
 import ca.ipredict.predictor.Evaluator;
-import ca.ipredict.predictor.CPT.NewCPTPredictor;
+import ca.ipredict.predictor.CPT.CPTPredictor;
 import ca.ipredict.predictor.DG.DGPredictor;
 import ca.ipredict.predictor.Markov.MarkovAllKPredictor;
 import ca.ipredict.predictor.Markov.MarkovFirstOrderPredictor;
@@ -24,7 +24,7 @@ public class MainController {
 		
 		//Loading predictors
 		evaluator.addPredictor(new DGPredictor());
-		evaluator.addPredictor(new NewCPTPredictor());
+		evaluator.addPredictor(new CPTPredictor());
 		evaluator.addPredictor(new MarkovFirstOrderPredictor());
 		evaluator.addPredictor(new MarkovAllKPredictor());
 		

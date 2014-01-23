@@ -15,8 +15,6 @@ import ca.ipredict.predictor.profile.ProfileManager;
 
 /**
  * Evaluation framework
- * @author Ted Gueniche
- *
  */
 public class Evaluator {
 

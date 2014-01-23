@@ -3,7 +3,9 @@ import java.util.List;
 
 import ca.ipredict.database.Sequence;
 
-
+/**
+ * Interface for all the predictors
+ */
 public interface Predictor {
 	
 	

@@ -10,13 +10,11 @@ import ca.ipredict.database.Sequence;
 
 /**
  * Best friend of CPT
- * @author Ted
- *
  */
-public class NewCPTHelper {
+public class CPTHelper {
 
 	
-	public static NewCPTPredictor predictor;
+	public static CPTPredictor predictor;
 	
 	/**
 	 * Return the last Length items
@@ -137,11 +135,5 @@ public class NewCPTHelper {
 			results.add(newSeq);
 		}
 		return results;
-	}
-	
-	
-	public static void main(String[] args){
-		
-		
 	}
 }
