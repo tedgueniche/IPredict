@@ -1,16 +1,13 @@
 package ca.ipredict.helpers;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 public class Stats {
 
 	private String name;
-	//private List<String> rows;
 	private Map<String, Map<String, String>> data;
 	
 	
@@ -60,19 +57,18 @@ public class Stats {
 		}
 	}
 	
-	
 	public String toString() {
 		
 		String output = "----"+ name +"----\n";
 		
 		boolean columnDisplayed = false;
 		
-		Iterator rows = data.entrySet().iterator();
+		Iterator<?> rows = data.entrySet().iterator();
 		while(rows.hasNext()) {
 			Map.Entry<String, Map<String, String>> pairRow = (Map.Entry)rows.next();
 			String row = pairRow.getKey();
 			
-			Iterator columns = data.get(row).entrySet().iterator();
+			Iterator<?> columns = data.get(row).entrySet().iterator();
 			
 			if(columnDisplayed == false) {
 				
@@ -102,7 +98,6 @@ public class Stats {
 		
 		return output;
 	}
-	
 	
 	public void Inc(String row, String column) {
 		

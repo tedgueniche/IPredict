@@ -1,7 +1,6 @@
 package ca.ipredict.helpers;
 
 import java.util.HashMap;
-import java.util.Map;
 
 //Represent a list of statistics and their values
 public class Result {

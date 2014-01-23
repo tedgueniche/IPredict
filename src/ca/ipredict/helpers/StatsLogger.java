@@ -22,14 +22,11 @@ public class StatsLogger {
 		}
 	}
 	
-	
 	public void addStep() {
 		for(Algo algo : algorithms) {
 			algo.addStep();
 		}
 	}
-	
-	
 	
 	public void set(String stat, String algoName, double value) {
 		getAlgoByName(algoName).set(stat, value);
@@ -47,8 +44,6 @@ public class StatsLogger {
 		getAlgoByName(algoName).set(stat, value);
 	}
 	
-	
-	
 	public double get(String stat, String algoName) {
 		return getAlgoByName(algoName).get(stat);
 	}
@@ -56,8 +51,6 @@ public class StatsLogger {
 	public double get(String stat, String algoName, int step) {
 		return getAlgoByName(algoName).get(step, stat);
 	}
-	
-	
 	
 	private Algo getAlgoByName(String algoName) {
 		for(Algo algo : algorithms) {
@@ -67,7 +60,6 @@ public class StatsLogger {
 		}
 		return null;
 	}
-	
 	
 	public String toString() {
 		String output = "";
@@ -82,8 +74,7 @@ public class StatsLogger {
 			}
 			output += "\n";
 			
-			//for each stats, display the stat name and each values
-			
+			//for each stats, display the stat name and each values			
 			for(String stat : statsNames) {
 				
 				DecimalFormat tenForm = new DecimalFormat("##.####"); 
@@ -100,11 +91,6 @@ public class StatsLogger {
 			
 		}
 		return output;
-	}
-	
-	
-	public static void main(String[] args) {
-
 	}
 
 }
