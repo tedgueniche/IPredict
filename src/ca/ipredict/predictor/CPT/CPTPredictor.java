@@ -13,8 +13,8 @@ import java.util.Set;
 import ca.ipredict.database.Item;
 import ca.ipredict.database.Sequence;
 import ca.ipredict.helpers.MemoryLogger;
-import ca.ipredict.predictor.Parameters;
 import ca.ipredict.predictor.Predictor;
+import ca.ipredict.predictor.profile.Profile;
 
 /**
  * Predictor based on a 3 main structures
@@ -105,7 +105,7 @@ public class CPTPredictor implements Predictor {
 		for(int index = indexes.nextSetBit(0); index >= 0 ; index = indexes.nextSetBit(index+1)) {
 
 			//Skip branches that have already been seen for this target sequence
-			if(Parameters.useHashSidVisited && hashSidVisited.contains(index)){
+			if(Profile.useHashSidVisited && hashSidVisited.contains(index)){
 				continue;    
 			}   
 			
@@ -135,7 +135,7 @@ public class CPTPredictor implements Predictor {
  			
 			/*
 			//ensure that target's last item is also the last on in the "branch"
-			if(Parameters.lastTargetItemShouldAppearLast){
+			if(Profile.lastTargetItemShouldAppearLast){
 				// Si l'on veut s'assurer que le dernier item de target soit le dernier
 				//  apparaîssent en dernier, on va le chercher en premier en parcourant la liste
 				// à l'envers.
@@ -151,7 +151,7 @@ public class CPTPredictor implements Predictor {
 			}
 			
 			// IF items do not need to appear closely (SIMPLE CASE)
-            if(Parameters.targetItemsShouldAppearClosely ==0 ){
+            if(Profile.targetItemsShouldAppearClosely ==0 ){
             	
             	Set<Integer>  alreadySeen = new HashSet<Integer>();  
      			for(i = branch.size()-1 ; i >=0 && alreadySeen.size() != hashTarget.size(); i-- ) { 
@@ -177,7 +177,7 @@ public class CPTPredictor implements Predictor {
                          while (iter.hasNext()) {
                              Map.Entry<java.lang.Integer, java.lang.Integer> entry = (Map.Entry<java.lang.Integer, java.lang.Integer>) iter
                                      .next();
-                             if(entry.getValue() < i - hashTarget.size() + Parameters.targetItemsShouldAppearClosely){
+                             if(entry.getValue() < i - hashTarget.size() + Profile.targetItemsShouldAppearClosely){
                                  iter.remove();
                              }
                          }
@@ -201,7 +201,7 @@ public class CPTPredictor implements Predictor {
 				}
 
 				//Update the countable with the right weight and value
-				float curValue = (Parameters.countTableWeightDivided == 0) ? 1f : 1f /((float)indexes.cardinality());
+				float curValue = (Profile.countTableWeightDivided == 0) ? 1f : 1f /((float)indexes.cardinality());
 				
 				CountTable.put(branch.get(i).val, oldValue + (curValue * weight) );
 				
@@ -231,7 +231,7 @@ public class CPTPredictor implements Predictor {
 			double support = II.get(it.getKey()).cardinality();
 			double confidence = it.getValue();
 			
-			double score = (Parameters.firstVote == 1) ? confidence : lift; //Use confidence or lift, depending on Parameter.firstVote
+			double score = (Profile.firstVote == 1) ? confidence : lift; //Use confidence or lift, depending on Parameter.firstVote
 			
 			//Saving the best value
 			if(score > maxValue) {
@@ -257,15 +257,15 @@ public class CPTPredictor implements Predictor {
 		//if there is a max item (at least one item in the CountTable)
 		// and it is better than second best (if there is one)
 		//and the minTreshold is respected
-		else if (diff >= Parameters.voteTreshold || secondMaxValue == -1) {
+		else if (diff >= Profile.voteTreshold || secondMaxValue == -1) {
 			Item predictedItem = new Item(maxItem);
 			predicted.addItem(predictedItem);
 		}
 		//if there is multiple "best" items with the same weight
 		else if(diff == 0.0 && secondMaxValue != -1) {
 			
-			//Return the best found value if no Parameters.secondVote
-			if(Parameters.secondVote == 0) {
+			//Return the best found value if no Profile.secondVote
+			if(Profile.secondVote == 0) {
 				//Item predictedItem = new Item(maxItem);
 				//predicted.addItem(predictedItem);
 			}
@@ -283,7 +283,7 @@ public class CPTPredictor implements Predictor {
 							double lift = it.getValue() / II.get(it.getKey()).cardinality();
 							double support = II.get(it.getKey()).cardinality();
 							
-							double score = (Parameters.secondVote == 1) ? support : lift; //Use confidence or lift, depending on Parameter.secondVote
+							double score = (Profile.secondVote == 1) ? support : lift; //Use confidence or lift, depending on Parameter.secondVote
 							
 							if(score > highestScore) {
 								highestScore = score;
@@ -311,7 +311,7 @@ public class CPTPredictor implements Predictor {
 		
 		//remove items that were never seen before from the Target sequence before LLCT try to make a prediction
 		//If set to false, those items will be still ignored later on (in updateCountTable())
-		if(Parameters.removeUnknownItemsForPrediction){
+		if(Profile.removeUnknownItemsForPrediction){
 			Iterator<Item> iter = target.getItems().iterator();
 			while (iter.hasNext()) {
 				Item item = (Item) iter.next();
@@ -332,8 +332,8 @@ public class CPTPredictor implements Predictor {
 
 		Sequence prediction = new Sequence(-1);
 		int i = 0;
-		int minRecursion = Parameters.recursiveDividerMin;
-		int maxRecursion = (Parameters.recursiveDividerMax > targetArray.length) ? targetArray.length : Parameters.recursiveDividerMax;
+		int minRecursion = Profile.recursiveDividerMin;
+		int maxRecursion = (Profile.recursiveDividerMax > targetArray.length) ? targetArray.length : Profile.recursiveDividerMax;
 		
 		for(i = minRecursion ; i < maxRecursion && prediction.size() == 0; i++) {
 			//Reset the CountTable and the hasSidVisited
@@ -371,9 +371,9 @@ public class CPTPredictor implements Predictor {
 		
 		//Setting up the weight multiplier for the countTable
 		float weight = 1f;		
-		if(Parameters.countTableWeightMultiplier == 1)
+		if(Profile.countTableWeightMultiplier == 1)
 			weight = 1f  / size;
-		else if(Parameters.countTableWeightMultiplier == 2)
+		else if(Profile.countTableWeightMultiplier == 2)
 			weight = (float)size / initialTargetArraySize;
 		
 		UpdateCountTable(targetArray, weight, countTable, hashSidVisited);
@@ -382,7 +382,7 @@ public class CPTPredictor implements Predictor {
 		for(int toHide = 0; toHide < size; toHide++) {
 			
 			//Parameter to protect the last sequence's item from being hidden 
-//			if(Parameters.dontRemoveLastItemFromTargetByRecursiveDivider && toHide == (size - 2)){
+//			if(Profile.dontRemoveLastItemFromTargetByRecursiveDivider && toHide == (size - 2)){
 //				continue;
 //			}
 			
@@ -423,11 +423,11 @@ public class CPTPredictor implements Predictor {
 		List<Sequence> newTrainingSet = new ArrayList<Sequence>();
 		for(Sequence seq : mTrainingSequences) {
 			
-			if(seq.size() > Parameters.splitLength && Parameters.splitMethod > 0) {
-				if(Parameters.splitMethod == 1)
-					newTrainingSet.addAll(LLCTHelper.sliceBasic(seq, Parameters.splitLength));
+			if(seq.size() > Profile.splitLength && Profile.splitMethod > 0) {
+				if(Profile.splitMethod == 1)
+					newTrainingSet.addAll(LLCTHelper.sliceBasic(seq, Profile.splitLength));
 				else
-					newTrainingSet.addAll(LLCTHelper.slice(seq, Parameters.splitLength));
+					newTrainingSet.addAll(LLCTHelper.slice(seq, Profile.splitLength));
 			}else{
 				newTrainingSet.add(seq);
 			}	

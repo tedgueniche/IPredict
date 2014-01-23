@@ -6,9 +6,7 @@ import java.util.List;
 
 import ca.ipredict.database.Item;
 import ca.ipredict.database.Sequence;
-import ca.ipredict.predictor.Parameters;
 import ca.ipredict.predictor.Predictor;
-import ca.ipredict.predictor.Markov.MarkovFirstOrderPredictor;
 
 public class DGPredictor implements Predictor {
 	

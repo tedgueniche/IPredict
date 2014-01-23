@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import ca.ipredict.predictor.Parameters;
+import ca.ipredict.predictor.profile.Profile;
 
 
 public class SequenceDatabase {
@@ -114,14 +114,14 @@ public class SequenceDatabase {
 						// pour enlever les duplicats.
 						//  2 = tous les duplicats
 						//  1 = seulement les duplicats consécutifs 
-						if(Parameters.removeDuplicatesMethod == 2){
+						if(Profile.removeDuplicatesMethod == 2){
 							
 							if(alreadySeen.contains(intVal)){
 								continue;
 							}else{
 								alreadySeen.add(intVal);
 							}
-						}else if(Parameters.removeDuplicatesMethod == 1){
+						}else if(Profile.removeDuplicatesMethod == 1){
 							//approach B
 							if(lastValue == intVal) {
 								continue;
@@ -170,14 +170,14 @@ public class SequenceDatabase {
 					// pour enlever les duplicats.
 					//  2 = tous les duplicats
 					//  1 = seulement les duplicats consécutifs 
-					if(Parameters.removeDuplicatesMethod == 2){
+					if(Profile.removeDuplicatesMethod == 2){
 						
 						if(alreadySeen.contains(value)){
 							continue;
 						}else{
 							alreadySeen.add(value);
 						}
-					}else if(Parameters.removeDuplicatesMethod == 1){
+					}else if(Profile.removeDuplicatesMethod == 1){
 						//approach B
 						if(lastValue == value) {
 							continue;
@@ -402,12 +402,12 @@ public class SequenceDatabase {
 						// pour enlever les duplicats.
 						//  2 = tous les duplicats
 						//  1 = seulement les duplicats consécutifs 
-						if(Parameters.removeDuplicatesMethod == 2){
+						if(Profile.removeDuplicatesMethod == 2){
 							if(alreadySeen.contains(character)){
 								continue;
 							}
 							alreadySeen.add(character);
-						}else if(Parameters.removeDuplicatesMethod == 1){
+						}else if(Profile.removeDuplicatesMethod == 1){
 							if(lastValue == character){
 								continue;
 							}

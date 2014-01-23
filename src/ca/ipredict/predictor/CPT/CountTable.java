@@ -6,8 +6,8 @@ import java.util.TreeMap;
 
 import ca.ipredict.database.Item;
 import ca.ipredict.database.Sequence;
-import ca.ipredict.predictor.Parameters;
 import ca.ipredict.predictor.CPT.NewCPTHelper;
+import ca.ipredict.predictor.profile.Profile;
 
 /**
  * Represents a CountTable for the CPT algorithm
@@ -41,13 +41,13 @@ public class CountTable {
 
 		//Setting up the weight multiplier for the countTable
 		float weight = 1f;		
-		if(Parameters.countTableWeightMultiplier == 1)
+		if(Profile.countTableWeightMultiplier == 1)
 			weight = 1f  / curSeqLength;
-		else if(Parameters.countTableWeightMultiplier == 2)
+		else if(Profile.countTableWeightMultiplier == 2)
 			weight = (float)curSeqLength / fullSeqLength;
 		
 		//Update the countable with the right weight and value
-		float curValue = (Parameters.countTableWeightDivided == 0) ? 1f : 1f /((float)numberOfSeqSameLength);
+		float curValue = (Profile.countTableWeightDivided == 0) ? 1f : 1f /((float)numberOfSeqSameLength);
 		
 		
 		Float oldVal = table.get(key);
@@ -74,7 +74,7 @@ public class CountTable {
 		//For each sequence similar of the given sequence
 		for(int id = ids.nextSetBit(0); id >= 0 ; id = ids.nextSetBit(id + 1)) {
 			
-			if(Parameters.useHashSidVisited && branchVisited.contains(id)) {
+			if(Profile.useHashSidVisited && branchVisited.contains(id)) {
 				continue;
 			}
 			
@@ -128,7 +128,7 @@ public class CountTable {
 			double lift = it.getValue() / support;
 			double confidence = it.getValue();
 			
-			double score = (Parameters.firstVote == 1) ? confidence : lift; //Use confidence or lift, depending on Parameter.firstVote
+			double score = (Profile.firstVote == 1) ? confidence : lift; //Use confidence or lift, depending on Parameter.firstVote
 			
 			if(! bestOfCT.containsKey(score)) {
 				bestOfCT.put(score, it.getKey());

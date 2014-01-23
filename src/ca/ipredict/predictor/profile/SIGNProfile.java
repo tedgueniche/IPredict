@@ -1,27 +1,25 @@
 package ca.ipredict.predictor.profile;
 
-
-public class BMSProfile extends Profile {
+public class SIGNProfile extends Profile {
 
 	@Override
 	public void Apply() {
-		
 		//Global parameters
 		//Pre-processing
-		sequenceMinSize = 6;
+		sequenceMinSize = 10;
 		sequenceMaxSize = 999;
 		removeDuplicatesMethod = 1;
-		consequentSize = 1; 
-		windowSize = 5; 
+		consequentSize = 3; 
+		windowSize = 7; 
 		
 		///////////////
 		//CPT parameters
 		//Training
-		splitMethod = 1; //0 for no split, 1 for basicSplit, 2 for complexSplit
-		splitLength = 15; // max tree height
+		splitMethod = 0; //0 for no split, 1 for basicSplit, 2 for complexSplit
+		splitLength = 20; // max tree height
 		
 		//Prediction
-		recursiveDividerMin = 4; //should be >= 0 and < recursiveDividerMax 
+		recursiveDividerMin = 3; //should be >= 0 and < recursiveDividerMax 
 		recursiveDividerMax = 99; //should be > recusiveDividerMax and < windowSize
 		
 		//best prediction from the count table
@@ -37,9 +35,6 @@ public class BMSProfile extends Profile {
 		useHashSidVisited = true;
 		branchTraversalTopToBottom = true; //used for branches with duplicates, set to true to allow with duplicates
 		removeUnknownItemsForPrediction = true; //remove items that were never seen before from the Target sequence before LLCT try to make a prediction
-		
 	}
-
-	
 
 }

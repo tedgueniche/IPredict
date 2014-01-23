@@ -13,8 +13,7 @@ import ca.ipredict.database.Item;
 import ca.ipredict.database.Sequence;
 import ca.ipredict.helpers.MemoryLogger;
 import ca.ipredict.predictor.Predictor;
-import ca.ipredict.predictor.Parameters;
-
+import ca.ipredict.predictor.profile.Profile;
 /**
  * Predictor based on a 3 main structures
  * a compact tree, an inverted index and a lookup table
@@ -97,7 +96,7 @@ public class LossLessCompactPredictor implements Predictor {
 		//For each branch 
 		for(Integer index : indexes) {
 
-			if(Parameters.useHashSidVisited && hashSidVisited.contains(index)){
+			if(Profile.useHashSidVisited && hashSidVisited.contains(index)){
 				continue;    
 			}   
 			
@@ -105,7 +104,7 @@ public class LossLessCompactPredictor implements Predictor {
 			PredictionTree curNode = LT.get(index);
 			
 			//New way, allows duplicate
-			if(Parameters.branchTraversalTopToBottom) {
+			if(Profile.branchTraversalTopToBottom) {
 				//Transform this branch in a list
 				List<Item> branch = new ArrayList<Item>();
 				while(curNode != Root) {
@@ -133,7 +132,7 @@ public class LossLessCompactPredictor implements Predictor {
 					}
 	
 					//Update the countable with the right weight and value
-					float curValue = (Parameters.countTableWeightDivided == 0) ? 1f : 1f /((float)indexes.size());
+					float curValue = (Profile.countTableWeightDivided == 0) ? 1f : 1f /((float)indexes.size());
 					CountTable.put(branch.get(i).val, oldValue + weight / curValue );
 					
 					hashSidVisited.add(index); 
@@ -181,7 +180,7 @@ public class LossLessCompactPredictor implements Predictor {
 			double support = II.get(it.getKey()).cardinality();
 			double confidence = it.getValue();
 			
-			double score = (Parameters.firstVote == 1) ? confidence : lift; //Use confidence or lift, depending on Parameter.firstVote
+			double score = (Profile.firstVote == 1) ? confidence : lift; //Use confidence or lift, depending on Parameter.firstVote
 
 			if(score > maxValue) {
 				secondMaxValue = maxValue; //saving the old value as the second best
@@ -204,14 +203,14 @@ public class LossLessCompactPredictor implements Predictor {
 			//Nothing to do
 		} 
 		//-If the secondVote is set to 0 , and their is a best and a second best, then
-		else if (Parameters.secondVote == 0 && maxItem != -1 && secondMaxValue != -1 && diff <= Parameters.voteTreshold) {
+		else if (Profile.secondVote == 0 && maxItem != -1 && secondMaxValue != -1 && diff <= Profile.voteTreshold) {
 			Item predictedItem = new Item(maxItem);
 			predicted.addItem(predictedItem);
 		}
 		//-If there is no second best value, then the best one is the winner
 		//-If there is a max item (at least one item in the CountTable)
 		// and it is better than second best according to the voteTreshold
-		else if (secondMaxValue == -1 || diff >= Parameters.voteTreshold) {
+		else if (secondMaxValue == -1 || diff >= Profile.voteTreshold) {
 			Item predictedItem = new Item(maxItem);
 			predicted.addItem(predictedItem);
 		}
@@ -228,7 +227,7 @@ public class LossLessCompactPredictor implements Predictor {
 						double lift = it.getValue() / II.get(it.getKey()).cardinality();
 						double support = II.get(it.getKey()).cardinality();
 						
-						double score = (Parameters.secondVote == 1) ? support : lift; //Use confidence or lift, depending on Parameter.secondVote
+						double score = (Profile.secondVote == 1) ? support : lift; //Use confidence or lift, depending on Parameter.secondVote
 						
 						if(score > highestScore) {
 							highestScore = score;
@@ -253,7 +252,7 @@ public class LossLessCompactPredictor implements Predictor {
 
 		//remove items that were never seen before from the Target sequence before LLCT try to make a prediction
 		//If set to false, those items will be still ignored later on (in updateCountTable())
-		if(Parameters.removeUnknownItemsForPrediction){
+		if(Profile.removeUnknownItemsForPrediction){
 			Iterator<Item> iter = target.getItems().iterator();
 			while (iter.hasNext()) {
 				Item item = (Item) iter.next();
@@ -267,8 +266,8 @@ public class LossLessCompactPredictor implements Predictor {
 		
 		
 		Sequence prediction = new Sequence(-1);
-		int minRecursion = Parameters.recursiveDividerMin;
-		int maxRecursion = (Parameters.recursiveDividerMax > target.size()) ? target.size() : Parameters.recursiveDividerMax;
+		int minRecursion = Profile.recursiveDividerMin;
+		int maxRecursion = (Profile.recursiveDividerMax > target.size()) ? target.size() : Profile.recursiveDividerMax;
 		
 		for(int i = minRecursion ; i < target.size() && prediction.size() == 0 && i < maxRecursion; i++) {
 		
@@ -290,9 +289,9 @@ public class LossLessCompactPredictor implements Predictor {
 				
 				//Setting up the weight multiplier for the countTable
 				float weight = 1f;		
-				if(Parameters.countTableWeightMultiplier == 1)
+				if(Profile.countTableWeightMultiplier == 1)
 					weight = 1f  / target.size();
-				else if(Parameters.countTableWeightMultiplier == 2)
+				else if(Profile.countTableWeightMultiplier == 2)
 					weight = (float)sequence.size() / target.size();
 				
 				UpdateCountTable(sequence, weight, CountTable, hashSidVisited);
@@ -330,11 +329,11 @@ public class LossLessCompactPredictor implements Predictor {
 		List<Sequence> newTrainingSet = new ArrayList<Sequence>();
 		for(Sequence seq : mTrainingSequences) {
 			
-			if(seq.size() > Parameters.splitLength && Parameters.splitMethod > 0) {
-				if(Parameters.splitMethod == 1)
-					newTrainingSet.addAll(LLCTHelper.sliceBasic(seq, Parameters.splitLength));
+			if(seq.size() > Profile.splitLength && Profile.splitMethod > 0) {
+				if(Profile.splitMethod == 1)
+					newTrainingSet.addAll(LLCTHelper.sliceBasic(seq, Profile.splitLength));
 				else
-					newTrainingSet.addAll(LLCTHelper.slice(seq, Parameters.splitLength));
+					newTrainingSet.addAll(LLCTHelper.slice(seq, Profile.splitLength));
 			}else{
 				newTrainingSet.add(seq);
 			}		

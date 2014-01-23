@@ -10,6 +10,8 @@ import ca.ipredict.database.Item;
 import ca.ipredict.database.Sequence;
 import ca.ipredict.helpers.MemoryLogger;
 import ca.ipredict.helpers.StatsLogger;
+import ca.ipredict.predictor.profile.Profile;
+import ca.ipredict.predictor.profile.ProfileManager;
 
 /**
  * Evaluation framework
@@ -94,7 +96,10 @@ public class Evaluator {
 		
 			int maxCount = datasetsMaxCount.get(i);
 			Format format = datasets.get(i);
-			database.loadDataset(format, maxCount, true); // PHILIPPE: AJOUT DU TROISIÈME PARAMÈTRE
+			database.loadDataset(format, maxCount, true);
+			
+			//Loading the parameter profile
+			ProfileManager.loadProfileByName(format.toString());
 			
 			//Creating the statsLogger
 			stats = new StatsLogger(statsColumns, predictorNames, false);
@@ -105,6 +110,7 @@ public class Evaluator {
 			//For each predictor, do the sampling and do the training/testing
 			for(int id = 0 ; id < predictors.size(); id++) {
 				
+				//Picking the sampling strategy
 				switch(samplingType) {
 					case HOLDOUT:
 						Holdout(param, id);
@@ -318,10 +324,10 @@ public class Evaluator {
 		for(Sequence target : testSequences) {
 			
 			//if sequence is long enough
-			if(target.size() > (Parameters.consequentSize)) {
+			if(target.size() > (Profile.consequentSize)) {
 				
-				Sequence consequent = target.getLastItems(Parameters.consequentSize,0); //the lasts actual items in target
-				Sequence finalTarget = target.getLastItems(Parameters.windowSize,Parameters.consequentSize);
+				Sequence consequent = target.getLastItems(Profile.consequentSize,0); //the lasts actual items in target
+				Sequence finalTarget = target.getLastItems(Profile.windowSize,Profile.consequentSize);
 				
 				Sequence predicted = predictors.get(classifierId).Predict(finalTarget);
 				

@@ -1,19 +1,13 @@
 package ca.ipredict.predictor.TRuleGrowth_D;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.List;
-import java.util.PriorityQueue;
-
-import ca.ipredict.predictor.Parameters;
 import ca.ipredict.predictor.Predictor;
 import ca.ipredict.predictor.TRuleGrowth_D.AlgoTRULEGROWTH;
 import ca.ipredict.predictor.TRuleGrowth_D.Rule;
+import ca.ipredict.predictor.profile.Profile;
 
 import ca.ipredict.database.Sequence;
 import ca.ipredict.database.Item;
@@ -99,7 +93,7 @@ public class TRuleGrowth_DPredictor implements Predictor {
 			// we keep only the best rule
 			if(ruleMatch(rule, toTest) == true)
 			{						
-				qualify(rule, Parameters.bestRuleCount, ruleSet, mTrainingDatabase.size());	//keep only the best rules
+				qualify(rule, Profile.bestRuleCount, ruleSet, mTrainingDatabase.size());	//keep only the best rules
 			}		
 		}
 		

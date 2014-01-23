@@ -8,8 +8,8 @@ import java.util.Map;
 
 import ca.ipredict.database.Item;
 import ca.ipredict.database.Sequence;
-import ca.ipredict.predictor.Parameters;
 import ca.ipredict.predictor.Predictor;
+import ca.ipredict.predictor.profile.Profile;
 
 /**
  * Predictor based on a 3 main structures
@@ -59,8 +59,8 @@ public class NewCPTPredictor implements Predictor {
 		for(Sequence seq : trainingSequences) {
 			
 			//slicing the sequence if needed
-			if(Parameters.splitMethod > 0) {
-				seq = NewCPTHelper.keepLastItems(seq, Parameters.splitLength);
+			if(Profile.splitMethod > 0) {
+				seq = NewCPTHelper.keepLastItems(seq, Profile.splitLength);
 			}
 			
 			//resetting node pointer to root node
@@ -102,7 +102,7 @@ public class NewCPTPredictor implements Predictor {
 		
 		//remove items that were never seen before from the Target sequence before LLCT try to make a prediction
 		//If set to false, those items will be still ignored later on (in updateCountTable())
-		if(Parameters.removeUnknownItemsForPrediction){
+		if(Profile.removeUnknownItemsForPrediction){
 			Iterator<Item> iter = target.getItems().iterator();
 			while (iter.hasNext()) {
 				Item item = (Item) iter.next();
@@ -119,8 +119,8 @@ public class NewCPTPredictor implements Predictor {
 		
 		//For every step of the recursive divider
 		//from recursiveDividerMin to recursiveDividerMax
-		int recursion = Parameters.recursiveDividerMin;
-		while(predicted.size() == 0 && recursion < Parameters.recursiveDividerMax ) {
+		int recursion = Profile.recursiveDividerMin;
+		while(predicted.size() == 0 && recursion < Profile.recursiveDividerMax ) {
 			
 			//Call recursive divider to update the countable
 			CountTable ct = new CountTable(this);

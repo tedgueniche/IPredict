@@ -1,11 +1,9 @@
 package ca.ipredict.predictor.profile;
 
-
-public class BMSProfile extends Profile {
+public class FIFAProfile extends Profile {
 
 	@Override
 	public void Apply() {
-		
 		//Global parameters
 		//Pre-processing
 		sequenceMinSize = 6;
@@ -18,10 +16,10 @@ public class BMSProfile extends Profile {
 		//CPT parameters
 		//Training
 		splitMethod = 1; //0 for no split, 1 for basicSplit, 2 for complexSplit
-		splitLength = 15; // max tree height
+		splitLength = 12; // max tree height
 		
 		//Prediction
-		recursiveDividerMin = 4; //should be >= 0 and < recursiveDividerMax 
+		recursiveDividerMin = 1; //should be >= 0 and < recursiveDividerMax 
 		recursiveDividerMax = 99; //should be > recusiveDividerMax and < windowSize
 		
 		//best prediction from the count table
@@ -34,12 +32,9 @@ public class BMSProfile extends Profile {
 		countTableWeightDivided = 1; // 0 for no divider, 1 for x/(#ofBranches for this sequence)
 		
 		//Others
-		useHashSidVisited = true;
+		useHashSidVisited = false;
 		branchTraversalTopToBottom = true; //used for branches with duplicates, set to true to allow with duplicates
 		removeUnknownItemsForPrediction = true; //remove items that were never seen before from the Target sequence before LLCT try to make a prediction
-		
 	}
-
-	
 
 }
