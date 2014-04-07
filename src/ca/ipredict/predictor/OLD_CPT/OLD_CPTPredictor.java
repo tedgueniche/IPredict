@@ -1,4 +1,4 @@
-package ca.ipredict.predictor.CPT;
+package ca.ipredict.predictor.OLD_CPT;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -7,6 +7,7 @@ import java.util.Map;
 
 import ca.ipredict.database.Item;
 import ca.ipredict.database.Sequence;
+import ca.ipredict.helpers.Bitvector;
 import ca.ipredict.predictor.Predictor;
 import ca.ipredict.predictor.profile.Profile;
 
@@ -14,20 +15,20 @@ import ca.ipredict.predictor.profile.Profile;
  * Predictor based on a 3 main structures
  * a prediction tree, an inverted index and a lookup table
  */
-public class CPTPredictor implements Predictor {
+public class OLD_CPTPredictor implements Predictor {
 
 	//The three data structure
-	public PredictionTree Root; 				//Prediction Tree
-	public Map<Integer, PredictionTree> LT; 	//Lookup Table
+	public OLD_PredictionTree Root; 				//Prediction Tree
+	public Map<Integer, OLD_PredictionTree> LT; 	//Lookup Table
 	public Map<Integer, Bitvector> II; 		//Inverted Index
 	
 	private long nodeNumber; 					//number of node in the prediction tree (used for size())
 	private List<Sequence> trainingSequences; 	//list of sequences to test
 	
 	
-	public CPTPredictor() {
-		Root = new PredictionTree();
-		LT = new HashMap<Integer, PredictionTree>();
+	public OLD_CPTPredictor() {
+		Root = new OLD_PredictionTree();
+		LT = new HashMap<Integer, OLD_PredictionTree>();
 		II = new HashMap<Integer, Bitvector>();
 		nodeNumber = 0;
 	}
@@ -44,20 +45,20 @@ public class CPTPredictor implements Predictor {
 	 * @return True on success
 	 */
 	public Boolean Preload() {
-		Root = new PredictionTree();
-		LT = new HashMap<Integer, PredictionTree>();
+		Root = new OLD_PredictionTree();
+		LT = new HashMap<Integer, OLD_PredictionTree>();
 		II = new HashMap<Integer, Bitvector>();
 		nodeNumber = 0;
 		
 		int seqId = 0;
-		PredictionTree curNode;
+		OLD_PredictionTree curNode;
 
 		//for each training sequence
 		for(Sequence seq : trainingSequences) {
 			
 			//slicing the sequence if needed
 			if(Profile.splitMethod > 0) {
-				seq = CPTHelper.keepLastItems(seq, Profile.splitLength);
+				seq = OLD_CPTHelper.keepLastItems(seq, Profile.splitLength);
 			}
 			
 			//resetting node pointer to root node
@@ -95,7 +96,7 @@ public class CPTPredictor implements Predictor {
 	@Override
 	public Sequence Predict(Sequence target) {
 		
-		CPTHelper.predictor = this;
+		OLD_CPTHelper.predictor = this;
 		
 		//remove items that were never seen before from the Target sequence before LLCT try to make a prediction
 		//If set to false, those items will be still ignored later on (in updateCountTable())
@@ -120,11 +121,11 @@ public class CPTPredictor implements Predictor {
 		while(predicted.size() == 0 && recursion < Profile.recursiveDividerMax ) {
 			
 			//Call recursive divider to update the countable
-			CountTable ct = new CountTable(this);
+			OLD_CountTable ct = new OLD_CountTable(this);
 			
 			int minSize = target.size() - recursion;
 			Item[] targetArray = target.getItems().toArray(new Item[0]);
-			CPTHelper.recursiveDivider(targetArray, minSize, ct,target.size());
+			OLD_CPTHelper.recursiveDivider(targetArray, minSize, ct,target.size());
 			
 			//Extract prediction from the CountTable
 			predicted = ct.getBestSequence(1);

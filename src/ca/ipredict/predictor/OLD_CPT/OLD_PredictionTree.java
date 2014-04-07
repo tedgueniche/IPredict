@@ -1,4 +1,4 @@
-package ca.ipredict.predictor.CPT;
+package ca.ipredict.predictor.OLD_CPT;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,37 +7,37 @@ import ca.ipredict.database.Item;
 /**
  * Represent the prediction tree for CPT
  */
-public class PredictionTree {
+public class OLD_PredictionTree {
 
 	public int Support; //support count
 	public Item Item; //actual item
-	public PredictionTree Parent; //parent's node
+	public OLD_PredictionTree Parent; //parent's node
 	
-	private List<PredictionTree> Children; //children list
+	private List<OLD_PredictionTree> Children; //children list
 	
-	public PredictionTree(Item itemValue) {
+	public OLD_PredictionTree(Item itemValue) {
 		Support = 0; //default support
 		Item = itemValue;
-		Children = new ArrayList<PredictionTree>();
+		Children = new ArrayList<OLD_PredictionTree>();
 		Parent = null;
 	}
 	
-	public PredictionTree() {
+	public OLD_PredictionTree() {
 		Support = 0; //default support
 		Item = new Item();
-		Children = new ArrayList<PredictionTree>();
+		Children = new ArrayList<OLD_PredictionTree>();
 		Parent = null;
 	}
 	
 	public void addChild(Item child) {
-		PredictionTree newChild = new PredictionTree(child);
+		OLD_PredictionTree newChild = new OLD_PredictionTree(child);
 		newChild.Parent = this;
 		Children.add(newChild);
 	}
 	
 	public Boolean hasChild(Item target) {
 		
-		for(PredictionTree child : Children) {
+		for(OLD_PredictionTree child : Children) {
 			if(child.Item.val.equals(target.val)) {
 				return true;
 			}
@@ -46,9 +46,9 @@ public class PredictionTree {
 		return false;
 	}
 	
-	public PredictionTree getChild(Item target) {
+	public OLD_PredictionTree getChild(Item target) {
 
-		for(PredictionTree child : Children) {
+		for(OLD_PredictionTree child : Children) {
 			if(child.Item.val.equals(target.val))
 				return child;
 		}

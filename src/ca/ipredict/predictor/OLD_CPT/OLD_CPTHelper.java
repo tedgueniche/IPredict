@@ -1,4 +1,4 @@
-package ca.ipredict.predictor.CPT;
+package ca.ipredict.predictor.OLD_CPT;
 
 
 import java.util.ArrayList;
@@ -7,14 +7,15 @@ import java.util.List;
 
 import ca.ipredict.database.Item;
 import ca.ipredict.database.Sequence;
+import ca.ipredict.helpers.Bitvector;
 
 /**
  * Best friend of CPT
  */
-public class CPTHelper {
+public class OLD_CPTHelper {
 
 	
-	public static CPTPredictor predictor;
+	public static OLD_CPTPredictor predictor;
 	
 	/**
 	 * Return the last Length items
@@ -69,7 +70,7 @@ public class CPTHelper {
 	public static Item[] getSequenceFromId(Integer id) {
 		
 		List<Item> sequence = new ArrayList<Item>();
-		PredictionTree curNode = predictor.LT.get(id);
+		OLD_PredictionTree curNode = predictor.LT.get(id);
 		
 		//Reading the whole branch from bottom to top
 		sequence.add(curNode.Item);
@@ -93,7 +94,7 @@ public class CPTHelper {
 	 * @param ct The CountTable to update
 	 * @param initialSequenceSize Initial size of the sequence to predict (use for the weighting function in CountTable)
 	 */
-	public static void recursiveDivider(Item[] sequence, int minSize, CountTable ct, int initialSequenceSize) {
+	public static void recursiveDivider(Item[] sequence, int minSize, OLD_CountTable ct, int initialSequenceSize) {
 		
 		//Exit recursion condition
 		int size = sequence.length;

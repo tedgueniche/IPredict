@@ -1,4 +1,4 @@
-package ca.ipredict.predictor.CPT;
+package ca.ipredict.predictor.OLD_CPT;
 
 import java.util.Map.Entry;
 import java.util.HashSet;
@@ -6,25 +6,26 @@ import java.util.TreeMap;
 
 import ca.ipredict.database.Item;
 import ca.ipredict.database.Sequence;
-import ca.ipredict.predictor.CPT.CPTHelper;
+import ca.ipredict.helpers.Bitvector;
+import ca.ipredict.predictor.OLD_CPT.OLD_CPTHelper;
 import ca.ipredict.predictor.profile.Profile;
 
 /**
  * Represents a CountTable for the CPT algorithm
  */
-public class CountTable {
+public class OLD_CountTable {
 
 	/**
 	 * Internal representation of the CountTable
 	 */
 	private TreeMap<Integer, Float> table;
 	private HashSet<Integer> branchVisited;
-	private CPTPredictor predictor;
+	private OLD_CPTPredictor predictor;
 	
 	/**
 	 * Basic controller
 	 */
-	public CountTable(CPTPredictor predictor) {
+	public OLD_CountTable(OLD_CPTPredictor predictor) {
 		table = new TreeMap<Integer, Float>();
 		branchVisited = new HashSet<Integer>();
 		this.predictor = predictor;
@@ -69,7 +70,7 @@ public class CountTable {
 	 */
 	public void update(Item[] sequence, int initialSequenceSize) {
 		
-		Bitvector ids = CPTHelper.getSimilarSequencesIds(sequence);
+		Bitvector ids = OLD_CPTHelper.getSimilarSequencesIds(sequence);
 
 		//For each sequence similar of the given sequence
 		for(int id = ids.nextSetBit(0); id >= 0 ; id = ids.nextSetBit(id + 1)) {
@@ -79,7 +80,7 @@ public class CountTable {
 			}
 			
 			//extracting the sequence from the PredictionTree
-			Item[] seq = CPTHelper.getSequenceFromId(id);
+			Item[] seq = OLD_CPTHelper.getSequenceFromId(id);
 			
 			//Generating a set of all the items from sequence
 			HashSet<Item> toAvoid = new HashSet<Item>();

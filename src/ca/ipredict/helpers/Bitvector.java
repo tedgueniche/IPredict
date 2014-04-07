@@ -1,4 +1,4 @@
-package ca.ipredict.predictor.CPT;
+package ca.ipredict.helpers;
 
 import java.util.BitSet;
 
@@ -19,7 +19,7 @@ public class Bitvector {
 	/**
 	 * Public constructor
 	 */
-	Bitvector() {
+	public Bitvector() {
 		bitset = new BitSet();
 		cardinality = 0;
 	}
@@ -47,7 +47,7 @@ public class Bitvector {
 	 * Clone this bit vector.
 	 * @return a BitVector
 	 */
-	protected Object clone(){
+	public Object clone(){
 		try {
 			 return new Bitvector((BitSet)bitset.clone(), cardinality);
 		} catch (Exception e) {
