@@ -73,12 +73,6 @@ public class Bitvector {
 		return cardinality;
 	}
 
-	// set a bit to 1 and increment the cardinality by 1
-	public void setBitAndIncrementCardinality(int i) {
-		bitset.set(i);
-		cardinality++;
-	}
-
 	public void setBit(int i) {
 		if(bitset.get(i) == false) {
 			bitset.set(i);
