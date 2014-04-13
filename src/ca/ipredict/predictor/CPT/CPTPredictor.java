@@ -1,5 +1,6 @@
 package ca.ipredict.predictor.CPT;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -94,49 +95,78 @@ public class CPTPredictor implements Predictor {
 
 	@Override
 	public Sequence Predict(Sequence target) {
-		
+
 		CPTHelper.predictor = this;
-		
+
+
 		//remove items that were never seen before from the Target sequence before LLCT try to make a prediction
 		//If set to false, those items will be still ignored later on (in updateCountTable())
 		if(Profile.removeUnknownItemsForPrediction){
-			Iterator<Item> iter = target.getItems().iterator();
-			while (iter.hasNext()) {
-				Item item = (Item) iter.next();
-				// if there is no bitset for that item (we have never seen it)
-				if(II.get(item.val) == null){
-					// then remove it from target.
-					iter.remove();  
-				}
+			
+			//Min support for items in the target sequence
+			int treshold = 0;
+			
+			List<Item> selectedItems = new ArrayList<Item>();
+			for(Item item : target.getItems()) {
+				
+				//Keep only the item that we have seen during training and that have a support 
+				//above the specified threshold
+				if(II.get(item.val) != null && II.get(item.val).cardinality() >= treshold) {
+					selectedItems.add(item);
+				}	
 			}
+			target.getItems().clear();
+			target.getItems().addAll(selectedItems);
 		}
 		
-		//Empty predicted sequence
+		
 		Sequence predicted = new Sequence(-1);
 		
-		//For every step of the recursive divider
-		//from recursiveDividerMin to recursiveDividerMax
-		int recursion = Profile.recursiveDividerMin;
-		while(predicted.size() == 0 && recursion < Profile.recursiveDividerMax ) {
+		//Initializing the count table
+		CountTable ct = new CountTable(this);
+		ct.update(target.getItems().toArray(new Item[0]), target.size());
+		
+		//Extract the best sequence
+		predicted = ct.getBestSequence(1);
+		while(predicted.size() == 0 && target.size() > 1) {
 			
-			//Call recursive divider to update the countable
-			CountTable ct = new CountTable(this);
+			List<Item> cutSeq = new ArrayList<Item>();
 			
-			int minSize = target.size() - recursion;
-			Item[] targetArray = target.getItems().toArray(new Item[0]);
-			CPTHelper.recursiveDivider(targetArray, minSize, ct,target.size());
+			//Find the lowest supporting item
+			int minSup = Integer.MAX_VALUE;
+			int itemVal = -1;
+			for(Item item : target.getItems()) {
+				if(II.get(item.val).cardinality() < minSup) {
+					minSup = II.get(item.val).cardinality();
+					itemVal = item.val;
+				}
+			}
 			
-			//Extract prediction from the CountTable
+			//Remove the lowest supporting item
+			for(Item item : target.getItems()) {
+				if(item.val.equals(itemVal) == false) {
+					cutSeq.add(item);
+				}
+			}
+
+			//Updating target sequence
+			target.getItems().clear();
+			target.getItems().addAll(cutSeq);
+			
+			//Updating the count table
+			ct.update(target.getItems().toArray(new Item[0]), target.size());
+			
+			//Extract the best sequence
 			predicted = ct.getBestSequence(1);
-			recursion++;
 		}
+		
 		
 		return predicted;
 	}
 
 	@Override
 	public String getTAG() {
-		return "newCPT";
+		return "CPT";
 	}
 
 	@Override
