@@ -102,23 +102,8 @@ public class CPTPredictor implements Predictor {
 		//remove items that were never seen before from the Target sequence before LLCT try to make a prediction
 		//If set to false, those items will be still ignored later on (in updateCountTable())
 		if(Profile.removeUnknownItemsForPrediction){
-			
-			//Min support for items in the target sequence
-			int treshold = 0;
-			
-			List<Item> selectedItems = new ArrayList<Item>();
-			for(Item item : target.getItems()) {
-				
-				//Keep only the item that we have seen during training and that have a support 
-				//above the specified threshold
-				if(II.get(item.val) != null && II.get(item.val).cardinality() >= treshold) {
-					selectedItems.add(item);
-				}	
-			}
-			target.getItems().clear();
-			target.getItems().addAll(selectedItems);
+			target = CPTHelper.removeUnseenItems(target);
 		}
-		
 		
 		Sequence predicted = new Sequence(-1);
 		
@@ -126,39 +111,60 @@ public class CPTPredictor implements Predictor {
 		CountTable ct = new CountTable(this);
 		ct.update(target.getItems().toArray(new Item[0]), target.size());
 		
-		//Extract the best sequence
-		predicted = ct.getBestSequence(1);
-		while(predicted.size() == 0 && target.size() > 1) {
-			
-			List<Item> cutSeq = new ArrayList<Item>();
-			
-			//Find the lowest supporting item
-			int minSup = Integer.MAX_VALUE;
-			int itemVal = -1;
-			for(Item item : target.getItems()) {
-				if(II.get(item.val).cardinality() < minSup) {
-					minSup = II.get(item.val).cardinality();
-					itemVal = item.val;
-				}
+		int recursion = 0;
+		while(target.size() > recursion && target.size() > recursion && predicted.size() == 0 && recursion < Profile.recursiveDividerMax ) {
+		
+			//Generating all subsequence of size Target.size() - recursion and adding these in the countTable
+			List<Item[]> subsequences = CPTHelper.noiseRemover(new Item[0], target.getItems().toArray(new Item[0]), 0, target.size() - recursion);
+			for(Item[] sub : subsequences) {
+				ct.update(sub, target.size());
 			}
 			
-			//Remove the lowest supporting item
-			for(Item item : target.getItems()) {
-				if(item.val.equals(itemVal) == false) {
-					cutSeq.add(item);
-				}
-			}
-
-			//Updating target sequence
-			target.getItems().clear();
-			target.getItems().addAll(cutSeq);
+			//if we reached the minimum level of recursion 
+			//then we try to make a prediction
+			if(recursion >= Profile.recursiveDividerMin)
+				predicted = ct.getBestSequence(1);
 			
-			//Updating the count table
-			ct.update(target.getItems().toArray(new Item[0]), target.size());
-			
-			//Extract the best sequence
-			predicted = ct.getBestSequence(1);
+			recursion++;
 		}
+		
+		//Make a prediction
+		predicted = ct.getBestSequence(1);
+		
+		
+		//CODE TO REMOVE 1 ITEM AT THE TIME BASED ON THE LOWEST COVERAGE
+		//IT GIVE REALLY GOOD TESTING TIME BUT SLIGHLTY LOWER ACCURACY
+//		while(predicted.size() == 0 && target.size() > 1) {
+//			
+//			List<Item> cutSeq = new ArrayList<Item>();
+//			
+//			//Find the lowest supporting item
+//			int minSup = Integer.MAX_VALUE;
+//			int itemVal = -1;
+//			for(Item item : target.getItems()) {
+//				if(II.get(item.val).cardinality() < minSup) {
+//					minSup = II.get(item.val).cardinality();
+//					itemVal = item.val;
+//				}
+//			}
+//			
+//			//Remove the lowest supporting item
+//			for(Item item : target.getItems()) {
+//				if(item.val.equals(itemVal) == false) {
+//					cutSeq.add(item);
+//				}
+//			}
+//
+//			//Updating target sequence
+//			target.getItems().clear();
+//			target.getItems().addAll(cutSeq);
+//			
+//			//Updating the count table
+//			ct.update(target.getItems().toArray(new Item[0]), target.size());
+//			
+//			//Extract the best sequence
+//			predicted = ct.getBestSequence(1);
+//		}
 		
 		
 		return predicted;

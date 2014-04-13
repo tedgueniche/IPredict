@@ -87,53 +87,90 @@ public class CPTHelper {
 	}
 	
 	/**
-	 * Recursively remove one item at the time from the sequence S and use it to update the countTable
-	 * @param sequence Sequence to remove item from
-	 * @param minSize Minimum size of the sequence (stop removing items when it reaches that size)
-	 * @param ct The CountTable to update
-	 * @param initialSequenceSize Initial size of the sequence to predict (use for the weighting function in CountTable)
+	 * The method return all possible subsequences of size S where the order is not relevant. It guarantee
+	 * not duplicates in the results
+	 * @param prefix Should be set to empty, eg: new Item[0]
+	 * @param alphabet All the possible items
+	 * @param offset Should be set to 0
+	 * @param S size of the subsequences to return
+	 * @return A list of subsequences of size S wihtout duplicates
 	 */
-	public static void recursiveDivider(Item[] sequence, int minSize, CountTable ct, int initialSequenceSize) {
+	public static List<Item[]> noiseRemover(Item[] prefix, Item[] alphabet, int offset, int S) {
+	
+		List<Item[]> results = new ArrayList<Item[]>();
+
 		
-		//Exit recursion condition
-		int size = sequence.length;
-		if(size < minSize) {
-			return;
+		//for each possible value in the alphabet from alphabet[offset] to alphabet[alphabet.length - 1]
+		while(offset < alphabet.length) {
+			
+			//creating a sequence of "size" containing the suffix
+			List<Item> cur = new ArrayList<Item>();
+			for(Item item : prefix) {
+				cur.add(item);
+			}
+			
+			//adding the current offset element in the alphabet
+			cur.add(alphabet[offset]);
+			
+			//if the cur sequence is not big enough
+			//do a recursive call to add more items
+			if(cur.size() < S) {
+				results.addAll(noiseRemover(cur.toArray(new Item[cur.size()]), alphabet, offset + 1, S));
+			}
+			//if the sequence is the right size, we add it to the result list
+			else {
+				results.add(cur.toArray(new Item[S]));
+			}
+
+			//shifting the offset by one
+			offset++;
 		}
 		
-		//Updating the count table with the current sequence
-		ct.update(sequence, initialSequenceSize);
-		
-		//Return if no possible child
-		if(size == minSize) {
-			return;
-		}
-		
-		//Recursive call on all subsequence of size (sequence.size() - 1)
-		List<Item[]> sequences = noiseRemover(sequence);
-		for(Item[] seq : sequences) {
-			recursiveDivider(seq, minSize, ct, initialSequenceSize);
-		}
+		return results;
 	}
 	
-	/**
-	 * Return a list of all possible subsequence of size (sequence.size() - 1)
-	 */
-	private static List<Item[]> noiseRemover(Item[] sequence) {
+	
+	public static Sequence removeUnseenItems(Sequence seq) {
 		
-		List<Item[]> results = new ArrayList<Item[]>();
-		for(Item toHide : sequence) {
-			Item[] newSeq = new Item[sequence.length - 1];
+		Sequence target = new Sequence(seq);
+		
+		//Min support for items in the target sequence
+		int treshold = 0;
+		
+		List<Item> selectedItems = new ArrayList<Item>();
+		for(Item item : target.getItems()) {
 			
-			int index = 0;
-			for(Item it : sequence) {
-				if(it != toHide) {
-					newSeq[index] = it;
-					index++;
-				}
-			}
-			results.add(newSeq);
+			//Keep only the item that we have seen during training and that have a support 
+			//above the specified threshold
+			if(predictor.II.get(item.val) != null && predictor.II.get(item.val).cardinality() >= treshold) {
+				selectedItems.add(item);
+			}	
 		}
-		return results;
+		target.getItems().clear();
+		target.getItems().addAll(selectedItems);
+		
+		return target;
+	}
+	
+	public static void main(String...args) {
+		
+		
+		Item[] alphabet = new Item[5];
+		alphabet[0] = new Item(1);
+		alphabet[1] = new Item(2);
+		alphabet[2] = new Item(3);
+		alphabet[3] = new Item(4);
+		alphabet[4] = new Item(5);
+		
+		
+		List<Item[]> results = noiseRemover(new Item[0], alphabet, 0, 3);
+	
+		
+		for(Item[] seq : results) {
+			for(Item item : seq) {
+				System.out.print(item.val + ", ");
+			}
+			System.out.println();
+		}
 	}
 }
