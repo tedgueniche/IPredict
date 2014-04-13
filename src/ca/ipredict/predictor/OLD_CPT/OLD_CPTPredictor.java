@@ -137,7 +137,7 @@ public class OLD_CPTPredictor implements Predictor {
 
 	@Override
 	public String getTAG() {
-		return "newCPT";
+		return "OLD_CPT";
 	}
 
 	@Override
