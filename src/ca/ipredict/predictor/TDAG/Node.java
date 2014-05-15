@@ -58,7 +58,7 @@ public class Node {
 	 */
 	public Node addChild(Integer symbol) {
 		
-		//If necessery: create and insert the node in the children
+		//If necessary: create and insert the node in the children
 		//Else extract the existing child from the children
 		Node child = children.get(symbol);
 		if(child == null) {

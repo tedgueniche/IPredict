@@ -10,9 +10,12 @@ import ca.ipredict.database.Sequence;
 import ca.ipredict.predictor.Predictor;
 
 /**
- * TDAG predictor is based on Markov Tree
- * Its fast but it has drawbacks in terms of accuracy.
+ * TDAG predictor is based on Markov Trees
+ * Its fast but it has drawbacks in terms 
+ * It takes a lot of space!
  * This implementation has a few of the optimization presented in the original paper below.
+ * 
+ * Optimization#1: max tree height as described in original papel -> reduce spacial size without noticeable effect on accuracy and coverage (to be double checked)
  * 
  * Source: Laird, Philip, and Ronald Saul. "Discrete sequence prediction and its applications." Machine learning 15.1 (1994): 43-68.
  */
@@ -38,6 +41,11 @@ public class TDAGPredictor implements Predictor {
 	 */
 	private Integer size;
 	
+	/**
+	 * Max tree height, forbid creating branch with a length higher
+	 * than this parameter
+	 */
+	private final Integer maxTreeHeight = 6;
 	
 	/**
 	 * Map a list of symbol to a specific node in the tree
@@ -61,6 +69,7 @@ public class TDAGPredictor implements Predictor {
 	@Override
 	public Boolean Preload() {
 		
+		
 		//for each training sequence
 		for(Sequence seq : trainingSequences) {
 			
@@ -75,16 +84,20 @@ public class TDAGPredictor implements Predictor {
 				List<Node> newState = new ArrayList<Node>();
 				newState.add(root);
 				
-				//Adding a child with this item to each of the node in State
+				//Adding a child with this item to each of the nodes in State
 				for(Node node : state) {
 					
-					//Create and insert the node
-					Node child = node.addChild(item.val);
-					size++;
-					dictionnary.put(child.pathFromRoot, child);
-					
-					//Pushing the new child in the next state
-					newState.add(child);
+					//if the node has not the maximal allowed height
+					if(node.pathFromRoot.size() <= maxTreeHeight) {
+						
+						//Create and insert the node
+						Node child = node.addChild(item.val);
+						size++;
+						dictionnary.put(child.pathFromRoot, child);
+						
+						//Pushing the new child in the next state
+						newState.add(child);
+					}
 				}
 				
 				//overwritting State with the newState
@@ -185,9 +198,9 @@ public class TDAGPredictor implements Predictor {
 		
 		
 		Sequence X = new Sequence(3);
-		X.addItem(new Item(1));
+		X.addItem(new Item(4));
 		
 		Sequence predicted = p.Predict(X);
-		System.out.println(predicted);
+		System.out.println("Predicted "+ predicted);
 	}
 }
