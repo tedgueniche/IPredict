@@ -35,7 +35,7 @@ public class CountTable {
 	 * if a key already exists then the given value is added to the old one
 	 * @param curSeqLength Size of the sequence that contains the item
 	 * @param fullSeqLength Size of the sequence before calling recursive divider
-	 * @param numberOfSeqSameLength Number of similar sequence with the same size
+	 * @param numberOfSeqSameLength Number of similar sequence
 	 */
 	public void push(Integer key, int curSeqLength, int fullSeqLength, int numberOfSeqSameLength) {
 
@@ -48,7 +48,6 @@ public class CountTable {
 		
 		//Update the countable with the right weight and value
 		float curValue = (Profile.countTableWeightDivided == 0) ? 1f : 1f /((float)numberOfSeqSameLength);
-		
 		
 		Float oldVal = table.get(key);
 		if(oldVal == null) {
@@ -94,11 +93,15 @@ public class CountTable {
 			//	sequence: 	A B C
 			//  seq: 		X A Y B C E A F
 			//	{S}: 		E F
+			int max = 99;
+			int count = 0;
 			for(Item item : seq) {
-				if(toAvoid.size() == 0) {
+				if(toAvoid.size() == 0 && count < max) {
+					
 					//calculating the score for this item
 					push(item.val, sequence.length, initialSequenceSize, ids.cardinality());
 					branchVisited.add(id);
+					count++;
 				}
 				else if(toAvoid.contains(item)) {
 					toAvoid.remove(item);
@@ -125,7 +128,7 @@ public class CountTable {
 			//LIFT: CONFIDENCE(X -> Y) / (|Y|)
 			//Calculate score based on lift or confidence
 			double support = predictor.II.get(it.getKey()).cardinality();
-			double lift = it.getValue() / support;
+			double lift = it.getValue() * support;
 			double confidence = it.getValue();
 			
 			double score = (Profile.firstVote == 1) ? confidence : lift; //Use confidence or lift, depending on Parameter.firstVote
