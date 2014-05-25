@@ -1,6 +1,7 @@
 package ca.ipredict.predictor.LZ78;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -12,12 +13,31 @@ import ca.ipredict.predictor.Predictor;
 
 public class LZ78Predictor implements Predictor {
 
-	private List<Sequence> mTrainingSequences; //list of sequences to test
+	/**
+	 * List of training sequences
+	 */
+	private List<Sequence> mTrainingSequences;
+	
+	/**
+	 * Set of unique labels found in the training set
+	 */
 	private HashSet<Integer> alphabet;
+	
+	/**
+	 * Number of nodes in the predictor
+	 */
 	private int count;
+	
+	/**
+	 * Max order of this predictor (defined with the training data in Preload())
+	 */
 	private int order;
 	
-	private HashMap<List<Integer>, Integer> dictionary;
+	/**
+	 * Dictionary that maps a LZPhrase to a support
+	 */
+	private HashMap<List<Integer>, Node> dictionary;
+	
 	
 	@Override
 	public void setTrainingSequences(List<Sequence> trainingSequences) {
@@ -27,7 +47,7 @@ public class LZ78Predictor implements Predictor {
 	@Override
 	public Boolean Preload() {
 		
-		dictionary = new HashMap<List<Integer>, Integer>();
+		dictionary = new HashMap<List<Integer>, Node>();
 		alphabet = new HashSet<Integer>();
 		order = 0;
 		
@@ -49,21 +69,33 @@ public class LZ78Predictor implements Predictor {
 				
 				
 				//if the dictionary contains this phrase already
-				Integer support = dictionary.get(lzPhrase);
-				if(support != null) {
+				Node node = dictionary.get(lzPhrase);
+				if(node != null) {
 					
 					//incrementing the support of this phrase
-					dictionary.put(lzPhrase, support + 1);
+					node.inc();
+					dictionary.put(lzPhrase, node);
 					
+					//Updating the max order if needed
 					order = (lzPhrase.size() > order) ? lzPhrase.size() : order;
+					
+					//adding the current node as a child of the prefix
+					if(prefix.size() > 0 && dictionary.get(prefix) != null) {
+						dictionary.get(prefix).incChildSupport();
+					}
 					
 					//adding the current item to the prefix
 					prefix.add(cur);
 				}
 				else {
 					
+					//adding the current node as a child of the prefix
+					if(prefix.size() > 0 && dictionary.get(prefix) != null) {
+						dictionary.get(prefix).addChild(cur);
+					}
+					
 					//adding this phrase in the dictionary
-					dictionary.put(lzPhrase, 1);
+					dictionary.put(lzPhrase, new Node(cur));
 					prefix.clear();
 					count++;
 				}
@@ -75,9 +107,7 @@ public class LZ78Predictor implements Predictor {
 				//incrementing the offset
 				offset++;
 			}
-		
 		}
-		
 		
 		return true;
 	}
@@ -93,62 +123,40 @@ public class LZ78Predictor implements Predictor {
 		List<Integer> lzPhrase = new ArrayList<Integer>();
 		List<Integer> prefix = new ArrayList<Integer>();
 		List<Item> lastItems = target.getLastItems(order, 0).getItems();
-		for(Item item : lastItems) {
-			prefix.add(item.val);
-		}
+		Collections.reverse(lastItems);
 		
 		//for each order, starting with the highest one
-		while(prefix.size() > 0) {
+		for(Item item : lastItems) {
 			
+			//adding the current element in reverse order
+			prefix.add(0, item.val);
 			
-			HashMap<Integer, Double> intermResults = new HashMap<Integer, Double>();
-			Double supportSum = 0d;
+			Node parent = dictionary.get(prefix);
 			
-			//for each item in the alphabet, calculate its probability of order K
-			for(Integer cur : alphabet) {
-				
-				lzPhrase = new ArrayList<Integer>(prefix);
-				lzPhrase.add(cur);
-				
-				//if the dictionary contains this phrase
-				Integer support = dictionary.get(lzPhrase);
-				if(support != null) {
-					
-					//calculating the prob this item for order k
-					Integer parentSupport = dictionary.get(prefix);
-					Double probK = ((double) support / parentSupport);
-					intermResults.put(cur, probK);
-					
-					//incrementing the total support for this order
-					supportSum += support;
-				}
-				else {
-					intermResults.put(cur, 0d);
-				}
+			//Stop the prediction if the current node does not exists
+			//because if X does not exists than any node more precise than X cannot exists
+			if(parent == null) {
+				break;
 			}
 			
 			//calculating the probability of the escape
-			Integer supParent = (dictionary.get(prefix) != null) ? dictionary.get(prefix) : 1;
-			Double escapeK = 1 - ((double) supportSum / supParent);
-
-			//for each item in the alphabet, update its probability for order K
-			for(Integer cur : alphabet) {
+			int escapeK = parent.getSup() - parent.getChildSup(); 
+			
+			//for each child of this prefix
+			for(Integer label : parent.children) {
 				
-				//prob for this item for order k+1
-				Double probK1 = results.get(cur);
-				if(probK1 == null) {
-					probK1 = 0d;
+				lzPhrase = new ArrayList<Integer>(prefix);
+				lzPhrase.add(label);
+ 				Node child = dictionary.get(lzPhrase);
+				
+				if(child != null) {
+					
+					//prob for this item for order k+1
+					Double probK1 = results.getOrDefault(label, 0d);
+					Double probK = ((double) child.getSup() / parent.getSup()) + (escapeK * probK1);
+					results.put(label, probK);	
 				}
-				
-				Double probK = intermResults.get(cur) + (escapeK * probK1);
-				results.put(cur, probK);
-				
 			}
-			
-			
-			//removing the first element from the prefix
-			prefix.subList(0, 1).clear();
-
 		}
 		
 		
@@ -163,7 +171,7 @@ public class LZ78Predictor implements Predictor {
 			}
 		}
 		
-		
+		//returns the resulting sequence
 		Sequence predicted = new Sequence(-1);
 		predicted.addItem(new Item(mostProbableItem));
 		return predicted;
