@@ -7,6 +7,7 @@ import java.util.List;
 import ca.ipredict.database.Item;
 import ca.ipredict.database.Sequence;
 import ca.ipredict.predictor.Predictor;
+import ca.ipredict.predictor.profile.Profile;
 
 public class DGPredictor implements Predictor {
 	
@@ -24,8 +25,7 @@ public class DGPredictor implements Predictor {
 		count = 0;
 		//TODO:  Resolve ABB...AC...AD...ABB problem, described in Mogul&Padmanabhan (3. some Issues)
 		
-		//int w = Parameters.windowSize; //Parameter
-		int w = 4;
+		int w = Profile.windowSize; //Window size parameter
 		
 		mDictionary = new HashMap<Integer, DGNode>();
 		
@@ -118,11 +118,12 @@ public class DGPredictor implements Predictor {
 	
 	public static void main(String[] args) {
 			
-			
+			//DG predictor
 			DGPredictor predictor = new DGPredictor();
 			
 			//Training sequences
 			List<Sequence> training = new ArrayList<Sequence>();
+			
 			//1 2 3 4
 			Sequence seq1 = new Sequence(-1);
 			seq1.addItem(new Item(1));
@@ -139,16 +140,19 @@ public class DGPredictor implements Predictor {
 			seq2.addItem(new Item(4));
 			training.add(seq2);
 			
+			//Training the predictor
 			predictor.setTrainingSequences(training);
 			predictor.Preload();
 			
-			//Testing
+			//Testing sequence
 			Sequence seqT = new Sequence(-1);
 			seqT.addItem(new Item(2));
-			//seqT.addItem(new Item(3));
+			seqT.addItem(new Item(3));
 			
+			//Actual prediction
 			Sequence result = predictor.Predict(seqT);
 			
+			//Show results
 			System.out.println(result.toString());
 		}
 }

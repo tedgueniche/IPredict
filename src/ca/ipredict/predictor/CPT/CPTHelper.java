@@ -151,26 +151,5 @@ public class CPTHelper {
 		
 		return target;
 	}
-	
-	public static void main(String...args) {
-		
-		
-		Item[] alphabet = new Item[5];
-		alphabet[0] = new Item(1);
-		alphabet[1] = new Item(2);
-		alphabet[2] = new Item(3);
-		alphabet[3] = new Item(4);
-		alphabet[4] = new Item(5);
-		
-		
-		List<Item[]> results = noiseRemover(new Item[0], alphabet, 0, 3);
-	
-		
-		for(Item[] seq : results) {
-			for(Item item : seq) {
-				System.out.print(item.val + ", ");
-			}
-			System.out.println();
-		}
-	}
+
 }

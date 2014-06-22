@@ -18,7 +18,6 @@ public class MainController {
 		//instantiate the evaluator
 		Evaluator evaluator = new Evaluator();
 		
-	
 		//Loading data sets
 		evaluator.addDataset(Format.BMS, 		1000);
 //		evaluator.addDataset(Format.SIGN, 		1000);
@@ -28,12 +27,8 @@ public class MainController {
 		
 		//Loading predictors
 		evaluator.addPredictor(new DGPredictor());
-//		evaluator.addPredictor(new CPT11_CPTPredictor());
-		evaluator.addPredictor(new TDAGPredictor());
 		evaluator.addPredictor(new CPTPredictor());
-		
-//		evaluator.addPredictor(new MarkovFirstOrderPredictor());
-//		evaluator.addPredictor(new MarkovAllKPredictor());
+		evaluator.addPredictor(new MarkovFirstOrderPredictor());
 		
 		//Start the experiment
 		evaluator.Start(Evaluator.KFOLD, 12, true);
