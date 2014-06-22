@@ -86,50 +86,6 @@ public class CPTHelper {
 		return sequence.toArray(new Item[0]);
 	}
 	
-	/**
-	 * The method return all possible subsequences of size S where the order is not relevant. It guarantee
-	 * not duplicates in the results
-	 * @param prefix Should be set to empty, eg: new Item[0]
-	 * @param alphabet All the possible items
-	 * @param offset Should be set to 0
-	 * @param S size of the subsequences to return
-	 * @return A list of subsequences of size S wihtout duplicates
-	 */
-	public static List<Item[]> noiseRemover(Item[] prefix, Item[] alphabet, int offset, int S) {
-	
-		List<Item[]> results = new ArrayList<Item[]>();
-
-		
-		//for each possible value in the alphabet from alphabet[offset] to alphabet[alphabet.length - 1]
-		while(offset < alphabet.length) {
-			
-			//creating a sequence of "size" containing the suffix
-			List<Item> cur = new ArrayList<Item>();
-			for(Item item : prefix) {
-				cur.add(item);
-			}
-			
-			//adding the current offset element in the alphabet
-			cur.add(alphabet[offset]);
-			
-			//if the cur sequence is not big enough
-			//do a recursive call to add more items
-			if(cur.size() < S) {
-				results.addAll(noiseRemover(cur.toArray(new Item[cur.size()]), alphabet, offset + 1, S));
-			}
-			//if the sequence is the right size, we add it to the result list
-			else {
-				results.add(cur.toArray(new Item[S]));
-			}
-
-			//shifting the offset by one
-			offset++;
-		}
-		
-		return results;
-	}
-	
-	
 	public static Sequence removeUnseenItems(Sequence seq) {
 		
 		Sequence target = new Sequence(seq);
