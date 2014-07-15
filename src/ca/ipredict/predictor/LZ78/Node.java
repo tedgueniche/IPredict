@@ -1,6 +1,7 @@
 package ca.ipredict.predictor.LZ78;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 public class Node {
@@ -13,7 +14,7 @@ public class Node {
 	/**
 	 * List of children nodes
 	 */
-	public List<Integer> children;
+	public HashSet<Integer> children;
 	
 	/**
 	 * Support of the node
@@ -27,7 +28,7 @@ public class Node {
 	
 	public Node(int label) {
 		this.label = label;
-		children = new ArrayList<Integer>();
+		children = new HashSet<Integer>();
 		support = 1;
 		childSumSupport = 0;
 	}

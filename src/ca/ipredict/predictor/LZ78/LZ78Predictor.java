@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
 
@@ -11,17 +12,18 @@ import ca.ipredict.database.Item;
 import ca.ipredict.database.Sequence;
 import ca.ipredict.predictor.Predictor;
 
+/**
+ * Predictor based on the LZ78 Algorithm
+ * 
+ * K. Gopalratnam and D. J. Cook. Active Lezi: An incremental parsing algorithm for sequential prediction. 
+ * In Proceedings of the Florida Artiﬁcial Intelligence Research Symposium, 2003.
+ */
 public class LZ78Predictor implements Predictor {
 
 	/**
 	 * List of training sequences
 	 */
 	private List<Sequence> mTrainingSequences;
-	
-	/**
-	 * Set of unique labels found in the training set
-	 */
-	private HashSet<Integer> alphabet;
 	
 	/**
 	 * Number of nodes in the predictor
@@ -48,7 +50,6 @@ public class LZ78Predictor implements Predictor {
 	public Boolean Preload() {
 		
 		dictionary = new HashMap<List<Integer>, Node>();
-		alphabet = new HashSet<Integer>();
 		order = 0;
 		
 		//for each training sequence
@@ -98,11 +99,8 @@ public class LZ78Predictor implements Predictor {
 					dictionary.put(lzPhrase, new Node(cur));
 					prefix.clear();
 					count++;
+					
 				}
-				
-				
-				//adding the current item if it not in the alphabet
-				alphabet.add(cur);
 				
 				//incrementing the offset
 				offset++;
@@ -187,4 +185,30 @@ public class LZ78Predictor implements Predictor {
 		return count;
 	}
 
+	
+	public static void main(String...args) {
+		
+		//abababcdcbdab
+		Sequence s1 = new Sequence(1);
+		s1.addItem(new Item(1));
+		s1.addItem(new Item(2));
+		s1.addItem(new Item(1));
+		s1.addItem(new Item(2));
+		s1.addItem(new Item(1));
+		s1.addItem(new Item(2));
+		s1.addItem(new Item(3));
+		s1.addItem(new Item(4));
+		s1.addItem(new Item(3));
+		s1.addItem(new Item(2));
+		s1.addItem(new Item(4));
+		s1.addItem(new Item(1));
+		s1.addItem(new Item(2));
+		
+		LinkedList<Sequence> training = new LinkedList<Sequence>();
+		training.add(s1);
+		
+		LZ78Predictor lz = new LZ78Predictor();
+		lz.setTrainingSequences(training);
+		lz.Preload();
+	}
 }
