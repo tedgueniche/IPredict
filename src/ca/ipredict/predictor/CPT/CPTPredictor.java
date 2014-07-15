@@ -13,13 +13,14 @@ import ca.ipredict.predictor.profile.Profile;
 /**
  * Predictor based on a 3 main structures
  * a prediction tree, an inverted index and a lookup table
+ * Original paper: Ted Gueniche, Philippe Fournier-Viger, Vincent S. Tseng: Compact Prediction Tree: A Lossless Model for Accurate Sequence Prediction. ADMA (2) 2013: 177-188
  */
 public class CPTPredictor implements Predictor {
 
 	//The three data structure
 	public PredictionTree Root; 				//Prediction Tree
 	public Map<Integer, PredictionTree> LT; 	//Lookup Table
-	public Map<Integer, Bitvector> II; 		//Inverted Index
+	public Map<Integer, Bitvector> II; 			//Inverted Index
 	
 	private long nodeNumber; 					//number of node in the prediction tree (used for size())
 	private List<Sequence> trainingSequences; 	//list of sequences to test
