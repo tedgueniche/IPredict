@@ -22,14 +22,16 @@ public class CPTPredictor implements Predictor {
 	public Map<Integer, PredictionTree> LT; 	//Lookup Table
 	public Map<Integer, Bitvector> II; 			//Inverted Index
 	
-	private long nodeNumber; 					//number of node in the prediction tree (used for size())
-	private List<Sequence> trainingSequences; 	//list of sequences to test
+	protected CPTHelper helper;
 	
+	protected long nodeNumber; 					//number of node in the prediction tree (used for size())
+	protected List<Sequence> trainingSequences; 	//list of sequences to test
 	
 	public CPTPredictor() {
 		Root = new PredictionTree();
 		LT = new HashMap<Integer, PredictionTree>();
 		II = new HashMap<Integer, Bitvector>();
+		helper = new CPTHelper(this);
 		nodeNumber = 0;
 	}
 	
@@ -53,12 +55,13 @@ public class CPTPredictor implements Predictor {
 		int seqId = 0;
 		PredictionTree curNode;
 
+		
 		//for each training sequence
 		for(Sequence seq : trainingSequences) {
-			
+						
 			//slicing the sequence if needed
 			if(Profile.splitMethod > 0) {
-				seq = CPTHelper.keepLastItems(seq, Profile.splitLength);
+				seq = helper.keepLastItems(seq, Profile.splitLength);
 			}
 			
 			//resetting node pointer to root node
@@ -79,7 +82,7 @@ public class CPTPredictor implements Predictor {
 				//adding the item in the Prediction Tree if needed
 				if(curNode.hasChild(item) == false) {
 					curNode.addChild(item);
-					nodeNumber++;
+					nodeNumber++;					
 				}
 				curNode = curNode.getChild(item);
 				
@@ -95,17 +98,16 @@ public class CPTPredictor implements Predictor {
 	@Override
 	public Sequence Predict(Sequence target) {
 
-		CPTHelper.predictor = this;
 
 		//remove items that were never seen before from the Target sequence before LLCT try to make a prediction
 		//If set to false, those items will be still ignored later on (in updateCountTable())
 		if(Profile.removeUnknownItemsForPrediction){
-			target = CPTHelper.removeUnseenItems(target);
+			target = helper.removeUnseenItems(target);
 		}
 		
 		
 		//Initializing the count table
-		CountTable ct = new CountTable(this);
+		CountTable ct = new CountTable(helper);
 		ct.update(target.getItems().toArray(new Item[0]), target.size());
 		
 

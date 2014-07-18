@@ -4,6 +4,7 @@ package ca.ipredict.predictor.CPT;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map.Entry;
 
 import ca.ipredict.database.Item;
 import ca.ipredict.database.Sequence;
@@ -14,14 +15,19 @@ import ca.ipredict.database.Sequence;
 public class CPTHelper {
 
 	
-	public static CPTPredictor predictor;
+	public CPTPredictor predictor;
+	
+	public CPTHelper(CPTPredictor predictor) {
+		this.predictor = predictor;
+	}
+	
 	
 	/**
 	 * Return the last Length items
 	 * @param sequence the sequence to slice
 	 * @param length the size of the subsequences
 	 */
-	public static Sequence keepLastItems(Sequence sequence, int length) { 
+	public Sequence keepLastItems(Sequence sequence, int length) { 
 
 		if(sequence.size() <= length){ 
 			return sequence;
@@ -38,7 +44,7 @@ public class CPTHelper {
 	 * @param II The inverted index containing the bit vectors
 	 * @return The similar sequences as a bit vector, where each bit indicate whether a sequence is similar or not
 	 */
-	public static Bitvector getSimilarSequencesIds(Item[] sequence) {
+	public Bitvector getSimilarSequencesIds(Item[] sequence) {
 		if(sequence.length == 0) {
 			return new Bitvector();
 		}
@@ -66,7 +72,7 @@ public class CPTHelper {
 	 * @param id Id of the sequence to extract
 	 * @return The full sequence matching the id
 	 */
-	public static Item[] getSequenceFromId(Integer id) {
+	public Item[] getSequenceFromId(Integer id) {
 		
 		List<Item> sequence = new ArrayList<Item>();
 		PredictionTree curNode = predictor.LT.get(id);
@@ -86,7 +92,7 @@ public class CPTHelper {
 		return sequence.toArray(new Item[0]);
 	}
 	
-	public static Sequence removeUnseenItems(Sequence seq) {
+	public Sequence removeUnseenItems(Sequence seq) {
 		
 		Sequence target = new Sequence(seq);
 		
@@ -107,5 +113,4 @@ public class CPTHelper {
 		
 		return target;
 	}
-
 }

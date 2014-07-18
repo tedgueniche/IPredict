@@ -1,5 +1,6 @@
 package ca.ipredict.predictor.CPT;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
@@ -21,15 +22,15 @@ public class CountTable {
 	 */
 	private TreeMap<Integer, Float> table;
 	private HashSet<Integer> branchVisited;
-	private CPTPredictor predictor;
+	private CPTHelper helper;
 	
 	/**
 	 * Basic controller
 	 */
-	public CountTable(CPTPredictor predictor) {
+	public CountTable(CPTHelper helper) {
 		table = new TreeMap<Integer, Float>();
 		branchVisited = new HashSet<Integer>();
-		this.predictor = predictor;
+		this.helper = helper;
 	}
 
 	/**
@@ -68,8 +69,9 @@ public class CountTable {
 	 * @param initialSequenceSize The initial size of the sequence to predict (used for weighting)
 	 */
 	public void update(Item[] sequence, int initialSequenceSize) {
-		
-		Bitvector ids = CPTHelper.getSimilarSequencesIds(sequence);
+
+			
+		Bitvector ids = helper.getSimilarSequencesIds(sequence);
 
 		//For each sequence similar of the given sequence
 		for(int id = ids.nextSetBit(0); id >= 0 ; id = ids.nextSetBit(id + 1)) {
@@ -80,13 +82,14 @@ public class CountTable {
 			branchVisited.add(id);
 			
 			//extracting the sequence from the PredictionTree
-			Item[] seq = CPTHelper.getSequenceFromId(id);
+			Item[] seq = helper.getSequenceFromId(id);
 			
 			//Generating a set of all the items from sequence
 			HashSet<Item> toAvoid = new HashSet<Item>();
 			for(Item item : sequence) {
 				toAvoid.add(item);
 			}
+			
 
 			//Updating this CountTable with the items {S}
 			//Where {S} contains only the items that are in seq after
@@ -130,7 +133,7 @@ public class CountTable {
 			//CONFIDENCE : |X -> Y|
 			//LIFT: CONFIDENCE(X -> Y) / (|Y|)
 			double confidence = it.getValue();
-			double support = predictor.II.get(it.getKey()).cardinality();
+			double support = helper.predictor.II.get(it.getKey()).cardinality();
 			double lift = it.getValue() * support;
 			
 			//Calculate score based on lift or confidence
