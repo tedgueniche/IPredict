@@ -1,6 +1,6 @@
 package ca.ipredict.database;
 
-public class Item {
+public class Item implements Comparable<Item> {
 
 	public Integer val;
 	
@@ -20,9 +20,20 @@ public class Item {
 		return val.hashCode();
 	}
 	
-	public boolean equals(Object b) {
-		Item tmp = (Item) b;
-		return val.equals(tmp.val);
+
+	public boolean equals(Item b) {
+		return val.equals(b.val);
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		Item b = (Item) obj;
+		return val.equals(b.val);
+	};
+
+	@Override
+	public int compareTo(Item o) {
+		return this.val.compareTo(o.val);
 	}
 
 }
