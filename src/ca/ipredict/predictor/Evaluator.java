@@ -306,8 +306,7 @@ public class Evaluator {
 	private void PrepareClassifier(List<Sequence> trainingSequences, int classifierId) {
 		long start = System.currentTimeMillis(); //Training starting time
 		
-		predictors.get(classifierId).setTrainingSequences(trainingSequences);
-		predictors.get(classifierId).Preload(); //actual training
+		predictors.get(classifierId).Train(trainingSequences); //actual training
 		
 		long end = System.currentTimeMillis(); //Training ending time
 		double duration = (double)(end - start) / 1000;

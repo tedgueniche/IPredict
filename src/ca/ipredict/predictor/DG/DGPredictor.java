@@ -9,19 +9,22 @@ import ca.ipredict.database.Sequence;
 import ca.ipredict.predictor.Predictor;
 import ca.ipredict.predictor.profile.Profile;
 
-public class DGPredictor implements Predictor {
+public class DGPredictor extends Predictor {
 	
-	private List<Sequence> mTrainingSequences; //list of sequences to test
 	private HashMap<Integer, DGNode> mDictionary; //link unique items to their node in a DG
 	private int count;
 	
-	@Override
-	public void setTrainingSequences(List<Sequence> trainingSequences) {
-		mTrainingSequences = trainingSequences;
+	
+	public DGPredictor() {
+		TAG = "DG";
+	}
+	
+	public DGPredictor(String tag) {
+		TAG = tag;
 	}
 
 	@Override
-	public Boolean Preload() {
+	public Boolean Train(List<Sequence> trainingSequences) {
 		count = 0;
 		//TODO:  Resolve ABB...AC...AD...ABB problem, described in Mogul&Padmanabhan (3. some Issues)
 		
@@ -30,7 +33,7 @@ public class DGPredictor implements Predictor {
 		mDictionary = new HashMap<Integer, DGNode>();
 		
 		//For each sequence of the training set
-		for(Sequence seq : mTrainingSequences) {
+		for(Sequence seq : trainingSequences) {
 			
 			//for each items in this sequence, but the last one
 			List<Item> items = seq.getItems();
@@ -107,11 +110,6 @@ public class DGPredictor implements Predictor {
 		return predicted;
 	}
 
-	@Override
-	public String getTAG() {
-		return "DG";
-	}
-	
 	public long size() {
 		return count;
 	}
@@ -141,8 +139,7 @@ public class DGPredictor implements Predictor {
 			training.add(seq2);
 			
 			//Training the predictor
-			predictor.setTrainingSequences(training);
-			predictor.Preload();
+			predictor.Train(training);
 			
 			//Testing sequence
 			Sequence seqT = new Sequence(-1);

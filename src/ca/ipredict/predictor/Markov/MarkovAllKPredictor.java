@@ -11,26 +11,27 @@ import ca.ipredict.predictor.Predictor;
 /**
  * All-Kth-Order Markov Model 
  */
-public class MarkovAllKPredictor implements Predictor {
-
-	private List<Sequence> mTrainingSequences; //list of sequences to test
+public class MarkovAllKPredictor extends Predictor {
 	
 	private int K = 5;// 
 	
 	private HashMap<String, MarkovState> mDictionary; //contains a list of unique items (one or multiple) and their state in the Markov model
 	
-	@Override
-	public void setTrainingSequences(List<Sequence> trainingSequences) {
-		mTrainingSequences = trainingSequences;
+	public MarkovAllKPredictor() {
+		TAG = "KMark";
+	}
+	
+	public MarkovAllKPredictor(String tag) {
+		TAG = tag;
 	}
 
 	@Override
-	public Boolean Preload() {
+	public Boolean Train(List<Sequence> trainingSequences) {
 		
 		mDictionary = new HashMap<String, MarkovState>();
 		
 		//for each sequence in the training set
-		for(Sequence seq : mTrainingSequences) {
+		for(Sequence seq : trainingSequences) {
 			
 			//for each items in this sequence, but the last one
 			List<Item> items = seq.getItems();
@@ -106,11 +107,6 @@ public class MarkovAllKPredictor implements Predictor {
 		return new Sequence(-1);
 	}
 	
-	@Override
-	public String getTAG() {
-		return "KMark";
-	}
-	
 	public long size() {
 		return mDictionary.size();
 	}
@@ -154,8 +150,7 @@ public class MarkovAllKPredictor implements Predictor {
 		seq4.addItem(new Item(4));
 		training.add(seq4);
 		
-		predictor.setTrainingSequences(training);
-		predictor.Preload();
+		predictor.Train(training);
 		
 		//Testing
 		Sequence seqT = new Sequence(-1);

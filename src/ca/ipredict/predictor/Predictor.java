@@ -6,34 +6,42 @@ import ca.ipredict.database.Sequence;
 /**
  * Interface for all the predictors
  */
-public interface Predictor {
-	
-	
+public abstract class Predictor {
+
 	/**
-	 * Set the training set
+	 * Represent the unique name of this predictor
+	 * each subclass should overwrite this TAG
 	 */
-	public void setTrainingSequences(List<Sequence> trainingSequences);
+	protected String TAG;
+	
+	public Predictor(){}
+	
+	public Predictor(String tag) {
+		this.TAG = tag;
+	}
 	
 	/**
-	 * Trains this predictor with training data
+	 * Trains this predictor with the provided training data
 	 * @return true on success
 	 */
-	public Boolean Preload();
+	public abstract Boolean Train(List<Sequence> trainingSequences);
 	
 	/**
 	 * Predict the next element in the given sequence
 	 * @param sequence to predict
 	 */
-	public Sequence Predict(Sequence target);
+	public abstract Sequence Predict(Sequence target);
 	
 	/**
 	 * Get the predictor's TAG (unique string identifier)
 	 */
-	public String getTAG();
+	public String getTAG() {
+		return TAG;
+	}
 	
 	/**
 	 * Get the size of the predictor
 	 */
-	public long size();
+	public abstract long size();
 	
 }

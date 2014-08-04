@@ -15,7 +15,7 @@ import ca.ipredict.predictor.profile.Profile;
  * a prediction tree, an inverted index and a lookup table
  * Original paper: Ted Gueniche, Philippe Fournier-Viger, Vincent S. Tseng: Compact Prediction Tree: A Lossless Model for Accurate Sequence Prediction. ADMA (2) 2013: 177-188
  */
-public class CPTPredictor implements Predictor {
+public class CPTPredictor extends Predictor {
 
 	//The three data structure
 	public PredictionTree Root; 				//Prediction Tree
@@ -25,7 +25,6 @@ public class CPTPredictor implements Predictor {
 	protected CPTHelper helper;
 	
 	protected long nodeNumber; 					//number of node in the prediction tree (used for size())
-	protected List<Sequence> trainingSequences; 	//list of sequences to test
 	
 	public CPTPredictor() {
 		Root = new PredictionTree();
@@ -33,20 +32,21 @@ public class CPTPredictor implements Predictor {
 		II = new HashMap<Integer, Bitvector>();
 		helper = new CPTHelper(this);
 		nodeNumber = 0;
+		TAG = "CPT";
 	}
 	
-	@Override
-	public void setTrainingSequences(List<Sequence> trainingSet) {
-		trainingSequences = trainingSet;
+	public CPTPredictor(String tag) {
+		this();
+		TAG = tag;
 	}
-
+	
 	/**
 	 * Iterating through each sequence in the trainingSequences. 
 	 * For each sequence, we add the items in the PredictionTree, 
 	 * the Lookup Table and the Inverted Index
 	 * @return True on success
 	 */
-	public Boolean Preload() {
+	public Boolean Train(List<Sequence> trainingSet) {
 		Root = new PredictionTree();
 		LT = new HashMap<Integer, PredictionTree>();
 		II = new HashMap<Integer, Bitvector>();
@@ -57,7 +57,7 @@ public class CPTPredictor implements Predictor {
 
 		
 		//for each training sequence
-		for(Sequence seq : trainingSequences) {
+		for(Sequence seq : trainingSet) {
 						
 			//slicing the sequence if needed
 			if(Profile.splitMethod > 0) {
@@ -148,10 +148,6 @@ public class CPTPredictor implements Predictor {
 		return predicted;
 	}
 
-	@Override
-	public String getTAG() {
-		return "CPT";
-	}
 
 	@Override
 	public long size() {

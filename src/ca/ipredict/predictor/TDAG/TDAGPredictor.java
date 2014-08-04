@@ -19,17 +19,12 @@ import ca.ipredict.predictor.Predictor;
  * 
  * Source: Laird, Philip, and Ronald Saul. "Discrete sequence prediction and its applications." Machine learning 15.1 (1994): 43-68.
  */
-public class TDAGPredictor implements Predictor {
+public class TDAGPredictor extends Predictor {
 
 	/**
 	 * FIFO used during training to remember the last Node inserted in the tree
 	 */
 	private List<Node> state;
-	
-	/**
-	 * Contains the training sequences
-	 */
-	private List<Sequence> trainingSequences;
 	
 	/**
 	 * Root of the tree
@@ -59,15 +54,17 @@ public class TDAGPredictor implements Predictor {
 		size = 1;
 		state = new ArrayList<Node>();
 		dictionnary = new HashMap<List<Integer>, Node>();
+		
+		TAG = "TDAG";
 	}
-	
-	@Override
-	public void setTrainingSequences(List<Sequence> trainingSequences) {
-		this.trainingSequences = trainingSequences;
+
+	public TDAGPredictor(String tag) {
+		this();
+		TAG = tag;
 	}
 
 	@Override
-	public Boolean Preload() {
+	public Boolean Train(List<Sequence> trainingSequences) {
 		
 		
 		//for each training sequence
@@ -165,11 +162,6 @@ public class TDAGPredictor implements Predictor {
 	}
 
 	@Override
-	public String getTAG() {
-		return "TDAG";
-	}
-
-	@Override
 	public long size() {
 		return size;
 	}
@@ -192,10 +184,7 @@ public class TDAGPredictor implements Predictor {
 		trainingSet.add(B);
 		
 		TDAGPredictor p = new TDAGPredictor();
-		p.setTrainingSequences(trainingSet);
-		p.Preload();
-		
-		
+		p.Train(trainingSet);
 		
 		Sequence X = new Sequence(3);
 		X.addItem(new Item(4));

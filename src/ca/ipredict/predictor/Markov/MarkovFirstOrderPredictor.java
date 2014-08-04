@@ -10,25 +10,28 @@ import ca.ipredict.predictor.Predictor;
 /**
  * First-order markov model
  */
-public class MarkovFirstOrderPredictor implements Predictor {
+public class MarkovFirstOrderPredictor extends Predictor {
 
+	/**
+	 * List of unique items and their state in the Markov model
+	 */
+	private HashMap<Integer, MarkovState> mDictionary;
 	
-	private HashMap<Integer, MarkovState> mDictionary; //contains a list of unique items and their state in the Markov model
-	
-	private List<Sequence> mTrainingSequences; //list of sequences to test
 
+	public MarkovFirstOrderPredictor() {
+		TAG = "1Mark";
+	}
 	
-	@Override
-	public void setTrainingSequences(List<Sequence> trainingSequences) {
-		mTrainingSequences = trainingSequences;
+	public MarkovFirstOrderPredictor(String tag) {
+		TAG = tag;
 	}
 
 	@Override
-	public Boolean Preload() {
+	public Boolean Train(List<Sequence> trainingSequences) {
 		mDictionary = new HashMap<Integer, MarkovState>();
 		
 		//for each sequence in the training set
-		for(Sequence seq : mTrainingSequences) {
+		for(Sequence seq : trainingSequences) {
 			
 			//for each items in this sequence, but the last one
 			List<Item> items = seq.getItems();
@@ -48,7 +51,7 @@ public class MarkovFirstOrderPredictor implements Predictor {
 			}
 			
 		}
-		//TODO: change the return value
+
 		return true;
 	}
 
@@ -71,10 +74,6 @@ public class MarkovFirstOrderPredictor implements Predictor {
 		return predicted;
 	}
 
-	@Override
-	public String getTAG() {
-		return "1Mark";
-	}
 	
 	public long size() {
 		return mDictionary.keySet().size();

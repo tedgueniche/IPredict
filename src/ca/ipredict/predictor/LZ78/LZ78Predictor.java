@@ -18,12 +18,7 @@ import ca.ipredict.predictor.Predictor;
  * K. Gopalratnam and D. J. Cook. Active Lezi: An incremental parsing algorithm for sequential prediction. 
  * In Proceedings of the Florida Artiﬁcial Intelligence Research Symposium, 2003.
  */
-public class LZ78Predictor implements Predictor {
-
-	/**
-	 * List of training sequences
-	 */
-	private List<Sequence> mTrainingSequences;
+public class LZ78Predictor extends Predictor {
 	
 	/**
 	 * Number of nodes in the predictor
@@ -41,19 +36,22 @@ public class LZ78Predictor implements Predictor {
 	private HashMap<List<Integer>, Node> dictionary;
 	
 	
-	@Override
-	public void setTrainingSequences(List<Sequence> trainingSequences) {
-		mTrainingSequences = trainingSequences;
+	public LZ78Predictor() {
+		TAG = "LZ78";
+	}
+	
+	public LZ78Predictor(String tag) {
+		TAG = tag;
 	}
 
 	@Override
-	public Boolean Preload() {
+	public Boolean Train(List<Sequence> trainingSequences) {
 		
 		dictionary = new HashMap<List<Integer>, Node>();
 		order = 0;
 		
 		//for each training sequence
-		for(Sequence seq : mTrainingSequences) {
+		for(Sequence seq : trainingSequences) {
 			
 			List<Item> items = seq.getItems();
 			List<Integer> lzPhrase = new ArrayList<Integer>();
@@ -176,11 +174,6 @@ public class LZ78Predictor implements Predictor {
 	}
 
 	@Override
-	public String getTAG() {
-		return "LZ78";
-	}
-
-	@Override
 	public long size() {
 		return count;
 	}
@@ -208,7 +201,6 @@ public class LZ78Predictor implements Predictor {
 		training.add(s1);
 		
 		LZ78Predictor lz = new LZ78Predictor();
-		lz.setTrainingSequences(training);
-		lz.Preload();
+		lz.Train(training);
 	}
 }
