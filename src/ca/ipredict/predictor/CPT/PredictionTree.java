@@ -79,12 +79,12 @@ public class PredictionTree {
 		
 		return null;
 	}
-
+	
 	/**
-	 * Return the number of child of this node
+	 * Returns all of its children as a list
 	 */
-	public int getChildrenCount() {
-		return Children.size();
+	public List<PredictionTree> getChildren() {
+		return Children;
 	}
 
 }

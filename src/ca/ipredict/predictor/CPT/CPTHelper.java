@@ -4,7 +4,6 @@ package ca.ipredict.predictor.CPT;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map.Entry;
 
 import ca.ipredict.database.Item;
 import ca.ipredict.database.Sequence;

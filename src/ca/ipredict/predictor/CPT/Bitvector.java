@@ -19,7 +19,7 @@ public class Bitvector {
 	/**
 	 * Public constructor
 	 */
-	Bitvector() {
+	public Bitvector() {
 		bitset = new BitSet();
 		cardinality = 0;
 	}
