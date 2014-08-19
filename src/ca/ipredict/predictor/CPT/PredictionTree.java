@@ -1,6 +1,7 @@
 package ca.ipredict.predictor.CPT;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import ca.ipredict.database.Item;
 
@@ -56,6 +57,18 @@ public class PredictionTree {
 		PredictionTree newChild = new PredictionTree(child);
 		newChild.Parent = this;
 		Children.add(newChild);
+	}
+	
+	/**
+	 * Adds a child to the current node
+	 */
+	public void addChild(PredictionTree child) {
+		child.Parent = this;
+		Children.add(child);
+	}
+	
+	public void removeChild(Item child) {
+		Children = Children.stream().filter(c -> c.Item.equals(child) == false).collect(Collectors.toList());
 	}
 	
 	/**
