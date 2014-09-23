@@ -67,9 +67,9 @@ public class CountTable {
 	 * @param sequence Sequence to use to update the CountTable
 	 * @param initialSequenceSize The initial size of the sequence to predict (used for weighting)
 	 */
-	public void update(Item[] sequence, int initialSequenceSize) {
+	public int update(Item[] sequence, int initialSequenceSize) {
 
-			
+		int branchesUsed = 0;
 		Bitvector ids = helper.getSimilarSequencesIds(sequence);
 
 		//For each sequence similar of the given sequence
@@ -111,8 +111,14 @@ public class CountTable {
 				else if(toAvoid.contains(item)) {
 					toAvoid.remove(item);
 				}
-			}			
+			}
+			//meaning that the count table has been really updated
+			if(count > 1 ) {
+				branchesUsed++;
+			}
 		}
+		
+		return branchesUsed;
 	}
 	
 	/**

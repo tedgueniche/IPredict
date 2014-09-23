@@ -58,4 +58,32 @@ public class CPTHelperCompressed extends CPTHelper {
 	}
 	
 	
+	/**
+	 * Extract the common prefix, if any, between two itemset. <br/>
+	 * Eg:  <br/>
+	 * 		{1,3,6,7,8} and {1,3,2} -> {1,3} <br/>
+	 *  	{1,3,6,7,8} and {1,3} -> {1,3}<br/>
+	 *  	{1,3} and {1,3} -> {1,3}<br/>
+	 */
+	public List<Item> getCommonPrefix(List<Item> A, List<Item> B) {
+		
+		if(A.size() < 1 || B.size() < 1) {
+			return null;
+		}
+		
+		List<Item> prefix = new ArrayList<>();
+		for(int i = 0; i < A.size() && i < B.size(); i++) {
+			
+			if(A.get(i).equals(B.get(i))) {
+				prefix.add(A.get(i));
+			}
+			else {
+				return prefix;
+			}
+		}
+		
+		return prefix;
+	}
+	
+	
 }

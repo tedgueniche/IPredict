@@ -3,6 +3,7 @@ package ca.ipredict.predictor.CPT;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 import ca.ipredict.database.Item;
@@ -111,5 +112,32 @@ public class CPTHelper {
 		target.getItems().addAll(selectedItems);
 		
 		return target;
+	}
+	
+	/**
+	 * Manually calculate the number of nodes in the prediction tree
+	 */
+	public long manualCalcSize() {
+		
+		long count = 0;
+		LinkedList<PredictionTree> toProcess = new LinkedList<PredictionTree>();
+		
+		toProcess.add(predictor.Root);
+		
+		while(toProcess.size() > 0) {
+			
+			PredictionTree cur = toProcess.pop();
+			
+			//cur has not been seen
+			if(cur.Support == 0) {
+				count++;
+				cur.Support = 1;
+				toProcess.addAll(cur.getChildren());
+			}
+			else {}
+		}
+		
+		
+		return count;
 	}
 }

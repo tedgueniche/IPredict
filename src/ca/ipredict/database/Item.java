@@ -8,6 +8,11 @@ public class Item implements Comparable<Item> {
 		val = value;
 	}
 	
+	@Override
+	public Item clone() {
+		return new Item(val);
+	}
+	
 	public Item() {
 		val = -1;
 	}

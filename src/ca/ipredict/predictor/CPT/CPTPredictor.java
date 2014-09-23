@@ -112,7 +112,7 @@ public class CPTPredictor extends Predictor {
 		
 
 		//Removed noisy items from the target sequence to enhance the coverage of this predictor
-		Sequence predicted = new Sequence(-1);
+		Sequence predicted = ct.getBestSequence(1);
 		while(predicted.size() == 0 && target.size() > 1) {
 			
 			List<Item> cutSeq = new ArrayList<Item>();

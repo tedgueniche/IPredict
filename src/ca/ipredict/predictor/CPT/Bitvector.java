@@ -47,7 +47,7 @@ public class Bitvector {
 	 * Clone this bit vector.
 	 * @return a BitVector
 	 */
-	protected Object clone(){
+	public Object clone(){
 		try {
 			 return new Bitvector((BitSet)bitset.clone(), cardinality);
 		} catch (Exception e) {

@@ -1,5 +1,6 @@
 package ca.ipredict.database;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 
@@ -14,6 +15,7 @@ public class Sequence {
 		items = new ArrayList<Item>();
 	}
 	
+
 	/**
 	 * Make a hard copy of the given sequence
 	 * @param aSequence  sequence to copy
@@ -136,5 +138,96 @@ public class Sequence {
 	
 	public void setID(int newid) {
 		id = newid;
+	}
+	
+	@Override
+	public Sequence clone() {
+		
+		Sequence copy = new Sequence(id);
+		
+		for(Item item : items) {
+			copy.items.add(item.clone());
+		}
+		
+		return copy;
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		
+		Sequence other = (Sequence) obj;
+		return equals(other);
+	}
+	
+	public boolean equals(Sequence other) {
+		
+		if(id != other.id || items.size() != other.items.size()) {
+			return false;
+		}
+		
+		for(int i = 0; i < items.size(); i++) {
+			
+			if(items.get(i).equals(other.items.get(i)) == false) {
+				return false;
+			}
+		}
+		
+		return true;
+	}
+	
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		
+		result = prime * result + id;
+		result = prime * result + items.hashCode();
+		
+		return result;
+	}
+	
+	public static void main(String...args) {
+		
+		
+		
+		Sequence a = new Sequence(-1);
+		a.addItem(new Item(1));
+		a.addItem(new Item(2));
+		a.addItem(new Item(3));
+		
+		Sequence b = new Sequence(-1);
+		b.addItem(new Item(1));
+		b.addItem(new Item(2));
+		b.addItem(new Item(3));
+		
+		Sequence c = b.clone();
+		
+		System.out.println(a.hashCode());
+		System.out.println(b.hashCode());
+		System.out.println(c.hashCode());
+		
+		
+		HashSet<Sequence> seen = new HashSet<Sequence>();
+		seen.add(b);
+		
+		if(seen.contains(a)) {
+			System.out.println("Seen a");
+		}
+		
+		if(seen.contains(b)) {
+			System.out.println("Seen b (obviously)");
+		}
+		
+		if(seen.contains(c)) {
+			System.out.println("Seen c");
+		}
+		
+		if(b.equals(a)) {
+			System.out.println("a == b");
+		}
+		
+		if(b.equals(c)) {
+			System.out.println("b == c");
+		}
 	}
 }
