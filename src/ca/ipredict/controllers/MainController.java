@@ -18,12 +18,13 @@ public class MainController {
 		Evaluator evaluator = new Evaluator();
 		
 		//Loading data sets
-		evaluator.addDataset(Format.BMS, 		5000);
-//		evaluator.addDataset(Format.SIGN, 		1000);
-//		evaluator.addDataset(Format.MSNBC, 		1000);
+//		evaluator.addDataset(Format.BMS, 		5000);
+//		evaluator.addDataset(Format.SIGN, 		1000); //good enough
+		evaluator.addDataset(Format.MSNBC, 		5000);
 //		evaluator.addDataset(Format.BIBLE_WORD, 2000);
 //		evaluator.addDataset(Format.BIBLE_CHAR, 1000);
-//		evaluator.addDataset(Format.KOSARAK, 	1000);
+//		evaluator.addDataset(Format.KOSARAK, 	2000);
+//		evaluator.addDataset(Format.FIFA, 5000);
 		
 		//Loading predictors
 		evaluator.addPredictor(new DGPredictor());
@@ -36,8 +37,8 @@ public class MainController {
 		evaluator.Start(Evaluator.KFOLD, 8 , true);
 		
 		//Shows the parameters used
-		System.out.println();
-		System.out.print(Profile.tostring());	
+//		System.out.println();
+//		System.out.print(Profile.tostring());	
 	}
 
 }
