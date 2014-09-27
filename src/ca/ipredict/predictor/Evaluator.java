@@ -91,13 +91,15 @@ public class Evaluator {
 		}
 		
 		for(int i = 0; i < datasets.size(); i++) {
-		
+			
 			int maxCount = datasetsMaxCount.get(i);
 			Format format = datasets.get(i);
-			database.loadDataset(format, maxCount, true);
 			
 			//Loading the parameter profile
 			ProfileManager.loadProfileByName(format.toString());
+			
+			//Loading the dataset
+			database.loadDataset(format, maxCount, true);
 			
 			//Creating the statsLogger
 			stats = new StatsLogger(statsColumns, predictorNames, false);
