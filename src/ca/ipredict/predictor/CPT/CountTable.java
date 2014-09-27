@@ -45,9 +45,11 @@ public class CountTable {
 		float weightLevel = 1f /numberOfSeqSameLength; //from [1.0,0[  -> higher is better
 		float weightDistance = 1f / dist; //from [1.0,0[ -> higher is better
 		float weightLength = (float)curSeqLength / fullSeqLength; //from [1.0,0[ -> higher is better
+//		float weightLength = (float)fullSeqLength / curSeqLength; //from [1.0,0[ -> higher is better
 	
 		//calculate the value for the current key 
-		float curValue = (weightLevel * 1f) + (weightLength * 1.0f) + (weightDistance * 0.0001f);
+//		float curValue = (weightLevel * 0.5f) + (weightLength * 5.0f) + (weightDistance * 0.8f);
+		float curValue = (weightLevel * 1f) + (weightLength * 1f) + (weightDistance * 0.0001f);
 		
 		//Update the count table
 		Float oldVal = table.get(key);
@@ -149,7 +151,8 @@ public class CountTable {
 		
 		//Filling a sequence with the best |count| items
 		Sequence seq = new Sequence(-1);
-		List<Integer> bestItems = sd.getBest(1.002);
+//		List<Integer> bestItems = sd.getBest(1.002);
+		List<Integer> bestItems = sd.getBest(1.00001);
 		if(bestItems != null && bestItems.size() > 0) {
 			for(int i = 0; i < count && i < bestItems.size(); i++) {
 				seq.addItem(new Item(bestItems.get(i)));

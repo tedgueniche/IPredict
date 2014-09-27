@@ -181,18 +181,13 @@ public class CPTPredictorCompressed extends CPTPredictor {
 		if(Profile.removeUnknownItemsForPrediction){
 			target = helper.removeUnseenItems(target);
 		}
+	
 		
-		
-		/**
-		 * QUESTION: why is the coverage so low, it should be near null
-		 */
-		
-		
-		int maxPredictionCount = 1; //minimum number of required prediction to ensure the best accuracy
-		int minPredictionCount = 1; //minimum number of required prediction to ensure the best accuracy
+		int maxPredictionCount = target.size(); //minimum number of required prediction to ensure the best accuracy
+		int minPredictionCount = 2; //minimum number of required prediction to ensure the best accuracy
 		int predictionCount = 0; //current number of prediction done (one by default because of the CountTable being updated with the target initially) 
 		
-		double noiseRatio = 0.2; //Ratio of items to remove in a sequence per level (level = target.size)
+		double noiseRatio = 1.0; //Ratio of items to remove in a sequence per level (level = target.size)
 		int initialTargetSize = target.size();
 		
 		HashSet<Sequence> seen = new HashSet<Sequence>();
@@ -208,17 +203,27 @@ public class CPTPredictorCompressed extends CPTPredictor {
 		//while the min prediction count is not reached and the target sequence is big enough
 		while(queue.size() > 0 && predictionCount < maxPredictionCount) {
 		
+						
+			//getting the sequence
+			Sequence seq = queue.poll();
+			
+		
+			//to test
+			ct = new CountTable(helper);
+			ct.update(seq.getItems().toArray(new Item[0]), seq.size());
+			predictionCount = 0;
+			maxPredictionCount = seq.size() - 1;
+			/////////////////////////////////////
 			
 			//if this sequence has not been seen yet
-			Sequence seq = queue.poll();
 			if(seen.contains(seq) == false && seq.size() > 1) {
 			
 				//set this sequence to seen
 				seen.add(seq);
 				
 				//get the sub sequences for this level while respecting the maxRatioForReduction
-//				List<Item> noises = getNoise(seq, noiseRatio);
-				List<Item> noises = getNoise(seq, 1 / seq.size());
+				List<Item> noises = getNoise(seq, noiseRatio);
+//				List<Item> noises = getNoise(seq, 1 / seq.size());
 				
 				//generating the candidates from the list of noisy items
 				for(Item noise : noises) {
@@ -239,7 +244,9 @@ public class CPTPredictorCompressed extends CPTPredictor {
 					
 					//update count table with this sequence
  					Item[] candidateItems = candidate.getItems().toArray(new Item[0]);
-					int branches = ct.update(candidateItems, initialTargetSize);
+
+//					int branches = ct.update(candidateItems, initialTargetSize);
+ 					int branches = ct.update(candidateItems, candidate.size()); //WTF on the second parameter
 					
 					//if(branches > 0) {
 						predicted = ct.getBestSequence(1);
@@ -252,7 +259,6 @@ public class CPTPredictorCompressed extends CPTPredictor {
 		}
 
 		predicted = ct.getBestSequence(1);
-		
 		return predicted;
 	}
 	
@@ -273,10 +279,10 @@ public class CPTPredictorCompressed extends CPTPredictor {
 		//then return the last [noiseCount] items
 		List<Item> noises = target.getItems().stream().sorted(
 				(i1, i2) -> Integer.compare(
-						II.get(i1.val).cardinality(), II.get(i1.val).
-						cardinality())).collect(Collectors.toList()).subList(target.size() - noiseCount, target.size());
-		
-		return noises;
+						II.get(i2.val).cardinality(), II.get(i1.val).
+						cardinality())).collect(Collectors.toList());
+				
+		return noises.subList(target.size() - noiseCount, target.size());
 	}
 	
 	
@@ -352,6 +358,6 @@ public class CPTPredictorCompressed extends CPTPredictor {
 		}
 		
 		nodeNumber -= nodeSaved;
-		System.out.println("Path Collapsing: "+ nodeSaved + " node saved");
+//		System.out.println("Path Collapsing: "+ nodeSaved + " node saved");
 	}
 }
