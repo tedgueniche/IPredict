@@ -182,8 +182,8 @@ public class CPTPredictorCompressed extends CPTPredictor {
 			target = helper.removeUnseenItems(target);
 		}
 	
-		
-		int maxPredictionCount = target.size(); //minimum number of required prediction to ensure the best accuracy
+		int maxPredictionCount = (int) (0.1 + target.size() * Profile.recursiveDividerMin * 0.75); //minimum number of required prediction to ensure the best accuracy
+//		int maxPredictionCount = (int) (target.size() * 3); //minimum number of required prediction to ensure the best accuracy
 		int minPredictionCount = 2; //minimum number of required prediction to ensure the best accuracy
 		int predictionCount = 0; //current number of prediction done (one by default because of the CountTable being updated with the target initially) 
 		
@@ -209,10 +209,11 @@ public class CPTPredictorCompressed extends CPTPredictor {
 			
 		
 			//to test
-			ct = new CountTable(helper);
-			ct.update(seq.getItems().toArray(new Item[0]), seq.size());
-			predictionCount = 0;
-			maxPredictionCount = seq.size() - 1;
+			//simulate per level recursive divider
+//			ct = new CountTable(helper);
+//			ct.update(seq.getItems().toArray(new Item[0]), seq.size());
+//			predictionCount = 0;
+//			maxPredictionCount = seq.size() - 1;
 			/////////////////////////////////////
 			
 			//if this sequence has not been seen yet
@@ -245,15 +246,16 @@ public class CPTPredictorCompressed extends CPTPredictor {
 					//update count table with this sequence
  					Item[] candidateItems = candidate.getItems().toArray(new Item[0]);
 
-//					int branches = ct.update(candidateItems, initialTargetSize);
- 					int branches = ct.update(candidateItems, candidate.size()); //WTF on the second parameter
+					int branches = ct.update(candidateItems, initialTargetSize);
+// 					int branches = ct.update(candidateItems, candidate.size()); //WTF on the second parameter
 					
-					//if(branches > 0) {
-						predicted = ct.getBestSequence(1);
-						if(predicted.size() > 0) {
+ 					//do a prediction if this CountTable update did something
+					if(branches > 0) {
+//						predicted = ct.getBestSequence(1);
+//						if(predicted.size() > 0) {
 							predictionCount++;
-						}
-					//}
+//						}
+					}
 				}
 			}
 		}
