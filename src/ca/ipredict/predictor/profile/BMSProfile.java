@@ -18,11 +18,13 @@ public class BMSProfile extends Profile {
 		//CPT parameters
 		//Training
 		splitMethod = 1; //0 for no split, 1 for basicSplit, 2 for complexSplit
-		splitLength = 15; // max tree height
+		splitLength = 10; // max tree height
 		
 		//Prediction
 		recursiveDividerMin = 4; //should be >= 0 and < recursiveDividerMax 
 		recursiveDividerMax = 99; //should be > recusiveDividerMax and < windowSize
+		minPredictionRatio = 2.0f; //should be over 0
+		noiseRatio = 1.0f; //should be in the range ]0,1]
 		
 		//best prediction from the count table
 		firstVote = 1; //1 for confidence, 2 for lift

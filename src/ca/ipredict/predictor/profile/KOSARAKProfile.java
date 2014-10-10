@@ -21,6 +21,8 @@ public class KOSARAKProfile extends Profile {
 		//Prediction
 		recursiveDividerMin = 3; //should be >= 0 and < recursiveDividerMax 
 		recursiveDividerMax = 99; //should be > recusiveDividerMax and < windowSize
+		minPredictionRatio = 1.0f; //should be over 0
+		noiseRatio = 1.0f; //should be in the range ]0,1]
 		
 		//best prediction from the count table
 		firstVote = 1; //1 for confidence, 2 for lift
