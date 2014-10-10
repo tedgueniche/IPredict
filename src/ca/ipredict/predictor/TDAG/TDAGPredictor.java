@@ -66,6 +66,12 @@ public class TDAGPredictor extends Predictor {
 	@Override
 	public Boolean Train(List<Sequence> trainingSequences) {
 		
+		//reset
+		root = new Node(0, new ArrayList<Integer>());
+		size = 1;
+		state = new ArrayList<Node>();
+		dictionnary = new HashMap<List<Integer>, Node>();
+		
 		
 		//for each training sequence
 		for(Sequence seq : trainingSequences) {
