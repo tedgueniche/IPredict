@@ -13,8 +13,8 @@ import java.util.Set;
 import ca.ipredict.database.Item;
 import ca.ipredict.database.Sequence;
 import ca.ipredict.helpers.MemoryLogger;
+import ca.ipredict.predictor.Paramable;
 import ca.ipredict.predictor.Predictor;
-import ca.ipredict.predictor.profile.Profile;
 
 /**
  * CPT - Compact Prediction Tree 
@@ -30,16 +30,24 @@ public class CPT13FastPredictor extends Predictor {
 	
 	private long nodeNumber; //number of node in the prediction tree
 	
+	public Paramable parameters;
+	
 	public CPT13FastPredictor() {
 		nodeNumber = 0;
 		Root = new PredictionTree();
 		LT = new HashMap<Integer, PredictionTree>();
 		II = new HashMap<Integer, Bitvector>();
+		parameters = new Paramable();
 	}
 
 	public CPT13FastPredictor(String tag) {
 		this();
 		TAG = tag;
+	}
+	
+	public CPT13FastPredictor(String tag, String params) {
+		this(tag);
+		parameters.setParameter(params);
 	}
 	
 	/**
@@ -109,7 +117,7 @@ public class CPT13FastPredictor extends Predictor {
 		for(int index = indexes.nextSetBit(0); index >= 0 ; index = indexes.nextSetBit(index+1)) {
 
 			//Skip branches that have already been seen for this target sequence
-			if(Profile.useHashSidVisited && hashSidVisited.contains(index)){
+			if(parameters.paramBool("useHashSidVisited") && hashSidVisited.contains(index)){
 				continue;    
 			}   
 			
@@ -205,7 +213,7 @@ public class CPT13FastPredictor extends Predictor {
 				}
 
 				//Update the countable with the right weight and value
-				float curValue = (Profile.countTableWeightDivided == 0) ? 1f : 1f /((float)indexes.cardinality());
+				float curValue = (parameters.paramInt("countTableWeightDivided") == 0) ? 1f : 1f /((float)indexes.cardinality());
 				
 				CountTable.put(branch.get(i).val, oldValue + (curValue * weight) );
 				
@@ -235,7 +243,7 @@ public class CPT13FastPredictor extends Predictor {
 			double support = II.get(it.getKey()).cardinality();
 			double confidence = it.getValue();
 			
-			double score = (Profile.firstVote == 1) ? confidence : lift; //Use confidence or lift, depending on Parameter.firstVote
+			double score = (parameters.paramInt("firstVote") == 1) ? confidence : lift; //Use confidence or lift, depending on Parameter.firstVote
 			
 			//Saving the best value
 			if(score > maxValue) {
@@ -261,7 +269,7 @@ public class CPT13FastPredictor extends Predictor {
 		//if there is a max item (at least one item in the CountTable)
 		// and it is better than second best (if there is one)
 		//and the minTreshold is respected
-		else if (diff >= Profile.voteTreshold || secondMaxValue == -1) {
+		else if (diff >= parameters.paramDouble("voteTreshold") || secondMaxValue == -1) {
 			Item predictedItem = new Item(maxItem);
 			predicted.addItem(predictedItem);
 		}
@@ -269,7 +277,7 @@ public class CPT13FastPredictor extends Predictor {
 		else if(diff == 0.0 && secondMaxValue != -1) {
 			
 			//Return the best found value if no Parameters.secondVote
-			if(Profile.secondVote == 0) {
+			if(parameters.paramInt("secondVote") == 0) {
 				//Item predictedItem = new Item(maxItem);
 				//predicted.addItem(predictedItem);
 			}
@@ -287,7 +295,7 @@ public class CPT13FastPredictor extends Predictor {
 							double lift = it.getValue() / II.get(it.getKey()).cardinality();
 							double support = II.get(it.getKey()).cardinality();
 							
-							double score = (Profile.secondVote == 1) ? support : lift; //Use confidence or lift, depending on Parameter.secondVote
+							double score = (parameters.paramInt("secondVote") == 1) ? support : lift; //Use confidence or lift, depending on Parameter.secondVote
 							
 							if(score > highestScore) {
 								highestScore = score;
@@ -315,7 +323,7 @@ public class CPT13FastPredictor extends Predictor {
 		
 		//remove items that were never seen before from the Target sequence before LLCT try to make a prediction
 		//If set to false, those items will be still ignored later on (in updateCountTable())
-		if(Profile.removeUnknownItemsForPrediction){
+		if(parameters.paramBool("removeUnknownItemsForPrediction")){
 			Iterator<Item> iter = target.getItems().iterator();
 			while (iter.hasNext()) {
 				Item item = (Item) iter.next();
@@ -336,8 +344,8 @@ public class CPT13FastPredictor extends Predictor {
 
 		Sequence prediction = new Sequence(-1);
 		int i = 0;
-		int minRecursion = Profile.recursiveDividerMin;
-		int maxRecursion = (Profile.recursiveDividerMax > targetArray.length) ? targetArray.length : Profile.recursiveDividerMax;
+		int minRecursion = parameters.paramInt("recursiveDividerMin");
+		int maxRecursion = (parameters.paramInt("recursiveDividerMax") > targetArray.length) ? targetArray.length : parameters.paramInt("recursiveDividerMax");
 		
 		for(i = minRecursion ; i < maxRecursion && prediction.size() == 0; i++) {
 			//Reset the CountTable and the hasSidVisited
@@ -375,9 +383,9 @@ public class CPT13FastPredictor extends Predictor {
 		
 		//Setting up the weight multiplier for the countTable
 		float weight = 1f;		
-		if(Profile.countTableWeightMultiplier == 1)
+		if(parameters.paramInt("countTableWeightMultiplier") == 1)
 			weight = 1f  / size;
-		else if(Profile.countTableWeightMultiplier == 2)
+		else if(parameters.paramInt("countTableWeightMultiplier") == 2)
 			weight = (float)size / initialTargetArraySize;
 		
 		UpdateCountTable(targetArray, weight, countTable, hashSidVisited);
@@ -428,11 +436,11 @@ public class CPT13FastPredictor extends Predictor {
 		List<Sequence> newTrainingSet = new ArrayList<Sequence>();
 		for(Sequence seq : trainingSequences) {
 			
-			if(seq.size() > Profile.splitLength && Profile.splitMethod > 0) {
-				if(Profile.splitMethod == 1)
-					newTrainingSet.addAll(LLCTHelper.sliceBasic(seq, Profile.splitLength));
+			if(seq.size() > parameters.paramInt("splitLength") && parameters.paramInt("splitMethod") > 0) {
+				if(parameters.paramInt("splitMethod") == 1)
+					newTrainingSet.addAll(LLCTHelper.sliceBasic(seq, parameters.paramInt("splitLength")));
 				else
-					newTrainingSet.addAll(LLCTHelper.slice(seq, Profile.splitLength));
+					newTrainingSet.addAll(LLCTHelper.slice(seq, parameters.paramInt("splitLength")));
 			}else{
 				newTrainingSet.add(seq);
 			}	

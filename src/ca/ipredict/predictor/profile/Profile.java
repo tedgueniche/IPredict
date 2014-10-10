@@ -1,71 +1,89 @@
 package ca.ipredict.predictor.profile;
 
+import java.util.HashMap;
+import java.util.Map.Entry;
+
 
 /**
  * Interface to load a parameters profile.
- * @author Ted Gueniche
  */
-public abstract class Profile {
+public class Profile {
 	
-	//Preprocessing
-	public static int sequenceMinSize = 3; //min sequence size in the dataset
-	public static int sequenceMaxSize = 999;  //max sequence size in the dataset
-	public static int removeDuplicatesMethod = 1;  // 0 for none, 1 for consecutive duplicates, 2 for all duplicates
-	public static int consequentSize = 1; //suffix-size for prediction
-	public static int windowSize = 2; //prefix size for prediction
-
-	//LLCT
-	//Training
-	public static int splitMethod = 0; //0 for no split, 1 for basicSplit, 2 for complexSplit
-	public static int splitLength = 99; // max tree height
+	//Contains the parameter as strings
+	public static HashMap<String, String> parameters;
 	
-	//Prediction
-	public static int recursiveDividerMin = 1;//default to 1 //should be >= 0 and < recursiveDividerMax 
-	public static int recursiveDividerMax = 2; //should be > recusiveDividerMax and < windowSize
-	public static float minPredictionRatio = 1.0f; //should be over 0
-	public static float noiseRatio = 1.0f; //should be in the range ]0,1]
+	public Profile() {
+		parameters = new HashMap<String, String>();
+	}
 	
-	//best prediction from the count table
-	public static int firstVote = 1; //1 for confidence, 2 for lift
-	public static int secondVote = 0; //0 for none, 1 for support, 2 for lift
-	public static double voteTreshold = 0.0; //confidence threshold to validate firstVote, else it uses the secondVote 
+	public static Double paramDouble(String name) {
+		Object value = parameters.get(name);
+		return Double.valueOf(parameters.get(name));
+	}
 	
-	//Countable weight system
-	public static int countTableWeightMultiplier = 0; // 0 for no weight (1), 1 for 1/targetSize, 2 for level/targetSize
-	public static int countTableWeightDivided = 0; // 0 for no divider, 1 for x/(#ofBranches for this sequence)
+	public static Integer paramInt(String name) {
+		Object value = parameters.get(name);
+		return Integer.valueOf(parameters.get(name));	
+	}
 	
-	//Others
-	public static boolean useHashSidVisited = false;
-	public static boolean branchTraversalTopToBottom = true; //used for branches with duplicates, set to true to allow with duplicates
-	public static boolean removeUnknownItemsForPrediction = true; //remove items that were never seen before from the Target sequence before LLCT try to make a prediction
+	public static Float paramFloat(String name) {
+		Object value = parameters.get(name);
+		return Float.valueOf(parameters.get(name));	
+	}
+	
+	public static Boolean paramBool(String name) {
+		Object value = parameters.get(name);
+		return Boolean.valueOf(parameters.get(name));	
+	}
+	
+	//Applies the parameters 
+	public void Apply(){
 		
-	//Rules for TRulesGrowth
-	public static int bestRuleCount = 10;
+		//Global parameters
+		//Pre-processing
+		parameters.put("sequenceMinSize", "6");
+		parameters.put("sequenceMaxSize", "999");
+		parameters.put("removeDuplicatesMethod", "1");
+		parameters.put("consequentSize", "1"); 
+		parameters.put("windowSize", "5"); 
+
+		///////////////
+		//CPT parameters
+		//Training
+		parameters.put("splitMethod", "0"); //0 for no split", "1 for basicSplit", "2 for complexSplit
+		parameters.put("splitLength", "999"); // max tree height
+
+		//Prediction
+		parameters.put("recursiveDividerMin", "4"); //should be >= 0 and < recursiveDividerMax 
+		parameters.put("recursiveDividerMax", "99"); //should be > recusiveDividerMax and < windowSize
+		parameters.put("minPredictionRatio", "2.0f"); //should be over 0
+		parameters.put("noiseRatio", "1.0f"); //should be in the range ]0,1]
+
+		//best prediction from the count table
+		parameters.put("firstVote", "1"); //1 for confidence", "2 for lift
+		parameters.put("secondVote", "2"); //0 for none", "1 for support", "2 for lift
+		parameters.put("voteTreshold", "0.0"); //confidence threshold to validate firstVote", "else it uses the secondVote 
+
+		//Countable weight system
+		parameters.put("countTableWeightMultiplier", "2"); // 0 for no weight (1)", "1 for 1/targetSize", "2 for level/targetSize
+		parameters.put("countTableWeightDivided", "1"); // 0 for no divider", "1 for x/(#ofBranches for this sequence)
+
+		//Others
+		parameters.put("useHashSidVisited", "true");
+		parameters.put("branchTraversalTopToBottom", "true"); //used for branches with duplicates", "set to true to allow with duplicates
+		parameters.put("removeUnknownItemsForPrediction", "true"); //remove items that were never seen before from the Target sequence before LLCT try to make a prediction
+	}
+	
 
 	public static String tostring() {
 		String nl = "\n";
 		String output = "---Global Parameters---" + nl;
-		output += "sequenceMinSize: \t"+ sequenceMinSize + nl;
-		output += "sequenceMaxSize: \t"+ sequenceMaxSize + nl;
-		output += "removeDuplicatesMethod: \t"+ removeDuplicatesMethod + nl;
-		output += "consequentSize: \t"+ consequentSize + nl;
-		output += "windowSize: \t"+ windowSize + nl;
-		output += nl;
-		output += "---LLCT Parameters---" + nl;
-		output += "splitMethod: \t"+ splitMethod + nl;
-		output += "splitLength: \t"+ splitLength + nl;
-		output += "recursiveDividerMin: \t"+ recursiveDividerMin + nl;
-		output += "recursiveDividerMax: \t"+ recursiveDividerMax + nl;
-		output += "firstVote: \t"+ firstVote + nl;
-		output += "secondVote: \t"+ secondVote + nl;
-		output += "voteTreshold: \t"+ voteTreshold + nl;
-		output += "countTableWeightMultiplier: \t"+ countTableWeightMultiplier + nl;
-		output += "countTableWeightDivided: \t"+ countTableWeightDivided + nl;
-		output += "useHashSidVisited: \t"+ useHashSidVisited + nl;
-		output += "branchTraversalTopToBottom: \t"+ branchTraversalTopToBottom + nl;
-		output += "removeUnknownItemsForPrediction: \t"+ removeUnknownItemsForPrediction + nl;
+		
+		
+		for(Entry<String, String> param : parameters.entrySet()) {
+			output += param.getKey() + "\t" + param.getValue() + nl;
+		}
+		
 		return output;
 	}
-	
-	public abstract void Apply();
 }

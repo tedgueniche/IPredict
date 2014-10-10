@@ -70,7 +70,7 @@ public class CountTable {
 	 * @param sequence Sequence to use to update the CountTable
 	 * @param initialSequenceSize The initial size of the sequence to predict (used for weighting)
 	 */
-	public int update(Item[] sequence, int initialSequenceSize) {
+	public int update(Item[] sequence, int initialSequenceSize, boolean useHashSidVisited) {
 
 		int branchesUsed = 0;
 		Bitvector ids = helper.getSimilarSequencesIds(sequence);
@@ -78,7 +78,7 @@ public class CountTable {
 		//For each sequence similar of the given sequence
 		for(int id = ids.nextSetBit(0); id >= 0 ; id = ids.nextSetBit(id + 1)) {
 			
-			if(Profile.useHashSidVisited && branchVisited.contains(id)) {
+			if(useHashSidVisited && branchVisited.contains(id)) {
 				continue;
 			}
 			branchVisited.add(id);
@@ -131,7 +131,7 @@ public class CountTable {
 	 * @param II The inverted index corresponding
 	 * @return The sequence containing the |count| best items sorted from the CountTable
 	 */
-	public Sequence getBestSequence(int count) {
+	public Sequence getBestSequence(int count, int firstVote) {
 		
 		//Iterating through the CountTable to sort the items by score
 		ScoreDistribution<Integer> sd = new ScoreDistribution<Integer>();
@@ -145,7 +145,7 @@ public class CountTable {
 			double lift = it.getValue() * support;
 			
 			//Calculate score based on lift or confidence
-			double score =  ((Profile.firstVote == 1) ? confidence : lift); //Use confidence or lift, depending on Parameter.firstVote
+			double score =  ((firstVote == 1) ? confidence : lift); //Use confidence or lift, depending on Parameter.firstVote
 						
 			sd.put(it.getKey(), score);
 		}

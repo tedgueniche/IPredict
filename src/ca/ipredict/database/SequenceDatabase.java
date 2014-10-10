@@ -91,7 +91,7 @@ public class SequenceDatabase {
 			myInput = new BufferedReader(new InputStreamReader(fin));
 			int i = 0;
 			while ((thisLine = myInput.readLine()) != null) {
-				// ajoute une séquence
+				// ajoute une sï¿½quence
 				String[] split = thisLine.split(" ");
 
 				if (maxCount == i) {
@@ -106,18 +106,18 @@ public class SequenceDatabase {
 					for (String value : split) {
 						int intVal = Integer.valueOf(value);
 						
-						// PHIL08: J'ai ajouté le choix de la méthode
+						// PHIL08: J'ai ajoutï¿½ le choix de la mï¿½thode
 						// pour enlever les duplicats.
 						//  2 = tous les duplicats
-						//  1 = seulement les duplicats consécutifs 
-						if(Profile.removeDuplicatesMethod == 2){
+						//  1 = seulement les duplicats consï¿½cutifs 
+						if(Profile.paramInt("removeDuplicatesMethod") == 2){
 							
 							if(alreadySeen.contains(intVal)){
 								continue;
 							}else{
 								alreadySeen.add(intVal);
 							}
-						}else if(Profile.removeDuplicatesMethod == 1){
+						}else if(Profile.paramInt("removeDuplicatesMethod") == 1){
 							//approach B
 							if(lastValue == intVal) {
 								continue;
@@ -162,18 +162,18 @@ public class SequenceDatabase {
 				for (String val : split) {
 					int value = Integer.valueOf(val);
 					
-					// PHIL08: J'ai ajouté le choix de la méthode
+					// PHIL08: J'ai ajoutï¿½ le choix de la mï¿½thode
 					// pour enlever les duplicats.
 					//  2 = tous les duplicats
-					//  1 = seulement les duplicats consécutifs 
-					if(Profile.removeDuplicatesMethod == 2){
+					//  1 = seulement les duplicats consï¿½cutifs 
+					if(Profile.paramInt("removeDuplicatesMethod") == 2){
 						
 						if(alreadySeen.contains(value)){
 							continue;
 						}else{
 							alreadySeen.add(value);
 						}
-					}else if(Profile.removeDuplicatesMethod == 1){
+					}else if(Profile.paramInt("removeDuplicatesMethod") == 1){
 						//approach B
 						if(lastValue == value) {
 							continue;
@@ -206,7 +206,7 @@ public class SequenceDatabase {
 			myInput = new BufferedReader(new InputStreamReader(fin));
 			int i = 0;
 			while ((thisLine = myInput.readLine()) != null) {
-				// ajoute une séquence
+				// ajoute une sï¿½quence
 				String[] split = thisLine.split(" ");
 
 				if (maxCount == i) {
@@ -267,10 +267,10 @@ public class SequenceDatabase {
 		}
 	}
 	
-	// PHIL08 -  J'ai ajouté un booléen pour indiquer si la fin d'une ligne
+	// PHIL08 -  J'ai ajoutï¿½ un boolï¿½en pour indiquer si la fin d'une ligne
 	// indique la fin d'une phrase ou non.  Pour certains datasets comme
-	// le roman "leviathan" ou le coran, il est mieux de le mettre à "false" alors
-	// que pour la bible, il est préférable d'utiliser "true".
+	// le roman "leviathan" ou le coran, il est mieux de le mettre ï¿½ "false" alors
+	// que pour la bible, il est prï¿½fï¿½rable d'utiliser "true".
 	public void loadFileLargeTextFormatAsWords(String filepath, int maxCount, int minSize, int maxSize, boolean doNotAllowSentenceToContinueOnNextLine) throws IOException {
 		String thisLine;
 		BufferedReader myInput = null;
@@ -394,16 +394,16 @@ public class SequenceDatabase {
 							continue;
 						}
 
-						// PHIL08: J'ai ajouté le choix de la méthode
+						// PHIL08: J'ai ajoutï¿½ le choix de la mï¿½thode
 						// pour enlever les duplicats.
 						//  2 = tous les duplicats
-						//  1 = seulement les duplicats consécutifs 
-						if(Profile.removeDuplicatesMethod == 2){
+						//  1 = seulement les duplicats consï¿½cutifs 
+						if(Profile.paramInt("removeDuplicatesMethod") == 2){
 							if(alreadySeen.contains(character)){
 								continue;
 							}
 							alreadySeen.add(character);
-						}else if(Profile.removeDuplicatesMethod == 1){
+						}else if(Profile.paramInt("removeDuplicatesMethod") == 1){
 							if(lastValue == character){
 								continue;
 							}
@@ -440,9 +440,9 @@ public class SequenceDatabase {
 			while ((thisLine = myInput.readLine()) != null && count < maxCount) {
 				Sequence sequence = new Sequence(sequences.size());
 				for (String entier : thisLine.split(" ")) {
-					if (entier.equals("-1")) { // séparateur d'itemsets
+					if (entier.equals("-1")) { // sï¿½parateur d'itemsets
 						
-					} else if (entier.equals("-2")) { // indicateur de fin de séquence
+					} else if (entier.equals("-2")) { // indicateur de fin de sï¿½quence
 						if(sequence.size()>= minSize &&
 							sequence.size() <= maxSize){
 							sequences.add(sequence);

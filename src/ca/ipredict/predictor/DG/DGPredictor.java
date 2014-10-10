@@ -6,6 +6,7 @@ import java.util.List;
 
 import ca.ipredict.database.Item;
 import ca.ipredict.database.Sequence;
+import ca.ipredict.predictor.Paramable;
 import ca.ipredict.predictor.Predictor;
 import ca.ipredict.predictor.profile.Profile;
 
@@ -14,6 +15,7 @@ public class DGPredictor extends Predictor {
 	private HashMap<Integer, DGNode> mDictionary; //link unique items to their node in a DG
 	private int count;
 	
+	public Paramable parameters;
 	
 	public DGPredictor() {
 		TAG = "DG";
@@ -22,13 +24,18 @@ public class DGPredictor extends Predictor {
 	public DGPredictor(String tag) {
 		TAG = tag;
 	}
+	
+	public DGPredictor(String tag, String params) {
+		this(tag);
+		parameters.setParameter(params);
+	}
 
 	@Override
 	public Boolean Train(List<Sequence> trainingSequences) {
 		count = 0;
 		//TODO:  Resolve ABB...AC...AD...ABB problem, described in Mogul&Padmanabhan (3. some Issues)
 		
-		int w = Profile.windowSize; //Window size parameter
+		int w = parameters.paramInt("windowSize"); //Window size parameter
 		
 		mDictionary = new HashMap<Integer, DGNode>();
 		

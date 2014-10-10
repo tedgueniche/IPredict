@@ -51,40 +51,40 @@ public class DatabaseHelper {
 		try {
 			switch(format) {
 			case BMS:
-				_database.loadFileBMSFormat(fileToPath("BMS.dat"), maxCount, Profile.sequenceMinSize, Profile.sequenceMaxSize);
+				_database.loadFileBMSFormat(fileToPath("BMS.dat"), maxCount, Profile.paramInt("sequenceMinSize"), Profile.paramInt("sequenceMaxSize"));
 				break;
 			case KOSARAK:
-				_database.loadFileKosarakFormat(fileToPath("kosarak.dat"), maxCount, Profile.sequenceMinSize, Profile.sequenceMaxSize);
+				_database.loadFileKosarakFormat(fileToPath("kosarak.dat"), maxCount, Profile.paramInt("sequenceMinSize"), Profile.paramInt("sequenceMaxSize"));
 				break;
 			case FIFA:
-				_database.loadFileFIFAFormat(fileToPath("FIFA.dat"), maxCount, Profile.sequenceMinSize, Profile.sequenceMaxSize);
+				_database.loadFileFIFAFormat(fileToPath("FIFA.dat"), maxCount, Profile.paramInt("sequenceMinSize"), Profile.paramInt("sequenceMaxSize"));
 				break;
 			case MSNBC:
-				_database.loadFileMsnbsFormat(fileToPath("msnbc.seq"), maxCount, Profile.sequenceMinSize, Profile.sequenceMaxSize);
+				_database.loadFileMsnbsFormat(fileToPath("msnbc.seq"), maxCount, Profile.paramInt("sequenceMinSize"), Profile.paramInt("sequenceMaxSize"));
 				break;
 			case SIGN:
-				_database.loadFileSignLanguage(fileToPath("sign_language.txt"), maxCount, Profile.sequenceMinSize, Profile.sequenceMaxSize);
+				_database.loadFileSignLanguage(fileToPath("sign_language.txt"), maxCount, Profile.paramInt("sequenceMinSize"), Profile.paramInt("sequenceMaxSize"));
 				break;
 			case CANADARM1:
-				_database.loadFileSPMFFormat(fileToPath("Canadarm1_actions.txt"), maxCount, Profile.sequenceMinSize, Profile.sequenceMaxSize);
+				_database.loadFileSPMFFormat(fileToPath("Canadarm1_actions.txt"), maxCount, Profile.paramInt("sequenceMinSize"), Profile.paramInt("sequenceMaxSize"));
 				break;
 			case CANADARM2:
-				_database.loadFileSPMFFormat(fileToPath("Canadarm2_states.txt"), maxCount, Profile.sequenceMinSize, Profile.sequenceMaxSize);
+				_database.loadFileSPMFFormat(fileToPath("Canadarm2_states.txt"), maxCount, Profile.paramInt("sequenceMinSize"), Profile.paramInt("sequenceMaxSize"));
 				break;
 			case SNAKE:
-				_database.loadSnakeDataset(fileToPath("snake.dat"), maxCount, Profile.sequenceMinSize, Profile.sequenceMaxSize);
+				_database.loadSnakeDataset(fileToPath("snake.dat"), maxCount, Profile.paramInt("sequenceMinSize"), Profile.paramInt("sequenceMaxSize"));
 				break;
 			case BIBLE_CHAR:
-				_database.loadFileLargeTextFormatAsCharacter(fileToPath("Bible.txt"), maxCount, Profile.sequenceMinSize, Profile.sequenceMaxSize);
+				_database.loadFileLargeTextFormatAsCharacter(fileToPath("Bible.txt"), maxCount, Profile.paramInt("sequenceMinSize"), Profile.paramInt("sequenceMaxSize"));
 				break;
 			case BIBLE_WORD:
-				_database.loadFileLargeTextFormatAsWords(fileToPath("Bible.txt"), maxCount, Profile.sequenceMinSize, Profile.sequenceMaxSize, true);
+				_database.loadFileLargeTextFormatAsWords(fileToPath("Bible.txt"), maxCount, Profile.paramInt("sequenceMinSize"), Profile.paramInt("sequenceMaxSize"), true);
 				break;
 			case KORAN_WORD:
-				_database.loadFileLargeTextFormatAsWords(fileToPath("koran.txt"), maxCount, Profile.sequenceMinSize, Profile.sequenceMaxSize, false);
+				_database.loadFileLargeTextFormatAsWords(fileToPath("koran.txt"), maxCount, Profile.paramInt("sequenceMinSize"), Profile.paramInt("sequenceMaxSize"), false);
 				break;
 			case LEVIATHAN_WORD:
-				_database.loadFileLargeTextFormatAsWords(fileToPath("leviathan.txt"), maxCount, Profile.sequenceMinSize, Profile.sequenceMaxSize, false);
+				_database.loadFileLargeTextFormatAsWords(fileToPath("leviathan.txt"), maxCount, Profile.paramInt("sequenceMinSize"), Profile.paramInt("sequenceMaxSize"), false);
 				break;
 			default:
 				System.out.println("Could not load dataset, unknown format.");

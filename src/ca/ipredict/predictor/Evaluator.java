@@ -323,10 +323,10 @@ public class Evaluator {
 		for(Sequence target : testSequences) {
 			
 			//if sequence is long enough
-			if(target.size() > (Profile.consequentSize)) {
+			if(target.size() > (Profile.paramInt("consequentSize"))) {
 				
-				Sequence consequent = target.getLastItems(Profile.consequentSize,0); //the lasts actual items in target
-				Sequence finalTarget = target.getLastItems(Profile.windowSize,Profile.consequentSize);
+				Sequence consequent = target.getLastItems(Profile.paramInt("consequentSize"),0); //the lasts actual items in target
+				Sequence finalTarget = target.getLastItems(Profile.paramInt("windowSize"),Profile.paramInt("consequentSize"));
 				
 				Sequence predicted = predictors.get(classifierId).Predict(finalTarget);
 				

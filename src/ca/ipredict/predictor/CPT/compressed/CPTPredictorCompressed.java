@@ -31,6 +31,16 @@ public class CPTPredictorCompressed extends CPTPredictor {
 		//using the custom compressed helper
 		helper = new CPTHelperCompressed(this);
 	}
+	
+	public CPTPredictorCompressed(String tag) {
+		this();
+		TAG = tag;
+	}
+	
+	public CPTPredictorCompressed(String tag, String params) {
+		this(tag);
+		parameters.setParameter(params);
+	}
 
 	@Override
 	public Boolean Train(List<Sequence> trainingSequences) {
@@ -62,8 +72,8 @@ public class CPTPredictorCompressed extends CPTPredictor {
 		for(Sequence seq : trainingSequences) {
 			
 			//slicing the sequence if needed
-			if(Profile.splitMethod > 0) {
-				seq = helper.keepLastItems(seq, Profile.splitLength);
+			if(parameters.paramInt("splitMethod") > 0) {
+				seq = helper.keepLastItems(seq, parameters.paramInt("splitLength"));
 			}
 
 			//Generating the compressed version of this sequence
@@ -121,15 +131,15 @@ public class CPTPredictorCompressed extends CPTPredictor {
 		
 		//remove items that were never seen before from the Target sequence before LLCT try to make a prediction
 		//If set to false, those items will be still ignored later on (in updateCountTable())
-		if(Profile.removeUnknownItemsForPrediction){
+		if(parameters.paramBool("removeUnknownItemsForPrediction")){
 			target = helper.removeUnseenItems(target);
 		}
 	
-		int maxPredictionCount = 1 + (int) (target.size() * Profile.minPredictionRatio); //minimum number of required prediction to ensure the best accuracy
+		int maxPredictionCount = 1 + (int) (target.size() * parameters.paramDouble("minPredictionRatio")); //minimum number of required prediction to ensure the best accuracy
 //		int minPredictionCount = 2; //minimum number of required prediction to ensure the best accuracy
 		int predictionCount = 0; //current number of prediction done (one by default because of the CountTable being updated with the target initially) 
 		
-		double noiseRatio = Profile.noiseRatio; //Ratio of items to remove in a sequence per level (level = target.size)
+		double noiseRatio = parameters.paramDouble("noiseRatio"); //Ratio of items to remove in a sequence per level (level = target.size)
 		int initialTargetSize = target.size();
 		
 		HashSet<Sequence> seen = new HashSet<Sequence>();
@@ -138,10 +148,10 @@ public class CPTPredictorCompressed extends CPTPredictor {
 		
 		//Initializing the count table
 		CountTable ct = new CountTable(helper);
-		ct.update(target.getItems().toArray(new Item[0]), target.size());
+		ct.update(target.getItems().toArray(new Item[0]), target.size(), parameters.paramBool("useHashSidVisited"));
 		
 		//Initial prediction
-		Sequence predicted = ct.getBestSequence(1);
+		Sequence predicted = ct.getBestSequence(1, parameters.paramInt("firstVote"));
 		if(predicted.size() > 0) {
 			predictionCount++;
 		}
@@ -183,12 +193,12 @@ public class CPTPredictorCompressed extends CPTPredictor {
 					//update count table with this sequence
  					Item[] candidateItems = candidate.getItems().toArray(new Item[0]);
 
-					int branches = ct.update(candidateItems, initialTargetSize);
+					int branches = ct.update(candidateItems, initialTargetSize, parameters.paramBool("useHashSidVisited"));
 // 					int branches = ct.update(candidateItems, candidate.size()); //WTF on the second parameter
 					
  					//do a prediction if this CountTable update did something
 					if(branches > 0) {
-						predicted = ct.getBestSequence(1);
+						predicted = ct.getBestSequence(1, parameters.paramInt("firstVote"));
 						if(predicted.size() > 0) {
 							predictionCount++;
 						}
@@ -197,7 +207,7 @@ public class CPTPredictorCompressed extends CPTPredictor {
 			}
 		}
 
-		predicted = ct.getBestSequence(1);
+		predicted = ct.getBestSequence(1, parameters.paramInt("firstVote"));
 		return predicted;
 	}
 	

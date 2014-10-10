@@ -12,8 +12,8 @@ import java.util.Map;
 import ca.ipredict.database.Item;
 import ca.ipredict.database.Sequence;
 import ca.ipredict.helpers.MemoryLogger;
+import ca.ipredict.predictor.Paramable;
 import ca.ipredict.predictor.Predictor;
-import ca.ipredict.predictor.profile.Profile;
 
 /**
  * CPT - Compact Prediction Tree 
@@ -29,17 +29,24 @@ public class CPT13Predictor extends Predictor {
 	
 	private long nodeNumber; //number of node in the Compact tree
 	
+	public Paramable parameters;
 	
 	public CPT13Predictor() {
 		nodeNumber = 0;
 		Root = new PredictionTree();
 		LT = new HashMap<Integer, PredictionTree>();
 		II = new HashMap<Integer, BitSet>();
+		parameters = new Paramable();
 	}
 
 	public CPT13Predictor(String tag) {
 		this();
 		TAG = tag;
+	}
+	
+	public CPT13Predictor(String tag, String params) {
+		this(tag);
+		parameters.setParameter(params);
 	}
 	
 	/**
@@ -101,7 +108,7 @@ public class CPT13Predictor extends Predictor {
 		//For each branch 
 		for(Integer index : indexes) {
 
-			if(Profile.useHashSidVisited && hashSidVisited.contains(index)){
+			if(parameters.paramBool("useHashSidVisited") && hashSidVisited.contains(index)){
 				continue;    
 			}   
 			
@@ -109,7 +116,7 @@ public class CPT13Predictor extends Predictor {
 			PredictionTree curNode = LT.get(index);
 			
 			//New way, allows duplicate
-			if(Profile.branchTraversalTopToBottom) {
+			if(parameters.paramBool("branchTraversalTopToBottom")) {
 				//Transform this branch in a list
 				List<Item> branch = new ArrayList<Item>();
 				while(curNode.Parent != Root) {
@@ -137,7 +144,7 @@ public class CPT13Predictor extends Predictor {
 					}
 	
 					//Update the countable with the right weight and value
-					float curValue = (Profile.countTableWeightDivided == 0) ? 1f : 1f /((float)indexes.size());
+					float curValue = (parameters.paramInt("countTableWeightDivided") == 0) ? 1f : 1f /((float)indexes.size());
 					CountTable.put(branch.get(i).val, oldValue + weight /((float)indexes.size()) );
 					
 					hashSidVisited.add(index); 
@@ -185,7 +192,7 @@ public class CPT13Predictor extends Predictor {
 			double support = II.get(it.getKey()).cardinality();
 			double confidence = it.getValue();
 			
-			double score = (Profile.firstVote == 1) ? confidence : lift; //Use confidence or lift, depending on Parameter.firstVote
+			double score = (parameters.paramInt("firstVote") == 1) ? confidence : lift; //Use confidence or lift, depending on Parameter.firstVote
 
 			if(score > maxValue) {
 				secondMaxValue = maxValue; //saving the old value as the second best
@@ -208,13 +215,13 @@ public class CPT13Predictor extends Predictor {
 			//Nothing to do
 		} 
 		//-If the secondVote is set to 0 , and their is a best and a second best, then
-		else if (Profile.secondVote == 0 && maxItem != -1 && secondMaxValue != -1 && diff <= Profile.voteTreshold) {
+		else if (parameters.paramInt("secondVote") == 0 && maxItem != -1 && secondMaxValue != -1 && diff <= parameters.paramDouble("voteTreshold")) {
 			
 		}
 		//-If there is no second best value, then the best one is the winner
 		//-If there is a max item (at least one item in the CountTable)
 		// and it is better than second best according to the voteTreshold
-		else if (secondMaxValue == -1 || diff >= Profile.voteTreshold) {
+		else if (secondMaxValue == -1 || diff >= parameters.paramDouble("voteTreshold")) {
 			Item predictedItem = new Item(maxItem);
 			predicted.addItem(predictedItem);
 		}
@@ -231,7 +238,7 @@ public class CPT13Predictor extends Predictor {
 						double lift = it.getValue() / II.get(it.getKey()).cardinality();
 						double support = II.get(it.getKey()).cardinality();
 						
-						double score = (Profile.secondVote == 1) ? support : lift; //Use confidence or lift, depending on Parameter.secondVote
+						double score = (parameters.paramInt("secondVote") == 1) ? support : lift; //Use confidence or lift, depending on Parameter.secondVote
 						
 						if(score > highestScore) {
 							highestScore = score;
@@ -256,7 +263,7 @@ public class CPT13Predictor extends Predictor {
 
 		//remove items that were never seen before from the Target sequence before LLCT try to make a prediction
 		//If set to false, those items will be still ignored later on (in updateCountTable())
-		if(Profile.removeUnknownItemsForPrediction){
+		if(parameters.paramBool("removeUnknownItemsForPrediction")){
 			Iterator<Item> iter = target.getItems().iterator();
 			while (iter.hasNext()) {
 				Item item = (Item) iter.next();
@@ -270,8 +277,8 @@ public class CPT13Predictor extends Predictor {
 		
 		
 		Sequence prediction = new Sequence(-1);
-		int minRecursion = Profile.recursiveDividerMin;
-		int maxRecursion = (Profile.recursiveDividerMax > target.size()) ? target.size() : Profile.recursiveDividerMax;
+		int minRecursion = parameters.paramInt("recursiveDividerMin");
+		int maxRecursion = (parameters.paramInt("recursiveDividerMax") > target.size()) ? target.size() : parameters.paramInt("recursiveDividerMax");
 		
 		for(int i = minRecursion ; i < target.size() && prediction.size() == 0 && i < maxRecursion; i++) {
 		
@@ -293,9 +300,9 @@ public class CPT13Predictor extends Predictor {
 				
 				//Setting up the weight multiplier for the countTable
 				float weight = 1f;		
-				if(Profile.countTableWeightMultiplier == 1)
+				if(parameters.paramInt("countTableWeightMultiplier") == 1)
 					weight = 1f  / target.size();
-				else if(Profile.countTableWeightMultiplier == 2)
+				else if(parameters.paramInt("countTableWeightMultiplier") == 2)
 					weight = (float)sequence.size() / target.size();
 				
 				UpdateCountTable(sequence, weight, CountTable, hashSidVisited);
@@ -334,11 +341,11 @@ public class CPT13Predictor extends Predictor {
 		List<Sequence> newTrainingSet = new ArrayList<Sequence>();
 		for(Sequence seq : trainingSequences) {
 			
-			if(seq.size() > Profile.splitLength && Profile.splitMethod > 0) {
-				if(Profile.splitMethod == 1)
-					newTrainingSet.addAll(LLCTHelper.sliceBasic(seq, Profile.splitLength));
+			if(seq.size() > parameters.paramInt("splitLength") && parameters.paramInt("splitMethod") > 0) {
+				if(parameters.paramInt("splitMethod") == 1)
+					newTrainingSet.addAll(LLCTHelper.sliceBasic(seq, parameters.paramInt("splitLength")));
 				else
-					newTrainingSet.addAll(LLCTHelper.slice(seq, Profile.splitLength));
+					newTrainingSet.addAll(LLCTHelper.slice(seq, parameters.paramInt("splitLength")));
 			}else{
 				newTrainingSet.add(seq);
 			}		

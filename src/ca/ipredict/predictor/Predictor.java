@@ -1,4 +1,5 @@
 package ca.ipredict.predictor;
+import java.util.HashMap;
 import java.util.List;
 
 import ca.ipredict.database.Sequence;
@@ -13,12 +14,27 @@ public abstract class Predictor {
 	 * each subclass should overwrite this TAG
 	 */
 	protected String TAG;
+//	HashMap<String, Object> parameters;
 	
-	public Predictor(){}
+	public Predictor(){
+//		parameters = new HashMap<String, Object>();
+	}
 	
 	public Predictor(String tag) {
+		this();
 		this.TAG = tag;
 	}
+	
+//	public Predictor(String tag, String params) {
+//		this(tag);
+//		
+//		String[] paramsStr = params.split("\\s");
+//		for(String param : paramsStr) {
+//			
+//			String[] keyValue = param.split(":");
+//			parameters.put(keyValue[0], keyValue[1]);
+//		}	
+//	}
 	
 	/**
 	 * Trains this predictor with the provided training data

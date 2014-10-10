@@ -7,6 +7,7 @@ import java.util.Map;
 
 import ca.ipredict.database.Item;
 import ca.ipredict.database.Sequence;
+import ca.ipredict.predictor.Paramable;
 import ca.ipredict.predictor.Predictor;
 import ca.ipredict.predictor.profile.Profile;
 
@@ -26,6 +27,8 @@ public class CPTPredictor extends Predictor {
 	
 	protected long nodeNumber; 					//number of node in the prediction tree (used for size())
 	
+	public Paramable parameters;
+	
 	public CPTPredictor() {
 		Root = new PredictionTree();
 		LT = new HashMap<Integer, PredictionTree>();
@@ -33,11 +36,17 @@ public class CPTPredictor extends Predictor {
 		helper = new CPTHelper(this);
 		nodeNumber = 0;
 		TAG = "CPT";
+		parameters = new Paramable();
 	}
 	
 	public CPTPredictor(String tag) {
 		this();
 		TAG = tag;
+	}
+	
+	public CPTPredictor(String tag, String params) {
+		this(tag);
+		parameters.setParameter(params);
 	}
 	
 	/**
@@ -60,8 +69,8 @@ public class CPTPredictor extends Predictor {
 		for(Sequence seq : trainingSet) {
 						
 			//slicing the sequence if needed
-			if(Profile.splitMethod > 0) {
-				seq = helper.keepLastItems(seq, Profile.splitLength);
+			if(parameters.paramInt("splitMethod") > 0) {
+				seq = helper.keepLastItems(seq, parameters.paramInt("splitLength"));
 			}
 			
 			//resetting node pointer to root node
@@ -101,18 +110,18 @@ public class CPTPredictor extends Predictor {
 
 		//remove items that were never seen before from the Target sequence before LLCT try to make a prediction
 		//If set to false, those items will be still ignored later on (in updateCountTable())
-		if(Profile.removeUnknownItemsForPrediction){
+		if(parameters.paramBool("removeUnknownItemsForPrediction")){
 			target = helper.removeUnseenItems(target);
 		}
 		
 		
 		//Initializing the count table
 		CountTable ct = new CountTable(helper);
-		ct.update(target.getItems().toArray(new Item[0]), target.size());
+		ct.update(target.getItems().toArray(new Item[0]), target.size(), parameters.paramBool("useHashSidVisited"));
 		
 
 		//Removed noisy items from the target sequence to enhance the coverage of this predictor
-		Sequence predicted = ct.getBestSequence(1);
+		Sequence predicted = ct.getBestSequence(1, parameters.paramInt("firstVote"));
 		while(predicted.size() == 0 && target.size() > 1) {
 			
 			List<Item> cutSeq = new ArrayList<Item>();
@@ -139,10 +148,10 @@ public class CPTPredictor extends Predictor {
 			target.getItems().addAll(cutSeq);
 			
 			//Update the count table with the newly generated sequence
-			ct.update(target.getItems().toArray(new Item[0]), target.size());
+			ct.update(target.getItems().toArray(new Item[0]), target.size(), parameters.paramBool("useHashSidVisited"));
 			
 			//Do the prediction from the count table
-			predicted = ct.getBestSequence(1);
+			predicted = ct.getBestSequence(1, parameters.paramInt("firstVote"));
 		}
 		
 		return predicted;
