@@ -52,7 +52,7 @@ public class CPTPredictorCompressed extends CPTPredictor {
 			FIF finder = new FIFRaw();
 			List<List<Item>> itemsets = finder.findFrequentItemsets(trainingSequences, 2, 4, 2);
 			
-//			System.out.println("Found "+ itemsets.size() + " frequent itemsets");
+			//filling the encoder with the frequent itemsets
 			for(List<Item> itemset : itemsets) {
 				encoder.addEntry(itemset);
 			}
@@ -92,59 +92,6 @@ public class CPTPredictorCompressed extends CPTPredictor {
 					//updating Inverted Index with seqId for this Item
 					II.get(item.val).setBit(seqId);
 				}
-				
-				//NOTE: the following code has yet to be proven better than the "dumb" alternative
-				//PT update
-				//adding the item in the Prediction Tree if needed
-//				if(curNode.hasChild(itemCompressed) == false && itemset.size() > 1) {
-//					
-//						//identify if there is a child with a common prefix
-//						//The child with the longuest prefix in common
-//						List<Item> bestChildPrefix = new ArrayList<>();
-//						PredictionTree bestChild = null;
-//						for(PredictionTree child : curNode.getChildren()) {
-//							
-//							List<Item> prefix = getCommonPrefix(itemset, encoder.getEntry(child.Item.val));
-//							if(prefix != null && prefix.size() > bestChildPrefix.size()) {
-//								bestChild = child;
-//								bestChildPrefix = prefix;
-//							}
-//						}
-//						
-//						//if there is a child with a common prefix, we can explode this child for the insertion
-//						if(bestChild != null) {
-//							
-//							int prefixLength = bestChildPrefix.size();
-//							Item prefix = new Item(encoder.getIdorAdd(bestChildPrefix));
-//							Item curSuffix = new Item(encoder.getIdorAdd(itemset.subList(prefixLength, itemset.size())));
-//							Item childSuffix = new Item(encoder.getIdorAdd(bestChildPrefix.subList(prefixLength, bestChildPrefix.size())));
-//							
-//							//Adding the new node with the common prefix
-//							curNode.addChild(prefix);
-//							
-//							//adding a new node for the current child with the suffix only
-//							bestChild.Item = childSuffix;
-//							curNode.getChild(prefix).addChild(bestChild);
-//							
-//							//adding the current itemset's suffix
-//							curNode.getChild(prefix).addChild(curSuffix);
-//							
-//							//removing the (old) current node
-//							curNode.removeChild(bestChild.Item);
-//							
-//							//updating the current node pointer
-//							curNode = curNode.getChild(prefix).getChild(curSuffix);
-//							nodeNumber += 2;
-//						}
-//						//else we add the current itemset a regular child
-//						else {
-//							curNode.addChild(itemCompressed);
-//							nodeNumber++;
-//							curNode = curNode.getChild(itemCompressed);
-//						}
-//				}
-//				//if this itemCompressed is not a child but the itemset has a size of 1
-//				else if(curNode.hasChild(itemCompressed) == false) {
 				if(curNode.hasChild(itemCompressed) == false) {
 					curNode.addChild(itemCompressed);
 					nodeNumber++;
@@ -156,18 +103,14 @@ public class CPTPredictorCompressed extends CPTPredictor {
 				}
 			}
 
-			
 			//adding the sequence id in the Lookup Table
 			LT.put(seqId, curNode); //adding <sequence id, last node in sequence>
 			seqId++; //increment sequence id number
 		}
 		
-		//More compression9
+		//Patch collapsing for added compression
 		pathCollapse();
-		
-		//nodeNumber = manualCalcSize();
-		
-		
+
 		return true;
 	}
 	
@@ -182,12 +125,11 @@ public class CPTPredictorCompressed extends CPTPredictor {
 			target = helper.removeUnseenItems(target);
 		}
 	
-		int maxPredictionCount = (int) (0.1 + target.size() * Profile.recursiveDividerMin * 0.75); //minimum number of required prediction to ensure the best accuracy
-//		int maxPredictionCount = (int) (target.size() * 3); //minimum number of required prediction to ensure the best accuracy
-		int minPredictionCount = 2; //minimum number of required prediction to ensure the best accuracy
+		int maxPredictionCount = 1 + (int) (target.size() * Profile.minPredictionRatio); //minimum number of required prediction to ensure the best accuracy
+//		int minPredictionCount = 2; //minimum number of required prediction to ensure the best accuracy
 		int predictionCount = 0; //current number of prediction done (one by default because of the CountTable being updated with the target initially) 
 		
-		double noiseRatio = 1.0; //Ratio of items to remove in a sequence per level (level = target.size)
+		double noiseRatio = Profile.noiseRatio; //Ratio of items to remove in a sequence per level (level = target.size)
 		int initialTargetSize = target.size();
 		
 		HashSet<Sequence> seen = new HashSet<Sequence>();
@@ -198,26 +140,19 @@ public class CPTPredictorCompressed extends CPTPredictor {
 		CountTable ct = new CountTable(helper);
 		ct.update(target.getItems().toArray(new Item[0]), target.size());
 		
-		Sequence predicted = new Sequence(-1);
+		//Initial prediction
+		Sequence predicted = ct.getBestSequence(1);
+		if(predicted.size() > 0) {
+			predictionCount++;
+		}
 		
 		//while the min prediction count is not reached and the target sequence is big enough
-		while(queue.size() > 0 && predictionCount < maxPredictionCount) {
+		Sequence seq;
+		while((seq = queue.poll()) != null && predictionCount < maxPredictionCount) {
 		
-						
-			//getting the sequence
-			Sequence seq = queue.poll();
-			
-		
-			//to test
-			//simulate per level recursive divider
-//			ct = new CountTable(helper);
-//			ct.update(seq.getItems().toArray(new Item[0]), seq.size());
-//			predictionCount = 0;
-//			maxPredictionCount = seq.size() - 1;
-			/////////////////////////////////////
 			
 			//if this sequence has not been seen yet
-			if(seen.contains(seq) == false && seq.size() > 1) {
+			if(seen.contains(seq) == false) {
 			
 				//set this sequence to seen
 				seen.add(seq);
@@ -241,7 +176,9 @@ public class CPTPredictorCompressed extends CPTPredictor {
 					}
 
 					//add this sequence to the queue
-					queue.add(candidate);
+					if(candidate.size() > 1) {
+						queue.add(candidate);
+					}
 					
 					//update count table with this sequence
  					Item[] candidateItems = candidate.getItems().toArray(new Item[0]);
@@ -251,10 +188,10 @@ public class CPTPredictorCompressed extends CPTPredictor {
 					
  					//do a prediction if this CountTable update did something
 					if(branches > 0) {
-//						predicted = ct.getBestSequence(1);
-//						if(predicted.size() > 0) {
+						predicted = ct.getBestSequence(1);
+						if(predicted.size() > 0) {
 							predictionCount++;
-//						}
+						}
 					}
 				}
 			}
@@ -268,23 +205,40 @@ public class CPTPredictorCompressed extends CPTPredictor {
 	/**
 	 * Return the list of items with the lowest support
 	 * @param target Sequence to consider to find the alphabet of items
-	 * @param noiseRatio Portion of the sequence to identify as noisy (it defines the number of item returned)
+	 * @param noiseRatio [0,1] Portion of the sequence to identify as noisy (it defines the number of item returned)
 	 */
 	protected List<Item> getNoise(Sequence target, double noiseRatio) {
 		
+		//Converting the noiseRatio (relative to the noiseCount (absolute)
 		int noiseCount = (int) Math.floor(target.size() * noiseRatio);
-		if(noiseCount <= 0) {
-			noiseCount = 1;
-		}
 		
-		//sort the items of a sequence by frequency
-		//then return the last [noiseCount] items
-		List<Item> noises = target.getItems().stream().sorted(
-				(i1, i2) -> Integer.compare(
-						II.get(i2.val).cardinality(), II.get(i1.val).
-						cardinality())).collect(Collectors.toList());
-				
-		return noises.subList(target.size() - noiseCount, target.size());
+		//When the noise is <= 0, noiseCount is set to one
+		//Optimization for noiseCount == 1
+		if(noiseCount <= 0) {
+			//Find the lowest supporting item
+			int minSup = Integer.MAX_VALUE;
+			int itemVal = -1;
+			for(Item item : target.getItems()) {
+				if(II.get(item.val).cardinality() < minSup) {
+					minSup = II.get(item.val).cardinality();
+					itemVal = item.val;
+				}
+			}
+			
+			List<Item> noises = new ArrayList<Item>();
+			noises.add(new Item(itemVal));
+			return noises;
+		}
+		else {
+			//sort the items of a sequence by frequency
+			//then return the last [noiseCount] items
+			List<Item> noises = target.getItems().stream().sorted(
+					(i1, i2) -> Integer.compare(
+							II.get(i2.val).cardinality(), II.get(i1.val).
+							cardinality())).collect(Collectors.toList());
+					
+			return noises.subList(target.size() - noiseCount, target.size());
+		}
 	}
 	
 	
@@ -301,8 +255,6 @@ public class CPTPredictorCompressed extends CPTPredictor {
 	 * to this node.
 	 */
 	protected void pathCollapse() {
-		
-		int nodeSaved = 0;
 		
 		//for each sequences registered in the Lookup Table (LT)
 		for(Entry<Integer, PredictionTree> entry : LT.entrySet()) {
@@ -332,16 +284,12 @@ public class CPTPredictorCompressed extends CPTPredictor {
 							//updating cur to have the leaf has a child
 							cur.removeChild(last.Item);
 							cur.addChild(leaf);
-							
-							nodeSaved += pathLength - 1;
 						}
 						singlePath = false;
 					}
 					//this node has only one child and so it is added to the itemset 
 					else {
 						List<Item> curItemset = encoder.getEntry(cur.Item.val);
-//						curItemset.addAll(itemset);
-//						itemset = curItemset;
 						
 						List<Item> tmp = itemset;
 						itemset = new ArrayList<Item>();
@@ -358,8 +306,5 @@ public class CPTPredictorCompressed extends CPTPredictor {
 				}			
 			}
 		}
-		
-		nodeNumber -= nodeSaved;
-//		System.out.println("Path Collapsing: "+ nodeSaved + " node saved");
 	}
 }

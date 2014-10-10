@@ -1,5 +1,6 @@
 package ca.ipredict.predictor.profile;
 
+
 /**
  * Interface to load a parameters profile.
  * @author Ted Gueniche
@@ -21,6 +22,8 @@ public abstract class Profile {
 	//Prediction
 	public static int recursiveDividerMin = 1;//default to 1 //should be >= 0 and < recursiveDividerMax 
 	public static int recursiveDividerMax = 2; //should be > recusiveDividerMax and < windowSize
+	public static float minPredictionRatio = 1.0f; //should be over 0
+	public static float noiseRatio = 1.0f; //should be in the range ]0,1]
 	
 	//best prediction from the count table
 	public static int firstVote = 1; //1 for confidence, 2 for lift
