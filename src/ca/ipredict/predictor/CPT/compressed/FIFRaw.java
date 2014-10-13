@@ -14,6 +14,33 @@ import ca.ipredict.database.Sequence;
  */
 public class FIFRaw implements FIF {
 	
+	
+	public HashMap<Item, Integer> itemFrequencies;
+	
+	
+	@Override
+	public HashMap<Item, Integer> getItemFrequencies(List<Sequence> seqs) {
+		if(itemFrequencies == null) {
+
+			itemFrequencies = new HashMap<Item, Integer>();
+//			for(Sequence seq : seqs) {
+//
+//				for(Item item : seq.getItems()) {
+//					
+//					Integer support = itemFrequencies.get(item);
+//					if(support == null) {
+//						support = 0;
+//					}
+//					support++;
+//					itemFrequencies.put(item, support);
+//				}
+//			}
+		}
+		
+		return itemFrequencies;
+	}
+	
+	
 	/**
 	 * Return all the consecutive items (length between [minLength,maxlength] ) found in the 
 	 * given sequences with a high enough support (support >= minSup)
@@ -22,6 +49,8 @@ public class FIFRaw implements FIF {
 	 */
 	public List<List<Item>> findFrequentItemsets(List<Sequence> seqs, int minLength, int maxlength, int minSup) {
 		
+		itemFrequencies = new HashMap<Item, Integer>();
+
 		List<List<Item>> frequents = new ArrayList<List<Item>>();
 		HashMap<List<Item>, Integer> frequencies = new HashMap<List<Item>, Integer>();
 		
@@ -44,7 +73,7 @@ public class FIFRaw implements FIF {
 						itemset = new ArrayList<Item>(itemset);
 						itemset.add(seq.get(offset));
 						
-						//saving the frequency of itemset big enough
+						//saving the frequency of itemset if it is long enough
 						if(itemset.size() >= minLength) {
 							
 							//Updating the frequency of this itemset
@@ -55,7 +84,14 @@ public class FIFRaw implements FIF {
 							frequencies.put(itemset, support + 1);
 							
 						}
-					}				
+					}
+					
+					Integer support = itemFrequencies.get(seq.get(i));
+					if(support == null) {
+						support = 0;
+					}
+					support++;
+					itemFrequencies.put(seq.get(i), support);
 				}
 			}
 		}

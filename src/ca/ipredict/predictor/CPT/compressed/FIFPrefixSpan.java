@@ -275,4 +275,10 @@ public class FIFPrefixSpan implements FIF {
 		System.out.println(frequentItemsets);
 		
 	}
+
+	@Override
+	public HashMap<Item, Integer> getItemFrequencies(List<Sequence> seqs) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
