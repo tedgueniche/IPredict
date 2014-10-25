@@ -26,7 +26,7 @@ public class CPTPredictorCompressed extends CPTPredictor {
 	public CPTPredictorCompressed() {
 		super("CPTC");
 		
-		this.seqEncoding = true;
+		this.seqEncoding = false;
 		
 		//using the custom compressed helper
 		helper = new CPTHelperCompressed(this);
@@ -55,11 +55,15 @@ public class CPTPredictorCompressed extends CPTPredictor {
 		int seqId = 0;
 		PredictionTree curNode;
 
+		
+		
+		
+				
 		//Identifying the frequent sequential itemsets
 		//setting up the encoder for futur encoding tasks
-		if(this.seqEncoding == true) {
+		FIF finder = new FIFRaw();
+		if(parameters.paramBool("CCF")) {
 //			FIF finder = new FIFPrefixSpan(); //prefixSpan is slower than the raw approach for BMS, needs to be investigated further
-			FIF finder = new FIFRaw();
 			List<List<Item>> itemsets = finder.findFrequentItemsets(trainingSequences, 2, 4, 2);
 			
 			//filling the encoder with the frequent itemsets
@@ -67,7 +71,28 @@ public class CPTPredictorCompressed extends CPTPredictor {
 				encoder.addEntry(itemset);
 			}
 		}
-
+		
+		
+		HashMap<Item, Integer> itemsToIgnore = new HashMap<Item, Integer>();
+		if(parameters.paramBool("CCF") && parameters.paramBool("SEI")) {
+			itemsToIgnore = finder.getItemFrequencies(trainingSequences);
+		}
+		if(parameters.paramBool("SEI") && itemsToIgnore.size() == 0) {
+			for(Sequence seq : trainingSequences) {
+				
+				Sequence seqCompressed = encoder.encode(new Sequence(seq));
+				for(Item item : seqCompressed.getItems()) {
+					
+					Integer support = itemsToIgnore.get(item);
+					if(support == null) {
+						support = 0;
+					}
+					support++;
+					itemsToIgnore.put(item, support);
+				}
+			}
+		}
+		
 		//for each training sequence
 		for(Sequence seq : trainingSequences) {
 			
@@ -86,6 +111,11 @@ public class CPTPredictorCompressed extends CPTPredictor {
 			//for each item in the compressed sequence
 			for(Item itemCompressed : seqCompressed.getItems()) {
 				
+				//ignoring very low supporting items
+				Integer support = itemsToIgnore.get(itemCompressed);
+				if(support != null && support > 0 && ((float) support / (float)trainingSequences.size()) < parameters.paramDouble("minSup")) {
+					continue;
+				}
 				
 				//decoding the current item the encoded sequence
 				List<Item> itemset = encoder.getEntry(itemCompressed.val);
@@ -119,7 +149,9 @@ public class CPTPredictorCompressed extends CPTPredictor {
 		}
 		
 		//Patch collapsing for added compression
-		pathCollapse();
+		if(parameters.paramBool("CBS")) {
+			pathCollapse();
+		}
 
 		return true;
 	}
@@ -266,6 +298,8 @@ public class CPTPredictorCompressed extends CPTPredictor {
 	 */
 	protected void pathCollapse() {
 		
+		int nodeSaved = 0;
+		
 		//for each sequences registered in the Lookup Table (LT)
 		for(Entry<Integer, PredictionTree> entry : LT.entrySet()) {
 			
@@ -294,6 +328,9 @@ public class CPTPredictorCompressed extends CPTPredictor {
 							//updating cur to have the leaf has a child
 							cur.removeChild(last.Item);
 							cur.addChild(leaf);
+							
+							//saving the number of node saved
+							nodeSaved += pathLength - 1;
 						}
 						singlePath = false;
 					}
@@ -316,5 +353,7 @@ public class CPTPredictorCompressed extends CPTPredictor {
 				}			
 			}
 		}
+		
+		nodeNumber -= nodeSaved;
 	}
 }
