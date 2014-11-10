@@ -19,10 +19,12 @@ public class DGPredictor extends Predictor {
 	
 	public DGPredictor() {
 		TAG = "DG";
+		parameters = new Paramable();
 	}
 	
 	public DGPredictor(String tag) {
 		TAG = tag;
+		parameters = new Paramable();
 	}
 	
 	public DGPredictor(String tag, String params) {

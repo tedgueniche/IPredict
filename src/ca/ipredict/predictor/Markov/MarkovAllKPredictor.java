@@ -6,6 +6,7 @@ import java.util.List;
 
 import ca.ipredict.database.Item;
 import ca.ipredict.database.Sequence;
+import ca.ipredict.predictor.Paramable;
 import ca.ipredict.predictor.Predictor;
 
 /**
@@ -17,12 +18,21 @@ public class MarkovAllKPredictor extends Predictor {
 	
 	private HashMap<String, MarkovState> mDictionary; //contains a list of unique items (one or multiple) and their state in the Markov model
 	
+	public Paramable parameters;
+	
 	public MarkovAllKPredictor() {
-		TAG = "KMark";
+		TAG = "AKOM";
+		parameters = new Paramable();
 	}
 	
 	public MarkovAllKPredictor(String tag) {
 		TAG = tag;
+		parameters = new Paramable();
+	}
+	
+	public MarkovAllKPredictor(String tag, String params) {
+		this(tag);
+		parameters.setParameter(params);
 	}
 
 	@Override

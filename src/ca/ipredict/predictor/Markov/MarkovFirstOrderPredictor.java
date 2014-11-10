@@ -5,6 +5,7 @@ import java.util.List;
 
 import ca.ipredict.database.Item;
 import ca.ipredict.database.Sequence;
+import ca.ipredict.predictor.Paramable;
 import ca.ipredict.predictor.Predictor;
 
 /**
@@ -18,12 +19,21 @@ public class MarkovFirstOrderPredictor extends Predictor {
 	private HashMap<Integer, MarkovState> mDictionary;
 	
 
+	public Paramable parameters;
+	
 	public MarkovFirstOrderPredictor() {
-		TAG = "1Mark";
+		TAG = "Mark1";
+		parameters = new Paramable();
 	}
 	
 	public MarkovFirstOrderPredictor(String tag) {
 		TAG = tag;
+		parameters = new Paramable();
+	}
+	
+	public MarkovFirstOrderPredictor(String tag, String params) {
+		this(tag);
+		parameters.setParameter(params);
 	}
 
 	@Override
