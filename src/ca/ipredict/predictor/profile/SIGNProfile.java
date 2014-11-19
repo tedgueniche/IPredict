@@ -18,7 +18,8 @@ public class SIGNProfile extends Profile {
 		//Training
 		parameters.put("splitMethod", "0"); //0 for no split", "1 for basicSplit", "2 for complexSplit
 		parameters.put("splitLength", "20"); // max tree height
-
+		parameters.put("minSup", "0.06"); //SEI compression, minSup to remove low supporting items
+		
 		//Prediction
 		parameters.put("recursiveDividerMin", "3"); //should be >= 0 and < recursiveDividerMax 
 		parameters.put("recursiveDividerMax", "99"); //should be > recusiveDividerMax and < windowSize
