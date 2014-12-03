@@ -108,69 +108,45 @@ public class CPT13Predictor extends Predictor {
 		//For each branch 
 		for(Integer index : indexes) {
 
-			if(parameters.paramBool("useHashSidVisited") && hashSidVisited.contains(index)){
+			if(hashSidVisited.contains(index)){
 				continue;    
 			}   
 			
 			//Getting the branch's leaf
 			PredictionTree curNode = LT.get(index);
 			
-			//New way, allows duplicate
-			if(parameters.paramBool("branchTraversalTopToBottom")) {
-				//Transform this branch in a list
-				List<Item> branch = new ArrayList<Item>();
-				while(curNode.Parent != Root) {
-					
-					branch.add(curNode.Item);
-					
-					//Going up the tree
-					curNode = curNode.Parent;
-				}
-				Collections.reverse(branch);
+			//Transform this branch in a list
+			List<Item> branch = new ArrayList<Item>();
+			while(curNode.Parent != Root) {
 				
-				HashSet<Integer> hashTargetTMP = new HashSet<Integer>(hashTarget);
-				int i = 0;
-				for(i = 0 ; i < branch.size() && hashTargetTMP.size() > 0; i++ ) {
-					
-					if(hashTargetTMP.contains(branch.get(i).val)== true) {
-						hashTargetTMP.remove(branch.get(i).val);
-					}	
-				}
+				branch.add(curNode.Item);
 				
-				for(;i < branch.size(); i++) {
-					float oldValue = 0;
-					if(CountTable.containsKey(branch.get(i).val)) {
-						oldValue = CountTable.get(branch.get(i).val);
-					}
-	
-					//Update the countable with the right weight and value
-					float curValue = (parameters.paramInt("countTableWeightDivided") == 0) ? 1f : 1f /((float)indexes.size());
-					CountTable.put(branch.get(i).val, oldValue + weight /((float)indexes.size()) );
-					
-					hashSidVisited.add(index); 
-				}
+				//Going up the tree
+				curNode = curNode.Parent;
 			}
-			else {
-				//Going up the branch until we find a item from the target
-				while( (hashTarget.contains(curNode.Item.val) == false)) {
-					
-					//Getting the current count for this item if it exists or 0
-					float oldValue = 0;
-					if(CountTable.containsKey(curNode.Item.val)) {
-						oldValue = CountTable.get(curNode.Item.val);
-					}
-	
-					//Update the countable with the right weight and value
-					CountTable.put(curNode.Item.val, oldValue + weight 
-							/((float)indexes.size()) );  
-					
-					
-					//Going up the tree
-					curNode = curNode.Parent;
-				}
+			Collections.reverse(branch);
+			
+			HashSet<Integer> hashTargetTMP = new HashSet<Integer>(hashTarget);
+			int i = 0;
+			for(i = 0 ; i < branch.size() && hashTargetTMP.size() > 0; i++ ) {
+				
+				if(hashTargetTMP.contains(branch.get(i).val)== true) {
+					hashTargetTMP.remove(branch.get(i).val);
+				}	
 			}
 			
+			for(;i < branch.size(); i++) {
+				float oldValue = 0;
+				if(CountTable.containsKey(branch.get(i).val)) {
+					oldValue = CountTable.get(branch.get(i).val);
+				}
 
+				//Update the countable with the right weight and value
+				float curValue = 1f /((float)indexes.size());
+				CountTable.put(branch.get(i).val, oldValue + weight /((float)indexes.size()) );
+				
+				hashSidVisited.add(index); 
+			}
 		}
 	}
 	
@@ -214,14 +190,10 @@ public class CPT13Predictor extends Predictor {
 		if(maxItem == -1) {
 			//Nothing to do
 		} 
-		//-If the secondVote is set to 0 , and their is a best and a second best, then
-		else if (parameters.paramInt("secondVote") == 0 && maxItem != -1 && secondMaxValue != -1 && diff <= parameters.paramDouble("voteTreshold")) {
-			
-		}
 		//-If there is no second best value, then the best one is the winner
 		//-If there is a max item (at least one item in the CountTable)
 		// and it is better than second best according to the voteTreshold
-		else if (secondMaxValue == -1 || diff >= parameters.paramDouble("voteTreshold")) {
+		else if (secondMaxValue == -1 || diff >= 0.0) {
 			Item predictedItem = new Item(maxItem);
 			predicted.addItem(predictedItem);
 		}
@@ -236,9 +208,8 @@ public class CPT13Predictor extends Predictor {
 					if(II.containsKey(it.getKey())) {
 						
 						double lift = it.getValue() / II.get(it.getKey()).cardinality();
-						double support = II.get(it.getKey()).cardinality();
 						
-						double score = (parameters.paramInt("secondVote") == 1) ? support : lift; //Use confidence or lift, depending on Parameter.secondVote
+						double score = lift; //Use confidence or lift, depending on Parameter.secondVote
 						
 						if(score > highestScore) {
 							highestScore = score;
@@ -262,19 +233,16 @@ public class CPT13Predictor extends Predictor {
 	public Sequence Predict(Sequence target) {
 
 		//remove items that were never seen before from the Target sequence before LLCT try to make a prediction
-		//If set to false, those items will be still ignored later on (in updateCountTable())
-		if(parameters.paramBool("removeUnknownItemsForPrediction")){
-			Iterator<Item> iter = target.getItems().iterator();
-			while (iter.hasNext()) {
-				Item item = (Item) iter.next();
-				// if there is no bitset for that item (we have never seen it)
-				if(II.get(item.val) == null){
-					// then remove it from target.
-					iter.remove();  
-				}
+		Iterator<Item> iter = target.getItems().iterator();
+		while (iter.hasNext()) {
+			Item item = (Item) iter.next();
+			// if there is no bitset for that item (we have never seen it)
+			if(II.get(item.val) == null){
+				// then remove it from target.
+				iter.remove();  
 			}
 		}
-		
+
 		
 		Sequence prediction = new Sequence(-1);
 		int minRecursion = parameters.paramInt("recursiveDividerMin");
@@ -300,9 +268,7 @@ public class CPT13Predictor extends Predictor {
 				
 				//Setting up the weight multiplier for the countTable
 				float weight = 1f;		
-				if(parameters.paramInt("countTableWeightMultiplier") == 1)
-					weight = 1f  / target.size();
-				else if(parameters.paramInt("countTableWeightMultiplier") == 2)
+				if(parameters.paramInt("countTableWeightMultiplier") == 2)
 					weight = (float)sequence.size() / target.size();
 				
 				UpdateCountTable(sequence, weight, CountTable, hashSidVisited);

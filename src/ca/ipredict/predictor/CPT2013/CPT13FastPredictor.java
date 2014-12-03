@@ -117,7 +117,7 @@ public class CPT13FastPredictor extends Predictor {
 		for(int index = indexes.nextSetBit(0); index >= 0 ; index = indexes.nextSetBit(index+1)) {
 
 			//Skip branches that have already been seen for this target sequence
-			if(parameters.paramBool("useHashSidVisited") && hashSidVisited.contains(index)){
+			if(hashSidVisited.contains(index)){
 				continue;    
 			}   
 			
@@ -213,7 +213,7 @@ public class CPT13FastPredictor extends Predictor {
 				}
 
 				//Update the countable with the right weight and value
-				float curValue = (parameters.paramInt("countTableWeightDivided") == 0) ? 1f : 1f /((float)indexes.cardinality());
+				float curValue = 1f /((float)indexes.cardinality());
 				
 				CountTable.put(branch.get(i).val, oldValue + (curValue * weight) );
 				
@@ -323,15 +323,13 @@ public class CPT13FastPredictor extends Predictor {
 		
 		//remove items that were never seen before from the Target sequence before LLCT try to make a prediction
 		//If set to false, those items will be still ignored later on (in updateCountTable())
-		if(parameters.paramBool("removeUnknownItemsForPrediction")){
-			Iterator<Item> iter = target.getItems().iterator();
-			while (iter.hasNext()) {
-				Item item = (Item) iter.next();
-				// if there is no bitset for that item (we have never seen it)
-				if(II.get(item.val) == null){
-					// then remove it from target.
-					iter.remove();  
-				}
+		Iterator<Item> iter = target.getItems().iterator();
+		while (iter.hasNext()) {
+			Item item = (Item) iter.next();
+			// if there is no bitset for that item (we have never seen it)
+			if(II.get(item.val) == null){
+				// then remove it from target.
+				iter.remove();  
 			}
 		}
 		
@@ -383,9 +381,7 @@ public class CPT13FastPredictor extends Predictor {
 		
 		//Setting up the weight multiplier for the countTable
 		float weight = 1f;		
-		if(parameters.paramInt("countTableWeightMultiplier") == 1)
-			weight = 1f  / size;
-		else if(parameters.paramInt("countTableWeightMultiplier") == 2)
+		if(parameters.paramInt("countTableWeightMultiplier") == 2)
 			weight = (float)size / initialTargetArraySize;
 		
 		UpdateCountTable(targetArray, weight, countTable, hashSidVisited);
