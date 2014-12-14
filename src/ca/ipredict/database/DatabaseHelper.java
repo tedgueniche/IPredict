@@ -57,7 +57,7 @@ public class DatabaseHelper {
 				_database.loadFileKosarakFormat(fileToPath("kosarak.dat"), maxCount, Profile.paramInt("sequenceMinSize"), Profile.paramInt("sequenceMaxSize"));
 				break;
 			case FIFA:
-				_database.loadFileFIFAFormat(fileToPath("FIFA.dat"), maxCount, Profile.paramInt("sequenceMinSize"), Profile.paramInt("sequenceMaxSize"));
+				_database.loadFileFIFAFormat(fileToPath("FIFA_large.dat"), maxCount, Profile.paramInt("sequenceMinSize"), Profile.paramInt("sequenceMaxSize"));
 				break;
 			case MSNBC:
 				_database.loadFileMsnbsFormat(fileToPath("msnbc.seq"), maxCount, Profile.paramInt("sequenceMinSize"), Profile.paramInt("sequenceMaxSize"));
@@ -93,6 +93,9 @@ public class DatabaseHelper {
 			if(showDatasetStats){
 				System.out.println();
 				SequenceStatsGenerator.prinStats(_database, format.name());
+			}
+			else {
+				System.out.println(format.name() + " count: " + _database.getSequences().size());
 			}
 			
 			Collections.shuffle(_database.getSequences()); //shuffle

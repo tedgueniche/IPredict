@@ -394,10 +394,6 @@ public class SequenceDatabase {
 							continue;
 						}
 
-						// PHIL08: J'ai ajout� le choix de la m�thode
-						// pour enlever les duplicats.
-						//  2 = tous les duplicats
-						//  1 = seulement les duplicats cons�cutifs 
 						if(Profile.paramInt("removeDuplicatesMethod") == 2){
 							if(alreadySeen.contains(character)){
 								continue;
@@ -421,7 +417,6 @@ public class SequenceDatabase {
 					sequences.add(sequence);
 			}
 			
-			System.out.println(sequence.toString());
 		} catch (Exception e) {
 			e.printStackTrace();
 		} 
