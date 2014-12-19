@@ -18,7 +18,7 @@ public class BIBLE_WORDProfile extends Profile {
 		//Training
 		parameters.put("splitMethod", "1"); //0 for no split", "1 for basicSplit", "2 for complexSplit
 		parameters.put("splitLength", "8"); // max tree height
-		parameters.put("minSup", "0.02"); //SEI compression, minSup to remove low supporting items
+		parameters.put("minSup", "0.0001"); //SEI compression, minSup to remove low supporting items
 		
 		//Prediction
 		parameters.put("recursiveDividerMin", "0"); //should be >= 0 and < recursiveDividerMax 
