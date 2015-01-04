@@ -20,6 +20,11 @@ public class MSNBCProfile extends Profile {
 		parameters.put("splitLength", "6"); // max tree height
 		parameters.put("minSup", "0.05"); //SEI compression, minSup to remove low supporting items
 		
+		//CCF compression
+		parameters.put("CCFmin", "2");
+		parameters.put("CCFmax", "4");
+		parameters.put("CCFsup", "16");
+		
 		//Prediction
 		parameters.put("recursiveDividerMin", "1"); //should be >= 0 and < recursiveDividerMax 
 		parameters.put("recursiveDividerMax", "5"); //should be > recusiveDividerMax and < windowSize

@@ -20,6 +20,11 @@ public class FIFAProfile extends Profile {
 		parameters.put("splitLength", "12"); // max tree height
 		parameters.put("minSup", "0.001"); //SEI compression, minSup to remove low supporting items
 		
+		//CCF compression
+		parameters.put("CCFmin", "2");
+		parameters.put("CCFmax", "4");
+		parameters.put("CCFsup", "2");
+		
 		//Prediction
 		parameters.put("recursiveDividerMin", "1"); //should be >= 0 and < recursiveDividerMax 
 		parameters.put("recursiveDividerMax", "99"); //should be > recusiveDividerMax and < windowSize
