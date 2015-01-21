@@ -17,7 +17,7 @@ import ca.ipredict.predictor.Predictor;
  * 
  * Optimization#1: max tree height as described in original papel -> reduce spacial size without noticeable effect on accuracy and coverage (to be double checked)
  * 
- * Source: Laird, Philip, and Ronald Saul. "Discrete sequence prediction and its applications." Machine learning 15.1 (1994): 43-68.
+ * Source:  P. Laird and R. Saul, "Discrete sequence prediction and its applications"  Mach. Learning, vol. 15, pp. 43-68, 1994. 
  */
 public class TDAGPredictor extends Predictor {
 

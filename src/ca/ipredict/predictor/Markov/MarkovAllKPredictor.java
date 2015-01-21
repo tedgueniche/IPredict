@@ -10,7 +10,9 @@ import ca.ipredict.predictor.Paramable;
 import ca.ipredict.predictor.Predictor;
 
 /**
- * All-Kth-Order Markov Model 
+ * All-Kth-Order Markov Model is a Variable order Markov Model
+ * 
+ * Source: J. Pitkow and P. Pirolli, "Mining longest repeating subsequences to predict world wide web surfing" in Proc. USENIX Symp. on Internet Technologies and Systems, 1999, pp. 1.
  */
 public class MarkovAllKPredictor extends Predictor {
 	

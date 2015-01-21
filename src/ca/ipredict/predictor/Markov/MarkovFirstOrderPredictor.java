@@ -9,7 +9,11 @@ import ca.ipredict.predictor.Paramable;
 import ca.ipredict.predictor.Predictor;
 
 /**
- * First-order markov model
+ * First-order markov model is a Variable order Markov Model of first order.
+ * 
+ * 
+ * Source: J. G. Cleary and I. Witten, "Data compression using adaptive coding and partial string matching"  Communications, IEEE Transactions on, vol. 32, pp. 396-402, 1984. 
+ * Source: J. Pitkow and P. Pirolli, "Mining longest repeating subsequences to predict world wide web surfing" in Proc. USENIX Symp. on Internet Technologies and Systems, 1999, pp. 1.
  */
 public class MarkovFirstOrderPredictor extends Predictor {
 

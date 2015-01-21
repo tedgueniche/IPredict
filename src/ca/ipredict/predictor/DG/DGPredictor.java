@@ -10,6 +10,11 @@ import ca.ipredict.predictor.Paramable;
 import ca.ipredict.predictor.Predictor;
 import ca.ipredict.predictor.profile.Profile;
 
+/**
+ * Dependency Graph is a predictor based on Variable order Markov Chains
+ *
+ * Source: V. N. Padmanabhan and J. C. Mogul, "Using predictive prefetching to improve world wide web latency"  ACM SIGCOMM Computer Communication Review, vol. 26, pp. 22-36, 1996. 
+ */
 public class DGPredictor extends Predictor {
 	
 	private HashMap<Integer, DGNode> mDictionary; //link unique items to their node in a DG
