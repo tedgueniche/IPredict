@@ -33,6 +33,9 @@ public class MarkovAllKPredictor extends Predictor {
 	public MarkovAllKPredictor(String tag, String params) {
 		this(tag);
 		parameters.setParameter(params);
+		if(parameters.paramInt("k") != 0) {
+			K = parameters.paramInt("k");
+		}
 	}
 
 	@Override
