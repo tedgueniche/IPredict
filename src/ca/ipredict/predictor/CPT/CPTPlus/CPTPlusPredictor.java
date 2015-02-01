@@ -1,47 +1,75 @@
-package ca.ipredict.predictor.CPT.compressed;
+package ca.ipredict.predictor.CPT.CPTPlus;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Queue;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Queue;
 import java.util.stream.Collectors;
 
 import ca.ipredict.database.Item;
 import ca.ipredict.database.Sequence;
-import ca.ipredict.predictor.CPT.Bitvector;
-import ca.ipredict.predictor.CPT.CPTPredictor;
-import ca.ipredict.predictor.CPT.CountTable;
-import ca.ipredict.predictor.CPT.PredictionTree;
-import ca.ipredict.predictor.profile.Profile;
+import ca.ipredict.predictor.Paramable;
+import ca.ipredict.predictor.Predictor;
 
-public class CPTPredictorCompressed extends CPTPredictor {
+public class CPTPlusPredictor extends Predictor {
 
+	//The three data structure
+	public PredictionTree Root; 				//Prediction Tree
+	public Map<Integer, PredictionTree> LT; 	//Lookup Table
+	public Map<Integer, Bitvector> II; 			//Inverted Index
+	
+	protected CPTHelper helper;
+	
+	protected long nodeNumber; 					//number of node in the prediction tree (used for size())
+	
+	public Paramable parameters;
+	
+	private String TAG = "CPT+";
+	
 	public Encoder encoder;
 	
 	protected boolean seqEncoding;
 	
-	public CPTPredictorCompressed() {
-		super("CPTC");
+	public CPTPlusPredictor() {
+		
+		Root = new PredictionTree();
+		LT = new HashMap<Integer, PredictionTree>();
+		II = new HashMap<Integer, Bitvector>();
+		nodeNumber = 0;
+		
+		parameters = new Paramable();
 		
 		this.seqEncoding = false;
 		
 		//using the custom compressed helper
-		helper = new CPTHelperCompressed(this);
+		helper = new CPTHelper(this);
 	}
 	
-	public CPTPredictorCompressed(String tag) {
+	public CPTPlusPredictor(String tag) {
 		this();
 		TAG = tag;
 	}
 	
-	public CPTPredictorCompressed(String tag, String params) {
+	public CPTPlusPredictor(String tag, String params) {
 		this(tag);
 		parameters.setParameter(params);
 	}
 
+	
+	@Override
+	public long size() {
+		return nodeNumber;
+	}
+	
+	@Override
+	public String getTAG() {
+		return TAG;
+	}
+	
 	@Override
 	public Boolean Train(List<Sequence> trainingSequences) {
 		
@@ -49,22 +77,19 @@ public class CPTPredictorCompressed extends CPTPredictor {
 		LT = new HashMap<Integer, PredictionTree>();
 		II = new HashMap<Integer, Bitvector>();
 		encoder = new Encoder();
-		((CPTHelperCompressed) helper).setEncoded(encoder);
+		((CPTHelper) helper).setEncoded(encoder);
 		nodeNumber = 0;
 		
 		int seqId = 0;
 		PredictionTree curNode;
 
 		
-		
-		
-				
+		//CCF Strategy
 		//Identifying the frequent sequential itemsets
-		//setting up the encoder for futur encoding tasks
+		//setting up the encoder for future encoding tasks
 		FIF finder = new FIFRaw();
 		if(parameters.paramBool("CCF")) {
-//			FIF finder = new FIFPrefixSpan(); //prefixSpan is slower than the raw approach for BMS, needs to be investigated further
-			List<List<Item>> itemsets = finder.findFrequentItemsets(trainingSequences, 2, 4, 2);
+			List<List<Item>> itemsets = finder.findFrequentItemsets(trainingSequences, parameters.paramInt("CCFmin"), parameters.paramInt("CCFmax"), parameters.paramInt("CCFsup"));
 			
 			//filling the encoder with the frequent itemsets
 			for(List<Item> itemset : itemsets) {
@@ -72,27 +97,7 @@ public class CPTPredictorCompressed extends CPTPredictor {
 			}
 		}
 		
-		
-		HashMap<Item, Integer> itemsToIgnore = new HashMap<Item, Integer>();
-		if(parameters.paramBool("CCF") && parameters.paramBool("SEI")) {
-			itemsToIgnore = finder.getItemFrequencies(trainingSequences);
-		}
-		if(parameters.paramBool("SEI") && itemsToIgnore.size() == 0) {
-			for(Sequence seq : trainingSequences) {
-				
-				Sequence seqCompressed = encoder.encode(new Sequence(seq));
-				for(Item item : seqCompressed.getItems()) {
-					
-					Integer support = itemsToIgnore.get(item);
-					if(support == null) {
-						support = 0;
-					}
-					support++;
-					itemsToIgnore.put(item, support);
-				}
-			}
-		}
-		
+
 		//for each training sequence
 		for(Sequence seq : trainingSequences) {
 			
@@ -110,13 +115,7 @@ public class CPTPredictorCompressed extends CPTPredictor {
 
 			//for each item in the compressed sequence
 			for(Item itemCompressed : seqCompressed.getItems()) {
-				
-				//ignoring very low supporting items
-				Integer support = itemsToIgnore.get(itemCompressed);
-				if(support != null && support > 0 && ((float) support / (float)trainingSequences.size()) < parameters.paramDouble("minSup")) {
-					continue;
-				}
-				
+						
 				//decoding the current item the encoded sequence
 				List<Item> itemset = encoder.getEntry(itemCompressed.val);
 				
@@ -132,6 +131,8 @@ public class CPTPredictorCompressed extends CPTPredictor {
 					//updating Inverted Index with seqId for this Item
 					II.get(item.val).setBit(seqId);
 				}
+				
+				//if this itemCompressed is not a child of the current node, we add him
 				if(curNode.hasChild(itemCompressed) == false) {
 					curNode.addChild(itemCompressed);
 					nodeNumber++;
@@ -148,11 +149,12 @@ public class CPTPredictorCompressed extends CPTPredictor {
 			seqId++; //increment sequence id number
 		}
 		
+
 		//Patch collapsing for added compression
 		if(parameters.paramBool("CBS")) {
 			pathCollapse();
 		}
-
+		
 		return true;
 	}
 	
@@ -163,30 +165,42 @@ public class CPTPredictorCompressed extends CPTPredictor {
 		
 		//remove items that were never seen before from the Target sequence before LLCT try to make a prediction
 		//If set to false, those items will be still ignored later on (in updateCountTable())
-		if(parameters.paramBool("removeUnknownItemsForPrediction")){
-			target = helper.removeUnseenItems(target);
-		}
-	
-		int maxPredictionCount = 1 + (int) (target.size() * parameters.paramDouble("minPredictionRatio")); //minimum number of required prediction to ensure the best accuracy
-//		int minPredictionCount = 2; //minimum number of required prediction to ensure the best accuracy
-		int predictionCount = 0; //current number of prediction done (one by default because of the CountTable being updated with the target initially) 
+		target = helper.removeUnseenItems(target);
+
+		CountTable ct = null;
+		ct = predictionByActiveNoiseReduction(target);
 		
+
+		Sequence predicted = ct.getBestSequence(1);
+		return predicted;
+	}
+	
+	
+	protected CountTable predictionByActiveNoiseReduction(Sequence target) {
+		
+		//Queues setup
+		HashSet<Sequence> seen = new HashSet<Sequence>(); //contains the sequence already seen to avoid work duplication
+		Queue<Sequence> queue = new LinkedList<Sequence>(); //contains the sequence to process
+		queue.add(target); //adding the target sequence as the initial sequence to process
+		
+
+		//Setting parameters
+		int maxPredictionCount = 1 + (int) (target.size() * parameters.paramDouble("minPredictionRatio")); //minimum number of required prediction to ensure the best accuracy
+		int predictionCount = 0; //current number of prediction done (one by default because of the CountTable being updated with the target initially) 
 		double noiseRatio = parameters.paramDouble("noiseRatio"); //Ratio of items to remove in a sequence per level (level = target.size)
 		int initialTargetSize = target.size();
 		
-		HashSet<Sequence> seen = new HashSet<Sequence>();
-		Queue<Sequence> queue = new LinkedList<Sequence>();
-		queue.add(target);
 		
 		//Initializing the count table
 		CountTable ct = new CountTable(helper);
-		ct.update(target.getItems().toArray(new Item[0]), target.size(), parameters.paramBool("useHashSidVisited"));
+		ct.update(target.getItems().toArray(new Item[0]), target.size());
 		
 		//Initial prediction
-		Sequence predicted = ct.getBestSequence(1, parameters.paramInt("firstVote"));
+		Sequence predicted = ct.getBestSequence(1);
 		if(predicted.size() > 0) {
 			predictionCount++;
 		}
+		
 		
 		//while the min prediction count is not reached and the target sequence is big enough
 		Sequence seq;
@@ -201,7 +215,6 @@ public class CPTPredictorCompressed extends CPTPredictor {
 				
 				//get the sub sequences for this level while respecting the maxRatioForReduction
 				List<Item> noises = getNoise(seq, noiseRatio);
-//				List<Item> noises = getNoise(seq, 1 / seq.size());
 				
 				//generating the candidates from the list of noisy items
 				for(Item noise : noises) {
@@ -225,12 +238,11 @@ public class CPTPredictorCompressed extends CPTPredictor {
 					//update count table with this sequence
  					Item[] candidateItems = candidate.getItems().toArray(new Item[0]);
 
-					int branches = ct.update(candidateItems, initialTargetSize, parameters.paramBool("useHashSidVisited"));
-// 					int branches = ct.update(candidateItems, candidate.size()); //WTF on the second parameter
+					int branches = ct.update(candidateItems, initialTargetSize);
 					
  					//do a prediction if this CountTable update did something
 					if(branches > 0) {
-						predicted = ct.getBestSequence(1, parameters.paramInt("firstVote"));
+						predicted = ct.getBestSequence(1);
 						if(predicted.size() > 0) {
 							predictionCount++;
 						}
@@ -238,9 +250,8 @@ public class CPTPredictorCompressed extends CPTPredictor {
 				}
 			}
 		}
-
-		predicted = ct.getBestSequence(1, parameters.paramInt("firstVote"));
-		return predicted;
+		
+		return ct;
 	}
 	
 	

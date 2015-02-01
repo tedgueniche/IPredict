@@ -1,4 +1,4 @@
-package ca.ipredict.predictor.CPT.compressed;
+package ca.ipredict.predictor.CPT.CPTPlus;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,7 +10,6 @@ import java.util.PriorityQueue;
 
 import ca.ipredict.database.Item;
 import ca.ipredict.database.Sequence;
-import ca.ipredict.predictor.CPT.Bitvector;
 
 /**
  * Algorithm based on the popular PrefixSpan but adapted to find

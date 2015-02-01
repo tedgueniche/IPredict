@@ -1,4 +1,4 @@
-package ca.ipredict.predictor.CPT.compressed;
+package ca.ipredict.predictor.CPT.CPTPlus;
 
 import java.util.ArrayList;
 import java.util.HashMap;
