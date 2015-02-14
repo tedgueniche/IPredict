@@ -1,4 +1,4 @@
-package ca.ipredict.predictor.CPT2013;
+package ca.ipredict.predictor.CPT.CPT;
 
 import java.util.ArrayList;
 import java.util.BitSet;
@@ -18,8 +18,10 @@ import ca.ipredict.predictor.Predictor;
 /**
  * CPT - Compact Prediction Tree 
  * 1st iteration from  ADMA 2013, without speed enhancement
+ * 
+ * Source: T. Gueniche, P. Fournier-Viger and V. S. Tseng, "Compact prediction tree: A lossless model for accurate sequence prediction" in Advanced Data Mining and Applications, Springer, 2013, pp. 177-188.
  */
-public class CPT13Predictor extends Predictor {
+public class CPTPredictor_POC extends Predictor {
 
 	private PredictionTree Root; //Compact tree
 	private Map<Integer, PredictionTree> LT; //Lookup Table
@@ -31,7 +33,7 @@ public class CPT13Predictor extends Predictor {
 	
 	public Paramable parameters;
 	
-	public CPT13Predictor() {
+	public CPTPredictor_POC() {
 		nodeNumber = 0;
 		Root = new PredictionTree();
 		LT = new HashMap<Integer, PredictionTree>();
@@ -39,12 +41,12 @@ public class CPT13Predictor extends Predictor {
 		parameters = new Paramable();
 	}
 
-	public CPT13Predictor(String tag) {
+	public CPTPredictor_POC(String tag) {
 		this();
 		TAG = tag;
 	}
 	
-	public CPT13Predictor(String tag, String params) {
+	public CPTPredictor_POC(String tag, String params) {
 		this(tag);
 		parameters.setParameter(params);
 	}
@@ -168,7 +170,7 @@ public class CPT13Predictor extends Predictor {
 			double support = II.get(it.getKey()).cardinality();
 			double confidence = it.getValue();
 			
-			double score = (parameters.paramInt("firstVote") == 1) ? confidence : lift; //Use confidence or lift, depending on Parameter.firstVote
+			double score = confidence; //Use confidence or lift, depending on Parameter.firstVote
 
 			if(score > maxValue) {
 				secondMaxValue = maxValue; //saving the old value as the second best
@@ -260,16 +262,14 @@ public class CPT13Predictor extends Predictor {
 			
 			//Dividing the target sequence into sub sequences
 			List<Sequence> subSequences = new ArrayList<Sequence>();
-			LLCTHelper.RecursiveDivider(subSequences, target, minSize);
+			CPTHelper.RecursiveDivider(subSequences, target, minSize);
 			
 			//For each subsequence, updating the CountTable
 			Map<Integer, Float> CountTable = new HashMap<Integer, Float>();
 			for(Sequence sequence : subSequences) {
 				
 				//Setting up the weight multiplier for the countTable
-				float weight = 1f;		
-				if(parameters.paramInt("countTableWeightMultiplier") == 2)
-					weight = (float)sequence.size() / target.size();
+				float weight = (float)sequence.size() / target.size();
 				
 				UpdateCountTable(sequence, weight, CountTable, hashSidVisited);
 			}
@@ -309,9 +309,9 @@ public class CPT13Predictor extends Predictor {
 			
 			if(seq.size() > parameters.paramInt("splitLength") && parameters.paramInt("splitMethod") > 0) {
 				if(parameters.paramInt("splitMethod") == 1)
-					newTrainingSet.addAll(LLCTHelper.sliceBasic(seq, parameters.paramInt("splitLength")));
+					newTrainingSet.addAll(CPTHelper.sliceBasic(seq, parameters.paramInt("splitLength")));
 				else
-					newTrainingSet.addAll(LLCTHelper.slice(seq, parameters.paramInt("splitLength")));
+					newTrainingSet.addAll(CPTHelper.slice(seq, parameters.paramInt("splitLength")));
 			}else{
 				newTrainingSet.add(seq);
 			}		

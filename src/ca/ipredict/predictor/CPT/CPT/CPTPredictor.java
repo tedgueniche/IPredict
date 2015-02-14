@@ -1,4 +1,4 @@
-package ca.ipredict.predictor.CPT2013;
+package ca.ipredict.predictor.CPT.CPT;
 
 
 import java.util.ArrayList;
@@ -20,7 +20,7 @@ import ca.ipredict.predictor.Predictor;
  * CPT - Compact Prediction Tree 
  * 1st iteration from  ADMA 2013, with speed enhancement
  */
-public class CPT13FastPredictor extends Predictor {
+public class CPTPredictor extends Predictor {
 
 	private PredictionTree Root; //prediction tree
 	private Map<Integer, PredictionTree> LT; //Lookup Table
@@ -32,7 +32,7 @@ public class CPT13FastPredictor extends Predictor {
 	
 	public Paramable parameters;
 	
-	public CPT13FastPredictor() {
+	public CPTPredictor() {
 		nodeNumber = 0;
 		Root = new PredictionTree();
 		LT = new HashMap<Integer, PredictionTree>();
@@ -40,12 +40,12 @@ public class CPT13FastPredictor extends Predictor {
 		parameters = new Paramable();
 	}
 
-	public CPT13FastPredictor(String tag) {
+	public CPTPredictor(String tag) {
 		this();
 		TAG = tag;
 	}
 	
-	public CPT13FastPredictor(String tag, String params) {
+	public CPTPredictor(String tag, String params) {
 		this(tag);
 		parameters.setParameter(params);
 	}
@@ -144,65 +144,6 @@ public class CPT13FastPredictor extends Predictor {
                      alreadySeen.add(branch.get(i).val);
  			}
  			int consequentEndPosition = i;
- 			
-			/*
-			//ensure that target's last item is also the last on in the "branch"
-			if(Parameters.lastTargetItemShouldAppearLast){
-				// Si l'on veut s'assurer que le dernier item de target soit le dernier
-				//  appara�ssent en dernier, on va le chercher en premier en parcourant la liste
-				// � l'envers.
-				Integer lastItem = targetArray[targetArray.length-1].val;
-				// for each item in this branch
-				for(i = branch.size()-1 ; i >=0; i-- ) { 
-     				// if the current item is the last item of target
-                     if(lastItem.equals(branch.get(i).val)) {
-                    	 break;
-                     }
-     			}	
-				// puis on cherchera les autres items...
-			}
-			
-			// IF items do not need to appear closely (SIMPLE CASE)
-            if(Parameters.targetItemsShouldAppearClosely ==0 ){
-            	
-            	Set<Integer>  alreadySeen = new HashSet<Integer>();  
-     			for(i = branch.size()-1 ; i >=0 && alreadySeen.size() != hashTarget.size(); i-- ) { 
-     				// if it is an item from target
-                     if(hashTarget.contains(branch.get(i).val)) 
-                         alreadySeen.add(branch.get(i).val);
-     			}
-     			
-            } // IF items should appear close to each other   (NEED TO DO SOME EXTRA CHECKING)
-            else{ 
-            	
-            	Map<Integer, Integer>  alreadySeen = new HashMap<Integer, Integer>();  
-     			for(i = branch.size()-1 ; i >=0 && alreadySeen.size() != hashTarget.size(); i-- ) { 
-
-     				// if it is an item from target
-                     if(hashTarget.contains(branch.get(i).val)) {
-                     	// record that we have seen the item at the current position i 
-                         alreadySeen.put(branch.get(i).val, i);
-                      
-                         // for each item that we have seen before, if it was too long ago, then forget
-                         // that information.
-                         Iterator<Entry<Integer, Integer>> iter =  alreadySeen.entrySet().iterator();
-                         while (iter.hasNext()) {
-                             Map.Entry<java.lang.Integer, java.lang.Integer> entry = (Map.Entry<java.lang.Integer, java.lang.Integer>) iter
-                                     .next();
-                             if(entry.getValue() < i - hashTarget.size() + Parameters.targetItemsShouldAppearClosely){
-                                 iter.remove();
-                             }
-                         }
-                     }
-     			}
-     			
-     			//PHIL08 : IF THE TARGET IS NOT FOUND , THEN RETURN
-     			if(alreadySeen.size() != hashTarget.size()){
-     				return;
-     			}
-            }	
-            */		
-            
             
 			//For all the items found 
 			for(i = 0; i <= consequentEndPosition; i++) {
@@ -243,7 +184,7 @@ public class CPT13FastPredictor extends Predictor {
 			double support = II.get(it.getKey()).cardinality();
 			double confidence = it.getValue();
 			
-			double score = (parameters.paramInt("firstVote") == 1) ? confidence : lift; //Use confidence or lift, depending on Parameter.firstVote
+			double score = confidence; //Use confidence or lift, depending on Parameter.firstVote
 			
 			//Saving the best value
 			if(score > maxValue) {
@@ -269,44 +210,34 @@ public class CPT13FastPredictor extends Predictor {
 		//if there is a max item (at least one item in the CountTable)
 		// and it is better than second best (if there is one)
 		//and the minTreshold is respected
-		else if (diff >= parameters.paramDouble("voteTreshold") || secondMaxValue == -1) {
+		else if (diff >= 0.0 || secondMaxValue == -1) {
 			Item predictedItem = new Item(maxItem);
 			predicted.addItem(predictedItem);
 		}
 		//if there is multiple "best" items with the same weight
 		else if(diff == 0.0 && secondMaxValue != -1) {
-			
-			//Return the best found value if no Parameters.secondVote
-			if(parameters.paramInt("secondVote") == 0) {
-				//Item predictedItem = new Item(maxItem);
-				//predicted.addItem(predictedItem);
-			}
-			//use Support or Lift
-			else {
+
+			//pick the one with the highest support or lift
+			double highestScore = 0;
+			int newBestItem = -1;
+			for(Map.Entry<Integer, Float> it : CountTable.entrySet()) {
 				
-				//pick the one with the highest support or lift
-				double highestScore = 0;
-				int newBestItem = -1;
-				for(Map.Entry<Integer, Float> it : CountTable.entrySet()) {
-					
-					if(maxValue == it.getValue()) {
-						if(II.containsKey(it.getKey())) {
-							
-							double lift = it.getValue() / II.get(it.getKey()).cardinality();
-							double support = II.get(it.getKey()).cardinality();
-							
-							double score = (parameters.paramInt("secondVote") == 1) ? support : lift; //Use confidence or lift, depending on Parameter.secondVote
-							
-							if(score > highestScore) {
-								highestScore = score;
-								newBestItem = it.getKey();
-							}
+				if(maxValue == it.getValue()) {
+					if(II.containsKey(it.getKey())) {
+						
+						double lift = it.getValue() / II.get(it.getKey()).cardinality();
+						
+						double score = lift; //Use confidence or lift, depending on Parameter.secondVote
+						
+						if(score > highestScore) {
+							highestScore = score;
+							newBestItem = it.getKey();
 						}
 					}
-				}			
-				Item predictedItem = new Item(newBestItem);
-				predicted.addItem(predictedItem);
-			}
+				}
+			}			
+			Item predictedItem = new Item(newBestItem);
+
 		}
 		else {
 			//Nothing to do
@@ -380,9 +311,7 @@ public class CPT13FastPredictor extends Predictor {
 		}
 		
 		//Setting up the weight multiplier for the countTable
-		float weight = 1f;		
-		if(parameters.paramInt("countTableWeightMultiplier") == 2)
-			weight = (float)size / initialTargetArraySize;
+		float weight = (float)size / initialTargetArraySize;
 		
 		UpdateCountTable(targetArray, weight, countTable, hashSidVisited);
 
@@ -434,9 +363,9 @@ public class CPT13FastPredictor extends Predictor {
 			
 			if(seq.size() > parameters.paramInt("splitLength") && parameters.paramInt("splitMethod") > 0) {
 				if(parameters.paramInt("splitMethod") == 1)
-					newTrainingSet.addAll(LLCTHelper.sliceBasic(seq, parameters.paramInt("splitLength")));
+					newTrainingSet.addAll(CPTHelper.sliceBasic(seq, parameters.paramInt("splitLength")));
 				else
-					newTrainingSet.addAll(LLCTHelper.slice(seq, parameters.paramInt("splitLength")));
+					newTrainingSet.addAll(CPTHelper.slice(seq, parameters.paramInt("splitLength")));
 			}else{
 				newTrainingSet.add(seq);
 			}	
@@ -489,8 +418,6 @@ public class CPT13FastPredictor extends Predictor {
 	        	it.remove();
 	        }
 	    }
-	    
-	    /*****************END OF OPTIMIZATION***********************/
 		
 		//Logging memory usage
 		MemoryLogger.addUpdate();

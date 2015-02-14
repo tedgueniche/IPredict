@@ -1,4 +1,4 @@
-package ca.ipredict.predictor.CPT2013;
+package ca.ipredict.predictor.CPT.CPT;
 
 import java.util.BitSet;
 

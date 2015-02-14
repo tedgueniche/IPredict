@@ -1,4 +1,4 @@
-package ca.ipredict.predictor.CPT2013;
+package ca.ipredict.predictor.CPT.CPT;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,7 +6,7 @@ import java.util.List;
 import ca.ipredict.database.Item;
 import ca.ipredict.database.Sequence;
 
-public class LLCTHelper {
+public class CPTHelper {
 	
 	
 	/**
