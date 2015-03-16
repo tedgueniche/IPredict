@@ -12,12 +12,20 @@ public class DGNode {
 	public List<DGArc> arcs; //list of outgoing arcs from this node
 	public int totalSupport;
 
+	public int numberOfArcs;
+	
 	public DGNode(int value) {
 		this.value = value;
 		arcs = new ArrayList<DGArc>();
 		totalSupport = 0;
 	}
 	
+	/**
+	 * Returns the number of transition for this state - not the support
+	 */
+	public int getArcCount() {
+		return arcs.size();
+	}
 	
 	/**
 	 * Update or create an arc from this node to another one (target)

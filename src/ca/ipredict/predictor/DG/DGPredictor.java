@@ -8,6 +8,7 @@ import ca.ipredict.database.Item;
 import ca.ipredict.database.Sequence;
 import ca.ipredict.predictor.Paramable;
 import ca.ipredict.predictor.Predictor;
+import ca.ipredict.predictor.Markov.MarkovState;
 import ca.ipredict.predictor.profile.Profile;
 
 /**
@@ -125,7 +126,14 @@ public class DGPredictor extends Predictor {
 	}
 
 	public long size() {
-		return count;
+		
+		long nodeCount = 0;
+		
+		for(DGNode node : mDictionary.values()) {
+			nodeCount += 1 + node.getArcCount();
+		}
+		
+		return nodeCount;
 	}
 	
 	public static void main(String[] args) {
