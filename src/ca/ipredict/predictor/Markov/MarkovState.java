@@ -6,8 +6,15 @@ import java.util.Map.Entry;
 
 public class MarkovState {
 
-	public Integer count;
-	public HashMap<Integer, Integer> transitions; //outgoing states and their count
+	/**
+	 * Number of transitions for this state
+	 */
+	private Integer count;
+	
+	/**
+	 * Hashmap of each transition and their respective support
+	 */
+	private HashMap<Integer, Integer> transitions; //outgoing states and their count
 	
 	
 	public MarkovState() {
@@ -15,20 +22,31 @@ public class MarkovState {
 		transitions = new HashMap<Integer, Integer>();
 	}
 	
+	/**
+	 * Returns the number of transition for this state - not the support
+	 */
+	public int getTransitionCount() {
+		return count;
+	}
 	
+	/**
+	 * Adds or update a transition from this state
+	 * @param val Value of the new state
+	 */
 	public void addTransition(Integer val) {
 		
 		//Getting the current value or creating it
-		Integer transitionCount = transitions.get(val);
-		if(transitionCount == null) {
-			transitionCount = 0;
+		Integer support = transitions.get(val);
+		if(support == null) {
+			support = 0;
+			count += 1;
 		}
 		
 		//updating value
-		transitionCount++;
+		support++;
 		
 		//pushing value back to the transitions map
-		transitions.put(val, transitionCount);
+		transitions.put(val, support);
 		
 	}
 	

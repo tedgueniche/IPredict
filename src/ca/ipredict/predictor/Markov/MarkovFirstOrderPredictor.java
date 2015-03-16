@@ -90,6 +90,13 @@ public class MarkovFirstOrderPredictor extends Predictor {
 
 	
 	public long size() {
-		return mDictionary.keySet().size();
+		
+		long nodeCount = 0;
+		
+		for(MarkovState state : mDictionary.values()) {
+			nodeCount += 1 + state.getTransitionCount();
+		}
+		
+		return nodeCount;
 	}
 }
