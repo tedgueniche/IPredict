@@ -9,18 +9,23 @@ import ca.ipredict.predictor.profile.Profile;
 
 public class DatabaseHelper {
 
+	/**
+	 * Path to the datasets directory
+	 */
+	private String basePath;
 	
 	//Data sets
 	public static enum Format{BMS, KOSARAK, FIFA, MSNBC, SIGN, CANADARM1, CANADARM2, SNAKE, BIBLE_CHAR, BIBLE_WORD, KORAN_WORD, LEVIATHAN_WORD}; 
 	
 	//Database
-	private SequenceDatabase _database;
+	private SequenceDatabase database;
 
 	/**
 	 * Main constructor, instantiate an empty database
 	 */
-	public DatabaseHelper() {
-		_database = new SequenceDatabase();
+	public DatabaseHelper(String basePath) {
+		this.basePath = basePath;
+		this.database = new SequenceDatabase();
 	}
 	
 	/**
@@ -28,7 +33,7 @@ public class DatabaseHelper {
 	 * @return
 	 */
 	public SequenceDatabase getDatabase() {
-		return _database;
+		return database;
 	}
 	
 	/**
@@ -41,50 +46,50 @@ public class DatabaseHelper {
 	public void loadDataset(Format format, int maxCount, boolean showDatasetStats) {
 		
 		//Creating or resetting the database
-		if(_database == null) {
-			_database = new SequenceDatabase();
+		if(database == null) {
+			database = new SequenceDatabase();
 		}
 		else 
-			_database.clear();
+			database.clear();
 		
 		//Loading the specified dataset (according to the format)
 		try {
 			switch(format) {
 			case BMS:
-				_database.loadFileBMSFormat(fileToPath("BMS.dat"), maxCount, Profile.paramInt("sequenceMinSize"), Profile.paramInt("sequenceMaxSize"));
+				database.loadFileBMSFormat(fileToPath("BMS.dat"), maxCount, Profile.paramInt("sequenceMinSize"), Profile.paramInt("sequenceMaxSize"));
 				break;
 			case KOSARAK:
-				_database.loadFileKosarakFormat(fileToPath("kosarak.dat"), maxCount, Profile.paramInt("sequenceMinSize"), Profile.paramInt("sequenceMaxSize"));
+				database.loadFileKosarakFormat(fileToPath("kosarak.dat"), maxCount, Profile.paramInt("sequenceMinSize"), Profile.paramInt("sequenceMaxSize"));
 				break;
 			case FIFA:
-				_database.loadFileFIFAFormat(fileToPath("FIFA_large.dat"), maxCount, Profile.paramInt("sequenceMinSize"), Profile.paramInt("sequenceMaxSize"));
+				database.loadFileFIFAFormat(fileToPath("FIFA_large.dat"), maxCount, Profile.paramInt("sequenceMinSize"), Profile.paramInt("sequenceMaxSize"));
 				break;
 			case MSNBC:
-				_database.loadFileMsnbsFormat(fileToPath("msnbc.seq"), maxCount, Profile.paramInt("sequenceMinSize"), Profile.paramInt("sequenceMaxSize"));
+				database.loadFileMsnbsFormat(fileToPath("msnbc.seq"), maxCount, Profile.paramInt("sequenceMinSize"), Profile.paramInt("sequenceMaxSize"));
 				break;
 			case SIGN:
-				_database.loadFileSignLanguage(fileToPath("sign_language.txt"), maxCount, Profile.paramInt("sequenceMinSize"), Profile.paramInt("sequenceMaxSize"));
+				database.loadFileSignLanguage(fileToPath("sign_language.txt"), maxCount, Profile.paramInt("sequenceMinSize"), Profile.paramInt("sequenceMaxSize"));
 				break;
 			case CANADARM1:
-				_database.loadFileSPMFFormat(fileToPath("Canadarm1_actions.txt"), maxCount, Profile.paramInt("sequenceMinSize"), Profile.paramInt("sequenceMaxSize"));
+				database.loadFileSPMFFormat(fileToPath("Canadarm1_actions.txt"), maxCount, Profile.paramInt("sequenceMinSize"), Profile.paramInt("sequenceMaxSize"));
 				break;
 			case CANADARM2:
-				_database.loadFileSPMFFormat(fileToPath("Canadarm2_states.txt"), maxCount, Profile.paramInt("sequenceMinSize"), Profile.paramInt("sequenceMaxSize"));
+				database.loadFileSPMFFormat(fileToPath("Canadarm2_states.txt"), maxCount, Profile.paramInt("sequenceMinSize"), Profile.paramInt("sequenceMaxSize"));
 				break;
 			case SNAKE:
-				_database.loadSnakeDataset(fileToPath("snake.dat"), maxCount, Profile.paramInt("sequenceMinSize"), Profile.paramInt("sequenceMaxSize"));
+				database.loadSnakeDataset(fileToPath("snake.dat"), maxCount, Profile.paramInt("sequenceMinSize"), Profile.paramInt("sequenceMaxSize"));
 				break;
 			case BIBLE_CHAR:
-				_database.loadFileLargeTextFormatAsCharacter(fileToPath("Bible.txt"), maxCount, Profile.paramInt("sequenceMinSize"), Profile.paramInt("sequenceMaxSize"));
+				database.loadFileLargeTextFormatAsCharacter(fileToPath("Bible.txt"), maxCount, Profile.paramInt("sequenceMinSize"), Profile.paramInt("sequenceMaxSize"));
 				break;
 			case BIBLE_WORD:
-				_database.loadFileLargeTextFormatAsWords(fileToPath("Bible.txt"), maxCount, Profile.paramInt("sequenceMinSize"), Profile.paramInt("sequenceMaxSize"), true);
+				database.loadFileLargeTextFormatAsWords(fileToPath("Bible.txt"), maxCount, Profile.paramInt("sequenceMinSize"), Profile.paramInt("sequenceMaxSize"), true);
 				break;
 			case KORAN_WORD:
-				_database.loadFileLargeTextFormatAsWords(fileToPath("koran.txt"), maxCount, Profile.paramInt("sequenceMinSize"), Profile.paramInt("sequenceMaxSize"), false);
+				database.loadFileLargeTextFormatAsWords(fileToPath("koran.txt"), maxCount, Profile.paramInt("sequenceMinSize"), Profile.paramInt("sequenceMaxSize"), false);
 				break;
 			case LEVIATHAN_WORD:
-				_database.loadFileLargeTextFormatAsWords(fileToPath("leviathan.txt"), maxCount, Profile.paramInt("sequenceMinSize"), Profile.paramInt("sequenceMaxSize"), false);
+				database.loadFileLargeTextFormatAsWords(fileToPath("leviathan.txt"), maxCount, Profile.paramInt("sequenceMinSize"), Profile.paramInt("sequenceMaxSize"), false);
 				break;
 			default:
 				System.out.println("Could not load dataset, unknown format.");
@@ -92,13 +97,13 @@ public class DatabaseHelper {
 
 			if(showDatasetStats){
 				System.out.println();
-				SequenceStatsGenerator.prinStats(_database, format.name());
+				SequenceStatsGenerator.prinStats(database, format.name());
 			}
 			else {
-				System.out.println(format.name() + " count: " + _database.getSequences().size());
+				System.out.println(format.name() + " count: " + database.getSequences().size());
 			}
 			
-			Collections.shuffle(_database.getSequences()); //shuffle
+			Collections.shuffle(database.getSequences()); //shuffle
 		
 		} catch (IOException e) {
 			System.out.println("Could not load dataset, IOExeption");
@@ -112,11 +117,8 @@ public class DatabaseHelper {
 	 * @param filename Name of the data set file
 	 * @throws UnsupportedEncodingException 
 	 */
-	public static String fileToPath(String filename)
-			throws UnsupportedEncodingException {
-		String parentPath = new File(SequenceDatabase.class.getResource("SequenceDatabase.class").getPath()).getParent();
-		String newPath = parentPath + File.separator + "datasets" + File.separator + filename;
-		return java.net.URLDecoder.decode(newPath, "UTF-8");
+	public String fileToPath(String filename) throws UnsupportedEncodingException {
+		return basePath + File.separator + filename;
 	}
 	
 }

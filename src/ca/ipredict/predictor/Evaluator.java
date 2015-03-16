@@ -40,11 +40,11 @@ public class Evaluator {
 	public List<Integer> datasetsMaxCount;  
 	
 	
-	public Evaluator() {
+	public Evaluator(String pathToDatasets) {
 		predictors = new ArrayList<Predictor>();
 		datasets = new ArrayList<Format>();
 		datasetsMaxCount = new ArrayList<Integer>();
-		database = new DatabaseHelper();
+		database = new DatabaseHelper(pathToDatasets);
 	}
 	
 	/**

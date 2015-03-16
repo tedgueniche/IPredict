@@ -19,7 +19,7 @@ public class MainController {
 	public static void main(String[] args) {
 		
 		//instantiate the evaluator
-		Evaluator evaluator = new Evaluator();
+		Evaluator evaluator = new Evaluator("/home/ted/java/IPredict/datasets");
 		
 		//Loading data sets
 		evaluator.addDataset(Format.BMS, 		5000);
