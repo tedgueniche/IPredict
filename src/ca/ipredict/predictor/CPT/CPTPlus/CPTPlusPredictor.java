@@ -15,6 +15,12 @@ import ca.ipredict.database.Sequence;
 import ca.ipredict.predictor.Paramable;
 import ca.ipredict.predictor.Predictor;
 
+/**
+ * CPT+ - Compact Prediction Tree Plus
+ * A predictor based on CPT with three additional strategies; CCF (compression), CBS (compression) and PNR (prediction speed)
+ *
+ * Source: T. Gueniche, P. Fournier-Viger and V. S. Tseng, "CPT+: Decreasing the time/space complexity of the Compact Prediction Tree" In the Pacific-Asia conference on Knowledge Discovery And Data mining (PAKDD 2015).
+ */
 public class CPTPlusPredictor extends Predictor {
 
 	//The three data structure

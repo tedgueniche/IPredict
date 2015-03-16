@@ -24,9 +24,9 @@ public class CPTPredictor extends Predictor {
 
 	private PredictionTree Root; //prediction tree
 	private Map<Integer, PredictionTree> LT; //Lookup Table
-	private Map<Integer, Bitvector> II;
+	private Map<Integer, Bitvector> II; //Inverted Index
 	
-	private String TAG = "CPT13Fa";
+	private String TAG = "CPT";
 	
 	private long nodeNumber; //number of node in the prediction tree
 	

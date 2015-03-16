@@ -8,7 +8,6 @@ import java.util.TreeMap;
 import ca.ipredict.database.Item;
 import ca.ipredict.database.Sequence;
 import ca.ipredict.helpers.ScoreDistribution;
-import ca.ipredict.predictor.profile.Profile;
 
 
 /**
@@ -44,7 +43,7 @@ public class CountTable {
 		//Declare the various weights
 		float weightLevel = 1f /numberOfSeqSameLength; //from [1.0,0[  -> higher is better
 		float weightDistance = 1f / dist; //from [1.0,0[ -> higher is better
-		float weightLength = (float)curSeqLength / fullSeqLength; //from [1.0,0[ -> higher is better
+//		float weightLength = (float)curSeqLength / fullSeqLength; //from [1.0,0[ -> higher is better
 //		float weightLength = (float)fullSeqLength / curSeqLength; //from [1.0,0[ -> higher is better
 	
 		//calculate the value for the current key 
@@ -141,8 +140,8 @@ public class CountTable {
 			//CONFIDENCE : |X -> Y|
 			//LIFT: CONFIDENCE(X -> Y) / (|Y|)
 			double confidence = it.getValue();
-			double support = helper.predictor.II.get(it.getKey()).cardinality();
-			double lift = it.getValue() * support;
+//			double support = helper.predictor.II.get(it.getKey()).cardinality();
+//			double lift = it.getValue() * support;
 			
 			//Calculate score based on lift or confidence
 			double score =  confidence; //Use confidence or lift, depending on Parameter.firstVote

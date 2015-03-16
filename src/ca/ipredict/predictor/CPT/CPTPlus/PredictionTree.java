@@ -9,14 +9,12 @@ import ca.ipredict.database.Item;
  * Recursive definition of a prediction tree for the CPT Predictor
  * PredictionTree is a node in a tree that has zero or more children
  * A node has a support (occurrence count) and a item which represents its value.
+ * 
+ * A node has a theoretical size of (16 + (4 * n)) bytes, where n is the number of children of the node
+ * 
  */
 public class PredictionTree {
 
-	/**
-	 * Number of occurrences
-	 */
-	public int Support;
-	
 	/**
 	 * Value of the node
 	 */
@@ -34,7 +32,6 @@ public class PredictionTree {
 	
 	
 	public PredictionTree(Item itemValue) {
-		Support = 0; //default support
 		Item = itemValue;
 		Children = new ArrayList<PredictionTree>();
 		Parent = null;
@@ -44,7 +41,6 @@ public class PredictionTree {
 	 * Construct an empty node 
 	 */
 	public PredictionTree() {
-		Support = 0; //default support
 		Item = new Item();
 		Children = new ArrayList<PredictionTree>();
 		Parent = null;
