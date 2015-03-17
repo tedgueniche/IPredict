@@ -24,12 +24,12 @@ public class TDAGPredictor extends Predictor {
 	/**
 	 * FIFO used during training to remember the last Node inserted in the tree
 	 */
-	private List<Node> state;
+	private List<TDAGNode> state;
 	
 	/**
 	 * Root of the tree
 	 */
-	private Node root;
+	private TDAGNode root;
 	
 	/**
 	 * Number of nodes in the tree
@@ -46,14 +46,14 @@ public class TDAGPredictor extends Predictor {
 	 * Map a list of symbol to a specific node in the tree
 	 * It is used to lookup specific nodes in the prediction method.
 	 */
-	private HashMap<List<Integer>, Node> dictionnary;
+	private HashMap<List<Integer>, TDAGNode> mDictionary;
 	
 	
 	public TDAGPredictor() {
-		root = new Node(0, new ArrayList<Integer>());
+		root = new TDAGNode(0, new ArrayList<Integer>());
 		size = 1;
-		state = new ArrayList<Node>();
-		dictionnary = new HashMap<List<Integer>, Node>();
+		state = new ArrayList<TDAGNode>();
+		mDictionary = new HashMap<List<Integer>, TDAGNode>();
 		
 		TAG = "TDAG";
 	}
@@ -67,10 +67,10 @@ public class TDAGPredictor extends Predictor {
 	public Boolean Train(List<Sequence> trainingSequences) {
 		
 		//reset
-		root = new Node(0, new ArrayList<Integer>());
+		root = new TDAGNode(0, new ArrayList<Integer>());
 		size = 1;
-		state = new ArrayList<Node>();
-		dictionnary = new HashMap<List<Integer>, Node>();
+		state = new ArrayList<TDAGNode>();
+		mDictionary = new HashMap<List<Integer>, TDAGNode>();
 		
 		
 		//for each training sequence
@@ -84,19 +84,19 @@ public class TDAGPredictor extends Predictor {
 			for(Item item : seq.getItems()) {
 				
 				//Initiating the newState
-				List<Node> newState = new ArrayList<Node>();
+				List<TDAGNode> newState = new ArrayList<TDAGNode>();
 				newState.add(root);
 				
 				//Adding a child with this item to each of the nodes in State
-				for(Node node : state) {
+				for(TDAGNode node : state) {
 					
 					//if the node has not the maximal allowed height
 					if(node.pathFromRoot.size() <= maxTreeHeight) {
 						
 						//Create and insert the node
-						Node child = node.addChild(item.val);
+						TDAGNode child = node.addChild(item.val);
 						size++;
-						dictionnary.put(child.pathFromRoot, child);
+						mDictionary.put(child.pathFromRoot, child);
 						
 						//Pushing the new child in the next state
 						newState.add(child);
@@ -124,23 +124,23 @@ public class TDAGPredictor extends Predictor {
 		
 		//Looking for a Node in the tree that contains the same symbols as a 
 		//path from the root.
-		Node context = dictionnary.get(symbols);
+		TDAGNode context = mDictionary.get(symbols);
 		while(context == null && symbols.size() > 0) {
 			
 			//removing the less relevant symbol from the symbols
 			symbols.remove(0);
 			
 			//Attempting to extract the right node
-			context = dictionnary.get(symbols);
+			context = mDictionary.get(symbols);
 		}
 		
 		
 		if(context != null) {
-			Node candidate1 = null; //Best candidate
-			Node candidate2 = null; //Second best candidate
+			TDAGNode candidate1 = null; //Best candidate
+			TDAGNode candidate2 = null; //Second best candidate
 			
 			//For each child of this context, we calculate the score (probability of appearance given the context)
-			for(Entry<Integer, Node> entry : context.children.entrySet()) {
+			for(Entry<Integer, TDAGNode> entry : context.children.entrySet()) {
 				
 				double score = ((double) entry.getValue().inCount / context.outCount);
 				entry.getValue().score = score;

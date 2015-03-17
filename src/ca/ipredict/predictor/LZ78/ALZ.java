@@ -32,7 +32,7 @@ public class ALZ extends Predictor {
 	/**
 	 * Dictionary that maps a LZPhrase to a support
 	 */
-	private HashMap<List<Integer>, Node> dictionary;
+	private HashMap<List<Integer>, LZNode> mDictionary;
 	
 	
 	public ALZ() {
@@ -47,7 +47,7 @@ public class ALZ extends Predictor {
 	public Boolean Train(List<Sequence> trainingSequences) {
 		
 		
-		dictionary = new HashMap<List<Integer>, Node>();
+		mDictionary = new HashMap<List<Integer>, LZNode>();
 
 		LinkedList<Integer> window = new LinkedList<Integer>();
 		int maxWindowLength = 0;
@@ -70,16 +70,16 @@ public class ALZ extends Predictor {
 				
 				
 				//if the dictionary contains this phrase already
-				Node node = dictionary.get(lzPhrase);
+				LZNode node = mDictionary.get(lzPhrase);
 				if(node != null) {
 					
 					//incrementing the support of this phrase
 					node.inc();
-					dictionary.put(lzPhrase, node);
+					mDictionary.put(lzPhrase, node);
 			
 					//adding the current node as a child of the prefix
-					if(prefix.size() > 0 && dictionary.get(prefix) != null) {
-						dictionary.get(prefix).incChildSupport();
+					if(prefix.size() > 0 && mDictionary.get(prefix) != null) {
+						mDictionary.get(prefix).incChildSupport();
 					}
 					
 					//adding the current item to the prefix
@@ -89,15 +89,15 @@ public class ALZ extends Predictor {
 				else {
 					
 					//adding the current node as a child of the prefix
-					if(prefix.size() > 0 && dictionary.get(prefix) != null) {
-						dictionary.get(prefix).addChild(cur);
+					if(prefix.size() > 0 && mDictionary.get(prefix) != null) {
+						mDictionary.get(prefix).addChild(cur);
 					}
 					
 					//Updating the max order if needed
 					maxWindowLength = (lzPhrase.size() > maxWindowLength) ? lzPhrase.size() : maxWindowLength;
 					
 					//adding this phrase in the dictionary
-					dictionary.put(lzPhrase, new Node(cur));
+					mDictionary.put(lzPhrase, new LZNode(cur));
 					prefix.clear();
 					count++;
 					
@@ -159,17 +159,17 @@ public class ALZ extends Predictor {
 		//update the prefix childs
 		if(prefix.size() > 0) {
 			
-			if(dictionary.get(prefix) == null) {
-				dictionary.put(prefix, new Node(prefix.subList(prefix.size() - 1, prefix.size()).get(0)));
+			if(mDictionary.get(prefix) == null) {
+				mDictionary.put(prefix, new LZNode(prefix.subList(prefix.size() - 1, prefix.size()).get(0)));
 				count++;
 			}
 			
-			Node prefixNode = dictionary.get(prefix);
+			LZNode prefixNode = mDictionary.get(prefix);
 			prefixNode.addChild(lastItem);
 		}
 		
 		//adding this phrase in the dictionary
-		dictionary.put(lzPhrase, new Node(lastItem));
+		mDictionary.put(lzPhrase, new LZNode(lastItem));
 
 		count++;
 	}

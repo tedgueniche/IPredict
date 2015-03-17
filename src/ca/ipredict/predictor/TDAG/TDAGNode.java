@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class Node {
+public class TDAGNode {
 
 	/**
 	 * Symbol of the Node
@@ -29,7 +29,7 @@ public class Node {
 	/**
 	 * List of children of this node
 	 */
-	public HashMap<Integer, Node> children;
+	public HashMap<Integer, TDAGNode> children;
 	
 	/**
 	 * Probability of getting this node given its parent
@@ -41,11 +41,11 @@ public class Node {
 	 * Construct a node with the given symbol
 	 * @param symbol Symbol of the node
 	 */
-	public Node(Integer symbol, List<Integer> parentPath) {
+	public TDAGNode(Integer symbol, List<Integer> parentPath) {
 		this.symbol = symbol;
 		inCount = 0;
 		outCount = 0;
-		children = new HashMap<Integer, Node>();
+		children = new HashMap<Integer, TDAGNode>();
 		
 		pathFromRoot = new ArrayList<Integer>(parentPath);
 		pathFromRoot.add(symbol);
@@ -56,13 +56,13 @@ public class Node {
 	 * @param item Item to use to create the child node.
 	 * @return Returns the new child.
 	 */
-	public Node addChild(Integer symbol) {
+	public TDAGNode addChild(Integer symbol) {
 		
 		//If necessary: create and insert the node in the children
 		//Else extract the existing child from the children
-		Node child = children.get(symbol);
+		TDAGNode child = children.get(symbol);
 		if(child == null) {
-			child = new Node(symbol, pathFromRoot);
+			child = new TDAGNode(symbol, pathFromRoot);
 			children.put(symbol, child);
 		}
 		

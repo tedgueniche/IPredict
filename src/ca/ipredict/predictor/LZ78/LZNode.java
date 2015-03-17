@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
-public class Node {
+public class LZNode {
 
 	/**
 	 * Label of the node
@@ -26,7 +26,7 @@ public class Node {
 	 */
 	private int childSumSupport;
 	
-	public Node(int label) {
+	public LZNode(int label) {
 		this.label = label;
 		children = new HashSet<Integer>();
 		support = 1;
