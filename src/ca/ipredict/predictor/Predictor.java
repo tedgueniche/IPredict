@@ -42,8 +42,12 @@ public abstract class Predictor {
 	}
 	
 	/**
-	 * Get the size of the predictor
+	 * Get the size of the predictor after training where the unit is an arbitrary value such as number of nodes (for graph and trees)
 	 */
 	public abstract long size();
 	
+	/**
+	 * Get the size in bytes of the predictor after training, the size should be theoretical and not obtained from Java directly.
+	 */
+	public abstract float memoryUsage();
 }
