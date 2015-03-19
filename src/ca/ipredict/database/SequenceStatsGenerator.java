@@ -101,29 +101,13 @@ public class SequenceStatsGenerator {
 		}
 		
 		// we print the statistics
-//		System.out.println("Number of distinct items: " + items.size());
-//		System.out.println("Largest item id: " + maxItem);
-//		System.out.println("Average number of itemsets per sequence : "
-//				+ calculateMean(sizes) + " standard deviation: "
-//				+ calculateStdDeviation(sizes) + " variance: "
-//				+ calculateVariance(sizes));
-//		System.out.println("Average number of distinct item per sequence : "
-//				+ calculateMean(differentitems) + " standard deviation: "
-//				+ calculateStdDeviation(differentitems) + " variance: "
-//				+ calculateVariance(differentitems));
-//		System.out
-//				.println("Average number of occurences in a sequence for each item appearing in a sequence : "
-//						+ calculateMean(appearXtimesbySequence)
-//						+ " standard deviation: "
-//						+ calculateStdDeviation(appearXtimesbySequence)
-//						+ " variance: "
-//						+ calculateVariance(appearXtimesbySequence));
 //		System.out.println();
 		System.out.println("Number of distinct items: \t" + items.size());
 		System.out.println("Largest item id: \t" + maxItem);
 		System.out.println("Itemsets per sequence: \t"+ calculateMean(sizes));
 		System.out.println("Distinct item per sequence: \t" + calculateMean(differentitems));
 		System.out.println("Occurences for each item: \t" + calculateMean(appearXtimesbySequence));
+		System.out.println("Size of the dataset in MB: \t" + ((database.size() * 4d) + (database.size() * calculateMean(sizes) * 4d) / (1000 * 1000)));
 		System.out.println();
 		
 	}
