@@ -50,16 +50,10 @@ public class TDAGPredictor extends Predictor {
 	
 	
 	public TDAGPredictor() {
-		root = new TDAGNode(0, new ArrayList<Integer>());
-		size = 1;
-		state = new ArrayList<TDAGNode>();
-		mDictionary = new HashMap<List<Integer>, TDAGNode>();
-		
 		TAG = "TDAG";
 	}
 
 	public TDAGPredictor(String tag) {
-		this();
 		TAG = tag;
 	}
 
@@ -103,10 +97,13 @@ public class TDAGPredictor extends Predictor {
 					}
 				}
 				
-				//overwritting State with the newState
+				//Overwriting State with the newState
 				state = newState;
 			}
 		}
+		
+		//Free memory since this is only used in the training process
+		state.clear();
 		
 		return true;
 	}
@@ -167,11 +164,18 @@ public class TDAGPredictor extends Predictor {
 		return predicted;
 	}
 
-	@Override
+
 	public long size() {
 		return size;
 	}
 
+	/**
+	 * Each node has a list of children, the sum of the lists for all children is equals to the number of nodes (2 * size).
+	 * Each nodes has also three integers (12 bytes)
+	 */
+	public float memoryUsage() {
+		return 2 * size * 12;
+	}
 	
 	public static void main(String...args) {
 		
@@ -198,4 +202,5 @@ public class TDAGPredictor extends Predictor {
 		Sequence predicted = p.Predict(X);
 		System.out.println("Predicted "+ predicted);
 	}
+
 }
