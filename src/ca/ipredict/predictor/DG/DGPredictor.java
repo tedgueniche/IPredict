@@ -34,7 +34,7 @@ public class DGPredictor extends Predictor {
 	}
 	
 	public DGPredictor(String tag, String params) {
-		this(tag);
+		TAG = tag;
 		parameters.setParameter(params);
 	}
 
@@ -136,6 +136,18 @@ public class DGPredictor extends Predictor {
 		return nodeCount;
 	}
 	
+
+	public float memoryUsage() {
+		
+		float size = 0f;
+		
+		for(DGNode node : mDictionary.values()) {
+			size += 4 + (8 * node.getArcCount());
+		}
+		
+		return size;
+	}
+	
 	public static void main(String[] args) {
 			
 			//DG predictor
@@ -174,4 +186,5 @@ public class DGPredictor extends Predictor {
 			//Show results
 			System.out.println(result.toString());
 		}
+
 }
