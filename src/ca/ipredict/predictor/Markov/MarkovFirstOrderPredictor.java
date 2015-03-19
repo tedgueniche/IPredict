@@ -99,4 +99,18 @@ public class MarkovFirstOrderPredictor extends Predictor {
 		
 		return nodeCount;
 	}
+
+	/**
+	 * Each node on the first level is an int (4 bytes)
+	 * For each of these nodes, each child is two ints (8 bytes), one for the value/id and the other for its support 
+	 */
+	public float memoryUsage() {
+		float size = 0f;
+		
+		for(MarkovState state : mDictionary.values()) {
+			size += 4 + (8 * state.getTransitionCount());
+		}
+		
+		return size;
+	}
 }
