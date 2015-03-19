@@ -47,6 +47,7 @@ public class LZ78Predictor extends Predictor {
 	@Override
 	public Boolean Train(List<Sequence> trainingSequences) {
 		
+		//TODO: [Reduce spatial size] Implement the mDictionary with a String hash instead of a List<Integer>, see AllKOrderMarkov.
 		mDictionary = new HashMap<List<Integer>, LZNode>();
 		order = 0;
 		
@@ -139,18 +140,18 @@ public class LZ78Predictor extends Predictor {
 			int escapeK = parent.getSup() - parent.getChildSup(); 
 			
 			//for each child of this prefix
-			for(Integer label : parent.children) {
+			for(Integer value : parent.children) {
 				
 				lzPhrase = new ArrayList<Integer>(prefix);
-				lzPhrase.add(label);
+				lzPhrase.add(value);
  				LZNode child = mDictionary.get(lzPhrase);
 				
 				if(child != null) {
 					
 					//prob for this item for order k+1
-					Double probK1 = results.getOrDefault(label, 0d);
+					Double probK1 = results.getOrDefault(value, 0d);
 					Double probK = ((double) child.getSup() / parent.getSup()) + (escapeK * probK1);
-					results.put(label, probK);	
+					results.put(value, probK);	
 				}
 			}
 		}
@@ -173,34 +174,61 @@ public class LZ78Predictor extends Predictor {
 		return predicted;
 	}
 
-	@Override
+	
 	public long size() {
 		return count;
 	}
 
+	/**
+	 * There is 3 integer per node (12 bytes) + a list of pointers to the other nodes
+	 */
+	public float memoryUsage() {
+		
+		float size = 0f;
+		
+		for(LZNode node : mDictionary.values()) {
+			size += 12 + (4 * node.children.size());
+		}
+		
+		return size; 
+	}
 	
 	public static void main(String...args) {
 		
-		//abababcdcbdab
+		//aaababbbbbaabccddcbaaaa
 		Sequence s1 = new Sequence(1);
-		s1.addItem(new Item(1));
-		s1.addItem(new Item(2));
-		s1.addItem(new Item(1));
-		s1.addItem(new Item(2));
-		s1.addItem(new Item(1));
-		s1.addItem(new Item(2));
-		s1.addItem(new Item(3));
-		s1.addItem(new Item(4));
-		s1.addItem(new Item(3));
-		s1.addItem(new Item(2));
-		s1.addItem(new Item(4));
-		s1.addItem(new Item(1));
-		s1.addItem(new Item(2));
+		s1.addItem(new Item(1));//a
+		s1.addItem(new Item(1));//a
+		s1.addItem(new Item(1));//a
+		s1.addItem(new Item(2));//b
+		s1.addItem(new Item(1));//a
+		s1.addItem(new Item(2));//b
+		s1.addItem(new Item(2));//b
+		s1.addItem(new Item(2));//b
+		s1.addItem(new Item(2));//b
+		s1.addItem(new Item(2));//b
+		s1.addItem(new Item(1));//a
+		s1.addItem(new Item(1));//a
+		s1.addItem(new Item(2));//b
+		s1.addItem(new Item(3));//c
+		s1.addItem(new Item(3));//c
+		s1.addItem(new Item(4));//d
+		s1.addItem(new Item(4));//d
+		s1.addItem(new Item(3));//c
+		s1.addItem(new Item(2));//b
+		s1.addItem(new Item(1));//a
+		s1.addItem(new Item(1));//a
+		s1.addItem(new Item(1));//a
+		s1.addItem(new Item(1));//a
 		
 		LinkedList<Sequence> training = new LinkedList<Sequence>();
 		training.add(s1);
 		
 		LZ78Predictor lz = new LZ78Predictor();
 		lz.Train(training);
+		
+		System.out.println(lz.size());
+		System.out.println(lz.memoryUsage() + " bytes");
 	}
+
 }

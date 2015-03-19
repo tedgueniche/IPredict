@@ -9,7 +9,7 @@ public class LZNode {
 	/**
 	 * Label of the node
 	 */
-	public int label;
+	public int value;
 	
 	/**
 	 * List of children nodes
@@ -26,8 +26,8 @@ public class LZNode {
 	 */
 	private int childSumSupport;
 	
-	public LZNode(int label) {
-		this.label = label;
+	public LZNode(int value) {
+		this.value = value;
 		children = new HashSet<Integer>();
 		support = 1;
 		childSumSupport = 0;
