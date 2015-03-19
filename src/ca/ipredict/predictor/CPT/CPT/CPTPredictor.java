@@ -108,7 +108,7 @@ public class CPTPredictor extends Predictor {
 		}
 	
 		//creating an HashMap of the target's item (for O(1) search time)
-		HashSet<Integer> hashTarget = new HashSet<Integer>(targetArray.length); // PHIL08: Initialise la taille avec: target.length;
+		HashSet<Integer> hashTarget = new HashSet<Integer>(targetArray.length);
 		for(Item it : targetArray) {
 			hashTarget.add(it.val);
 		}
@@ -387,7 +387,7 @@ public class CPTPredictor extends Predictor {
 				}
 				//updating Inverted Index with seqId for this Item
 				
-				II.get(it.val).setBitAndIncrementCardinality(seqId);  // PHIL08
+				II.get(it.val).setBitAndIncrementCardinality(seqId); 
 				
 				//if item is not in prediction tree then we add it
 				if(curNode.hasChild(it) == false) {
@@ -410,7 +410,7 @@ public class CPTPredictor extends Predictor {
 		 */
 		
 		int minSup = 0; //should be relative instead of absolute // for bms try: 50
-		Iterator<Entry<Integer, Bitvector>> it = II.entrySet().iterator();  //PHIL08: j'ai enlev� un warning en sp�cifiant le type Entry<Integer, Bitset>>
+		Iterator<Entry<Integer, Bitvector>> it = II.entrySet().iterator();
 	    while (it.hasNext()) {
 	        Map.Entry<Integer, Bitvector> pairs = it.next();
 	        
@@ -430,5 +430,17 @@ public class CPTPredictor extends Predictor {
 	 */
 	public long size() {
 		return nodeNumber;
+	}
+
+	@Override
+	public float memoryUsage() {
+		
+		float sizePredictionTree = nodeNumber * 3 * 4; // each node uses 3 integers, one for value, one for parent link, and one on average for child
+		
+		float sizeInvertedIndex = (float) (II.size() * ( Math.ceil(LT.size() / 8) + 4));
+		
+		float sizeLookupTable = LT.size() * 2 * 4; //the key and the value of this hashmap are integer and pointer respectively (4 bytes)
+		
+		return sizePredictionTree + sizeInvertedIndex + sizeLookupTable;
 	}
 }

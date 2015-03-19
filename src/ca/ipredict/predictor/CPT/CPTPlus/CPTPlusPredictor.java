@@ -64,12 +64,6 @@ public class CPTPlusPredictor extends Predictor {
 		this(tag);
 		parameters.setParameter(params);
 	}
-
-	
-	@Override
-	public long size() {
-		return nodeNumber;
-	}
 	
 	@Override
 	public String getTAG() {
@@ -372,5 +366,22 @@ public class CPTPlusPredictor extends Predictor {
 		}
 		
 		nodeNumber -= nodeSaved;
+	}
+
+	@Override
+	public long size() {
+		return nodeNumber;
+	}
+	
+	@Override
+	public float memoryUsage() {
+		
+		float sizePredictionTree = nodeNumber * 3 * 4; // each node uses 3 integers, one for value, one for parent link, and one on average for child
+		
+		float sizeInvertedIndex = (float) (II.size() * ( Math.ceil(LT.size() / 8) + 4));
+		
+		float sizeLookupTable = LT.size() * 2 * 4; //the key and the value of this hashmap are integer and pointer respectively (4 bytes)
+		
+		return sizePredictionTree + sizeInvertedIndex + sizeLookupTable;
 	}
 }
