@@ -31,19 +31,59 @@
         <h1>
 <a id="ipredict-a-sequence-prediction-framework" class="anchor" href="#ipredict-a-sequence-prediction-framework" aria-hidden="true"><span class="octicon octicon-link"></span></a>IPredict, a sequence prediction Framework</h1>
 
+<p><img src="http://s9.postimg.org/oihcg1pj3/context_prefix_suffix_1.png" alt="Sequence Prediction Image"></p>
+
 <p>Sequence prediction consists in predicting the next item(s) of a sequence of items, given a set of training sequences and a finite alphabet of items (symbols). This task has numerous applications such as web page prefetching, product recommendation, weather forecasting and stock market prediction.</p>
 
-<p>This frameworks has implementations for the following sequence predictors:</p>
+<h3>
+<a id="this-frameworks-has-implementations-for-the-following-sequence-predictors" class="anchor" href="#this-frameworks-has-implementations-for-the-following-sequence-predictors" aria-hidden="true"><span class="octicon octicon-link"></span></a>This frameworks has implementations for the following sequence predictors:</h3>
 
 <ul>
-<li>Compact Prediction Tree (CPT)</li>
-<li>Compact Prediction Tree Plus (CPT+)</li>
-<li>First order Markov Chains (PPM)</li>
-<li>All-k-Order Markov Chains (AKOM)</li>
-<li>Dependency Graph (DG)</li>
-<li>TDAG</li>
-<li>LZ78</li>
+<li>Compact Prediction Tree (CPT) [1]</li>
+<li>Compact Prediction Tree Plus (CPT+) [2]</li>
+<li>First order Markov Chains (PPM) [3] 1</li>
+<li>Dependency Graph (DG) [4] 2</li>
+<li>All-k-Order Markov Chains (AKOM) [5] 3</li>
+<li>TDAG [6] 4</li>
+<li>LZ78 [7] 12</li>
 </ul>
+
+<p><img src="http://s8.postimg.org/t1t2ujyid/ppm_dg_akom_1_1.png" alt="PPM, DG, and AKOM"></p>
+
+<h3>
+<a id="datasets" class="anchor" href="#datasets" aria-hidden="true"><span class="octicon octicon-link"></span></a>Datasets</h3>
+
+<p>The following datasets are compatible with this framework and can be used to perform experiments with the proposed sequence prediction models.</p>
+
+<p><strong>BMS</strong> is a popular dataset in the field of association rule mining made
+available for KDD CUP 2000. It contains web sessions from an e-commerce
+website, encoded as sequences of integers, representing web pages. 
+%(parse)</p>
+
+<p><strong>FIFA</strong> contains web sessions recorded on the 1998 FIFA World Cup Web site and holds over one million web page requests. Originally, the dataset is a set of individual
+ requests containing metadata (e.g.  client id and time). We converted requests into sequences by grouping requests by users and splitting a sequence if there was a delay of more than an hour between two requests. Our final dataset is a random sample from the original dataset.</p>
+
+<p><strong>SIGN</strong> is a dense dataset with long sequences, containing 730 sequences of sign-language utterances transcripted from videos.</p>
+
+<p><strong>KOSARAK</strong> is a dataset containing web sessions from a Hungarian news portal available at <a href="http://fimi.ua.ac.be/data">http://fimi.ua.ac.be/data</a>. It is the largest dataset used in our experimental evaluation.</p>
+
+<p><strong>BIBLE</strong> is the religious Christian set of books used in plain text as a flow of sentences. The prediction task consists in predicting the next character in a given sequence of characters. The book is split in sentences where each sentence is a sequence. This dataset is interesting since it has a small alphabet with only 75 distinct characters and it is based on natural language.</p>
+
+<hr>
+
+<p><em>[1] T. Gueniche, P. Fournier-Viger, V. S. Tseng, "Compact prediction tree: A lossless modelfor  accurate  sequence  prediction".  Proceedings  of  the  Ninth  Advanced  Data  Mining  and Applications, Springer, 2013, pp. 177-188.</em></p>
+
+<p><em>[2] T. Gueniche, P. Fournier-Viger, R. Raman, V. S. Tseng, "CPT+: Decreasing the time/space complexity of the Compact Prediction Tree". Proceedings of the 19th Pacific-Asia Conference on Knowledge Discovery and Data Mining (PAKDD 2015), Springer, 12 pages (to appear).</em></p>
+
+<p><em>[3] J. G. Cleary, I. Witten, "Data compression using adaptive coding and partial string matching".IEEE Transactions on Communications, vol. 32, pp. 396-402, 1984.</em></p>
+
+<p><em>[4] V. N. Padmanabhan, J. C. Mogul, "Using predictive prefetching to improve world wide web latency". ACM SIGCOMM Computer Communication Review, vol. 26, pp. 22-36, 1996.</em></p>
+
+<p><em>[5] J.  Pitkow,  P.  Pirolli,  "Mining  longest  repeating  subsequences  to  predict  world  wide  websurfing". Proceedings of the Second USENIX Symposium on Internet Technologies and Systems, 1999, pp. 1.</em></p>
+
+<p><em>[6] P. Laird, R. Saul, "Discrete sequence prediction and its applications". Machine Learning,vol. 15, pp. 43-68, 1994.</em></p>
+
+<p><em>[7] J. Ziv, A. Lempel, "Compression of individual sequences via variable-rate coding". IEEETransactions on Information Theory, vol. 24, pp. 530-536, 1978.</em></p>
       </section>
       <footer>
         <p>This project is maintained by <a href="https://github.com/tedgueniche">tedgueniche</a></p>
