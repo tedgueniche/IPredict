@@ -380,5 +380,11 @@ public class CPTPredictor_POC extends Predictor {
 	public long size() {
 		return nodeNumber;
 	}
+
+	@Override
+	public float memoryUsage() {
+		
+		return 0f;
+	}
 	
 }

@@ -8,8 +8,6 @@ import ca.ipredict.database.Item;
 import ca.ipredict.database.Sequence;
 import ca.ipredict.predictor.Paramable;
 import ca.ipredict.predictor.Predictor;
-import ca.ipredict.predictor.Markov.MarkovState;
-import ca.ipredict.predictor.profile.Profile;
 
 /**
  * Dependency Graph is a predictor based on Variable order Markov Chains
@@ -19,9 +17,13 @@ import ca.ipredict.predictor.profile.Profile;
 public class DGPredictor extends Predictor {
 	
 	private HashMap<Integer, DGNode> mDictionary; //link unique items to their node in a DG
-	private int count;
 	
 	public Paramable parameters;
+	
+	/**
+	 * Lookahead window of the model (default value)
+	 */
+	private final int lookahead = 4;
 	
 	public DGPredictor() {
 		TAG = "DG";
@@ -34,16 +36,15 @@ public class DGPredictor extends Predictor {
 	}
 	
 	public DGPredictor(String tag, String params) {
-		TAG = tag;
+		this(tag);
 		parameters.setParameter(params);
 	}
 
 	@Override
 	public Boolean Train(List<Sequence> trainingSequences) {
-		count = 0;
 		//TODO:  Resolve ABB...AC...AD...ABB problem, described in Mogul&Padmanabhan (3. some Issues)
 		
-		int w = parameters.paramInt("windowSize"); //Window size parameter
+		int w = parameters.paramIntOrDefault("lookahead", lookahead); //Window size parameter
 		
 		mDictionary = new HashMap<Integer, DGNode>();
 		
@@ -58,7 +59,6 @@ public class DGPredictor extends Predictor {
 				DGNode node = mDictionary.get(items.get(i).val);
 				if(node == null) {
 					node = new DGNode(items.get(i).val);
-					count++;
 				}
 				node.totalSupport++; //incrementing the absolute support of this node
 				

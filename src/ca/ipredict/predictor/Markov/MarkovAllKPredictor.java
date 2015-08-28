@@ -16,9 +16,15 @@ import ca.ipredict.predictor.Predictor;
  */
 public class MarkovAllKPredictor extends Predictor {
 	
-	private int K = 5;// 
+	/**
+	 * order of the model (default value)
+	 */
+	private int K = 5;
 	
-	private HashMap<String, MarkovState> mDictionary; //contains a list of unique items (one or multiple) and their state in the Markov model
+	/**
+	 * contains a list of unique items (one or multiple) and their state in the Markov model
+	 */
+	private HashMap<String, MarkovState> mDictionary;
 	
 	public Paramable parameters;
 	
@@ -35,9 +41,6 @@ public class MarkovAllKPredictor extends Predictor {
 	public MarkovAllKPredictor(String tag, String params) {
 		this(tag);
 		parameters.setParameter(params);
-		if(parameters.paramInt("k") != 0) {
-			K = parameters.paramInt("k");
-		}
 	}
 
 	@Override
@@ -51,9 +54,10 @@ public class MarkovAllKPredictor extends Predictor {
 			//for each items in this sequence, but the last one
 			List<Item> items = seq.getItems();
 			for(int i = 0 ; i < (items.size() - 1); i++) {
+
+				int k = parameters.paramIntOrDefault("order", K);
+				k = ( (items.size() - i) > k) ? k : (items.size() - i - 1);
 				
-				int k = ( (items.size() - i) > K) ? K : (items.size() - i - 1);
-	
 				//For each order (from 1 to K)
 				for(int c = 1 ; c <= k ; c++) {
 					
@@ -87,7 +91,8 @@ public class MarkovAllKPredictor extends Predictor {
 	@Override
 	public Sequence Predict(Sequence target) {
 		
-		int k = (target.size() >= K) ? K : (target.size());
+		int k = parameters.paramIntOrDefault("order", K);
+		k = (target.size() >= k) ? k : (target.size());
 		
 		
 		//for each order (from K to 1) or until we have a match

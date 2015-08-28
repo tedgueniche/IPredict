@@ -23,22 +23,46 @@ import ca.ipredict.predictor.Predictor;
  */
 public class CPTPlusPredictor extends Predictor {
 
-	//The three data structure
-	public PredictionTree Root; 				//Prediction Tree
-	public Map<Integer, PredictionTree> LT; 	//Lookup Table
-	public Map<Integer, Bitvector> II; 			//Inverted Index
+	/**
+	 * Prediction Tree
+	 */
+	public PredictionTree Root;
+
+	/**
+	 * Lookup Table
+	 */
+	public Map<Integer, PredictionTree> LT;
+	
+	/**
+	 * Inverted Index
+	 */
+	public Map<Integer, Bitvector> II;
 	
 	protected CPTHelper helper;
 	
-	protected long nodeNumber; 					//number of node in the prediction tree (used for size())
+	/**
+	 * number of node in the prediction tree (used for size())
+	 */
+	protected long nodeNumber;
 	
-	public Paramable parameters;
+	/**
+	 * Flag for the CCF Strategy (default value)
+	 */
+	private boolean CCF = false;
 	
-	private String TAG = "CPT+";
+	/**
+	 * Flag for the CBS Strategy (default value)
+	 */
+	private boolean CBS = true;
+	
 	
 	public Encoder encoder;
 	
 	protected boolean seqEncoding;
+	
+	public Paramable parameters;
+	
+	private String TAG = "CPT+";
 	
 	public CPTPlusPredictor() {
 		
@@ -88,7 +112,7 @@ public class CPTPlusPredictor extends Predictor {
 		//Identifying the frequent sequential itemsets
 		//setting up the encoder for future encoding tasks
 		FIF finder = new FIFRaw();
-		if(parameters.paramBool("CCF")) {
+		if(parameters.paramBoolOrDefault("CCF", CCF)) {
 			List<List<Item>> itemsets = finder.findFrequentItemsets(trainingSequences, parameters.paramInt("CCFmin"), parameters.paramInt("CCFmax"), parameters.paramInt("CCFsup"));
 			
 			//filling the encoder with the frequent itemsets
@@ -151,7 +175,7 @@ public class CPTPlusPredictor extends Predictor {
 		
 
 		//Patch collapsing for added compression
-		if(parameters.paramBool("CBS")) {
+		if(parameters.paramBoolOrDefault("CBS", CBS)) {
 			pathCollapse();
 		}
 		

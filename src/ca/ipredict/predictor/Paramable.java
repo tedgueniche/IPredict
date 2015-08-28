@@ -13,16 +13,18 @@ public class Paramable {
 	}
 	
 	public void setParameter(String params) {
-		String[] paramsStr = params.split("\\s");
-		for(String param : paramsStr) {
+		if(params != null && params.length() > 0 && params.contains(":")) {
 			
-			String[] keyValue = param.split(":");
-			parameters.put(keyValue[0], keyValue[1]);
-		}	
+			String[] paramsStr = params.split("\\s");
+			for(String param : paramsStr) {
+				
+				String[] keyValue = param.split(":");
+				parameters.put(keyValue[0], keyValue[1]);
+			}	
+		}
 	}
 	
-	
-	public double paramDouble(String name) {
+	public Double paramDouble(String name) {
 		Object value = parameters.get(name);
 		
 		if(value != null) {
@@ -33,7 +35,12 @@ public class Paramable {
 		}	
 	}
 	
-	public int paramInt(String name) {
+	public double paramDoubleOrDefault(String paramName, double defaultValue) {
+		Double param = paramDouble(paramName);
+		return (param != null) ? param : defaultValue;
+	}
+	
+	public Integer paramInt(String name) {
 		Object value = parameters.get(name);
 		
 		if(value != null) {
@@ -44,7 +51,12 @@ public class Paramable {
 		}
 	}
 	
-	public float paramFloat(String name) {
+	public int paramIntOrDefault(String paramName, int defaultValue) {
+		Integer param = paramInt(paramName);
+		return (param != null) ? param : defaultValue;
+	}
+	
+	public Float paramFloat(String name) {
 		Object value = parameters.get(name);
 		
 		if(value != null) {
@@ -55,7 +67,12 @@ public class Paramable {
 		}
 	}
 	
-	public boolean paramBool(String name) {
+	public float paramFloatOrDefault(String paramName, float defaultValue) {
+		Float param = paramFloat(paramName);
+		return (param != null) ? param : defaultValue;
+	}
+	
+	public Boolean paramBool(String name) {
 		Object value = parameters.get(name);
 		
 		if(value != null) {
@@ -66,4 +83,8 @@ public class Paramable {
 		}
 	}
 	
+	public boolean paramBoolOrDefault(String paramName, boolean defaultValue) {
+		Boolean param = paramBool(paramName);
+		return (param != null) ? param : defaultValue;
+	}
 }

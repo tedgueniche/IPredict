@@ -217,5 +217,11 @@ public class ALZ extends Predictor {
 		ALZ alz = new ALZ();
 		alz.Train(training);
 	}
+
+	@Override
+	public float memoryUsage() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 	
 }

@@ -18,22 +18,22 @@ public class Profile {
 	
 	public static Double paramDouble(String name) {
 		Object value = parameters.get(name);
-		return Double.valueOf(parameters.get(name));
+		return (value == null) ? null : Double.valueOf(parameters.get(name));
 	}
 	
 	public static Integer paramInt(String name) {
 		Object value = parameters.get(name);
-		return Integer.valueOf(parameters.get(name));	
+		return (value == null) ? null : Integer.valueOf(parameters.get(name));	
 	}
 	
 	public static Float paramFloat(String name) {
 		Object value = parameters.get(name);
-		return Float.valueOf(parameters.get(name));	
+		return (value == null) ? null : Float.valueOf(parameters.get(name));	
 	}
 	
 	public static Boolean paramBool(String name) {
 		Object value = parameters.get(name);
-		return Boolean.valueOf(parameters.get(name));	
+		return (value == null) ? null : Boolean.valueOf(parameters.get(name));	
 	}
 	
 	//Applies the parameters 
