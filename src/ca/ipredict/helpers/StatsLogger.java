@@ -77,13 +77,13 @@ public class StatsLogger {
 			//for each stats, display the stat name and each values			
 			for(String stat : statsNames) {
 				
-				DecimalFormat tenForm = new DecimalFormat("##.####"); 
+				DecimalFormat tenForm = new DecimalFormat("##.###"); 
 				String empty = "          ";
 				
 				output += (stat.length() < 9) ? (stat + empty.substring(stat.length())) : stat.substring(0, 9);
 				for(Algo algo : algorithms) {
 					double value = algo.get(stat) * 100;
-					output += "\t" + ((value == 0.0)? "00.0000" : tenForm.format(value));
+					output += "\t" + ((value == 0.0)? "00.000" : tenForm.format(value));
 				}
 				output += "\n";
 			}
@@ -91,6 +91,44 @@ public class StatsLogger {
 			
 		}
 		return output;
+	}
+	
+	public String toJsonString() {
+		
+		String output = "";
+		if(useSteps) {
+			
+		}
+		else {
+			//The list of algorithms. algorithms: ['CPT', 'AKOM',...]
+			output += "\"algorithms\": [";
+			for(Algo algo : algorithms) {
+				output += "\"" + algo.name + "\",";
+			}
+			output = output.substring(0, output.length() - 1);
+			output += "], ";
+			
+			output += "\"resuls\": [";
+			//for each stats, display the stat name and each values			
+			for(String stat : statsNames) {
+				
+				DecimalFormat tenForm = new DecimalFormat("##.###"); 
+				
+				output += "{\"name\": \""+ stat + "\",";
+				output += "\"data\": [";
+				for(Algo algo : algorithms) {
+					double value = algo.get(stat) * 100;
+					output += "" + ((value == 0.0)? "00.000" : tenForm.format(value)) + ",";
+				}
+				output = output.substring(0, output.length() - 1);
+				output += "]},";
+			}
+			output = output.substring(0, output.length() - 1);
+			output += "]";
+			
+		}
+		
+		return "{" + output + "}";
 	}
 
 }

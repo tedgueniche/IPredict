@@ -3,12 +3,15 @@ package ca.ipredict.helpers;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * An algo has a list of steps or only 1 step,
+ * each step has a multiple stats and their associated value
+ */
 public class Algo {
-	
-	//a algo as a list of step or only 1 step
-	//each step has a bunch of stats and their value
-	
 
+	/**
+	 * Name of the algorithm
+	 */
 	public String name;
 	
 	private boolean useSteps;

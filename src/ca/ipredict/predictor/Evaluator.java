@@ -8,6 +8,7 @@ import ca.ipredict.database.DatabaseHelper;
 import ca.ipredict.database.DatabaseHelper.Format;
 import ca.ipredict.database.Item;
 import ca.ipredict.database.Sequence;
+import ca.ipredict.database.SequenceStatsGenerator;
 import ca.ipredict.helpers.MemoryLogger;
 import ca.ipredict.helpers.StatsLogger;
 import ca.ipredict.predictor.profile.Profile;
@@ -34,15 +35,15 @@ public class Evaluator {
 	
 	//public Stats stats;
 	public StatsLogger stats;
-	public List<StatsLogger> experiements;
+	public List<StatsLogger> experiments;
 	
-	public List<Format> datasets;  
+	public List<String> datasets;  
 	public List<Integer> datasetsMaxCount;  
 	
 	
 	public Evaluator(String pathToDatasets) {
 		predictors = new ArrayList<Predictor>();
-		datasets = new ArrayList<Format>();
+		datasets = new ArrayList<String>();
 		datasetsMaxCount = new ArrayList<Integer>();
 		database = new DatabaseHelper(pathToDatasets);
 	}
@@ -60,7 +61,7 @@ public class Evaluator {
 	 * @param format Format of the Dataset
 	 * @param maxCount Maximum number of sequence to read in the dataset
 	 */
-	public void addDataset(Format format, int maxCount) {
+	public void addDataset(String format, int maxCount) {
 		datasets.add(format);
 		datasetsMaxCount.add(maxCount);
 	}
@@ -70,8 +71,9 @@ public class Evaluator {
 	 * @param samplingType one of: HOLDOUT, RANDOMSAMPLING, KFOLD
 	 * @param param The parameter associated with the sampling type
 	 * @param showDatasetStats show statistics about the dataset
+	 * @return 
 	 */
-	public void Start(int samplingType, float param, boolean showDatasetStats) {
+	public StatsLogger Start(int samplingType, float param, boolean showResults, boolean showDatasetStats, boolean showExecutionStats) {
 	
 		//Setting statsLogger
 		List<String> statsColumns = new ArrayList<String>();
@@ -80,7 +82,7 @@ public class Evaluator {
 		statsColumns.add("No Match");
 		statsColumns.add("Too Small");
 		statsColumns.add("Overall");
-		statsColumns.add("Size");
+		statsColumns.add("Size (MB)");
 		statsColumns.add("Train Time");
 		statsColumns.add("Test Time");
 		
@@ -93,13 +95,18 @@ public class Evaluator {
 		for(int i = 0; i < datasets.size(); i++) {
 			
 			int maxCount = datasetsMaxCount.get(i);
-			Format format = datasets.get(i);
+			String format = datasets.get(i);
 			
 			//Loading the parameter profile
 			ProfileManager.loadProfileByName(format.toString());
 			
 			//Loading the dataset
-			database.loadDataset(format, maxCount, true);
+			database.loadDataset(format, maxCount);
+			
+			if(showDatasetStats) {
+				System.out.println();
+				SequenceStatsGenerator.prinStats(database.getDatabase(), format);
+			}
 			
 			//Creating the statsLogger
 			stats = new StatsLogger(statsColumns, predictorNames, false);
@@ -131,8 +138,14 @@ public class Evaluator {
 			//Saving end time
 			endTime = System.currentTimeMillis();
 			
-			displayStats(true);
+			finalizeStats(showExecutionStats);
+			
+			if(showResults == true) {
+				System.out.println(stats.toString());
+			}
 		}
+		
+		return stats;
 	}
 
 	/**
@@ -235,7 +248,7 @@ public class Evaluator {
 	 * Display the stats for the experiment
 	 * @param showExecutionStats
 	 */
-	public void displayStats(boolean showExecutionStats) {
+	public void finalizeStats(boolean showExecutionStats) {
 		
 		//For each predictor, updates the stats
 		for(Predictor predictor : predictors) {
@@ -262,14 +275,12 @@ public class Evaluator {
 			stats.divide("Overall", predictor.getTAG(), testingSize);
 			
 			//Size of the predictor
-			stats.set("Size", predictor.getTAG(), predictor.size());
-			stats.divide("Size", predictor.getTAG(), 100);
+			stats.set("Size (MB)", predictor.getTAG(), predictor.memoryUsage());
+			stats.divide("Size (MB)", predictor.getTAG(), (100 * 1000 * 1000));
 			
 			
 		}
-		//Display the stats in the console
-		System.out.println(stats.toString());
-
+		
 		if(showExecutionStats) {
 	        //memory usage
 	  		MemoryLogger.addUpdate();

@@ -2,6 +2,7 @@ package ca.ipredict.database;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -40,6 +41,44 @@ public class SequenceDatabase {
 		sequences.clear();
 	}
 	
+	public void loadFileCustomFormat(String filepath, int maxCount, int minSize, int maxSize) throws IOException {
+		
+		String line;
+		BufferedReader reader = null;
+		
+		try {
+			//Opening the file
+			reader = new BufferedReader(new FileReader(filepath));
+			
+			//For each line in the files -- up to the end of the file or the max number of sequences
+			int count = 0;
+			while( (line = reader.readLine()) != null && count < maxCount) {
+				
+				//Spliting into items
+				String[] split = line.split(" ");
+				
+				//Checks the size requirements of this sequence
+				if(split.length >= minSize && split.length <= maxSize )	{
+					
+					Sequence sequence = new Sequence(-1);
+					for (String value : split) {
+						Item item = new Item(Integer.valueOf(value)); //adding current val to current sequence
+						sequence.addItem(item);
+					}
+					
+					//Saving the sequence
+					sequences.add(sequence);
+					count++;
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (reader != null) {
+				reader.close();
+			}
+		}
+	}
 	
 	public void loadFileBMSFormat(String filepath, int maxCount, int minSize, int maxSize) throws IOException {
 		String thisLine;
@@ -197,41 +236,6 @@ public class SequenceDatabase {
 		
 	}
 	
-	
-	public void loadFileKosarakFormat(String filepath, int maxCount, int minSize, int maxSize) throws IOException {
-		String thisLine;
-		BufferedReader myInput = null;
-		try {
-			FileInputStream fin = new FileInputStream(new File(filepath));
-			myInput = new BufferedReader(new InputStreamReader(fin));
-			int i = 0;
-			while ((thisLine = myInput.readLine()) != null) {
-				// ajoute une s�quence
-				String[] split = thisLine.split(" ");
-
-				if (maxCount == i) {
-					break;
-				}
-				if(split.length >= minSize && split.length <= maxSize )	{ 
-					Sequence sequence = new Sequence(-1);
-					for (String value : split) {
-						Item item = new Item(Integer.valueOf(value)); //adding current val to current sequence
-						sequence.addItem(item);
-					}
-					i++;
-					sequences.add(sequence);
-				}
-				
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			if (myInput != null) {
-				myInput.close();
-			}
-		}
-	}
-	
 	public void loadFileLargeTextFormatAsCharacter(String filepath, int maxCount, int minSize, int maxSize) throws IOException {
 		String thisLine;
 		BufferedReader myInput = null;
@@ -267,10 +271,6 @@ public class SequenceDatabase {
 		}
 	}
 	
-	// PHIL08 -  J'ai ajout� un bool�en pour indiquer si la fin d'une ligne
-	// indique la fin d'une phrase ou non.  Pour certains datasets comme
-	// le roman "leviathan" ou le coran, il est mieux de le mettre � "false" alors
-	// que pour la bible, il est pr�f�rable d'utiliser "true".
 	public void loadFileLargeTextFormatAsWords(String filepath, int maxCount, int minSize, int maxSize, boolean doNotAllowSentenceToContinueOnNextLine) throws IOException {
 		String thisLine;
 		BufferedReader myInput = null;
@@ -435,7 +435,7 @@ public class SequenceDatabase {
 			while ((thisLine = myInput.readLine()) != null && count < maxCount) {
 				Sequence sequence = new Sequence(sequences.size());
 				for (String entier : thisLine.split(" ")) {
-					if (entier.equals("-1")) { // s�parateur d'itemsets
+					if (entier.equals("-1")) { // separateur d'itemsets
 						
 					} else if (entier.equals("-2")) { // indicateur de fin de s�quence
 						if(sequence.size()>= minSize &&
