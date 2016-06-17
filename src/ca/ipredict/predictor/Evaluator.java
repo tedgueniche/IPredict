@@ -3,6 +3,7 @@ package ca.ipredict.predictor;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.io.IOException;
 
 import ca.ipredict.database.DatabaseHelper;
 import ca.ipredict.database.DatabaseHelper.Format;
@@ -73,7 +74,7 @@ public class Evaluator {
 	 * @param showDatasetStats show statistics about the dataset
 	 * @return 
 	 */
-	public StatsLogger Start(int samplingType, float param, boolean showResults, boolean showDatasetStats, boolean showExecutionStats) {
+	public StatsLogger Start(int samplingType, float param, boolean showResults, boolean showDatasetStats, boolean showExecutionStats) throws IOException {
 	
 		//Setting statsLogger
 		List<String> statsColumns = new ArrayList<String>();
