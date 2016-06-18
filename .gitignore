@@ -1,3 +1,4 @@
 bin/
 CPT+_release/
 CPT+_release.tar.gz
+*.class

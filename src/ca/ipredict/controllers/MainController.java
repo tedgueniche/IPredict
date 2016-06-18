@@ -1,5 +1,8 @@
 package ca.ipredict.controllers;
 
+import java.io.IOException;
+import java.util.Arrays;
+
 import ca.ipredict.helpers.StatsLogger;
 import ca.ipredict.predictor.Evaluator;
 import ca.ipredict.predictor.CPT.CPT.CPTPredictor;
@@ -15,10 +18,14 @@ import ca.ipredict.predictor.TDAG.TDAGPredictor;
  */
 public class MainController {
 
-	public static void main(String[] args) {
-		
+	public static void main(String[] args) throws IOException {
+			if (args.length < 1) {
+				System.out.println("Missing required argument with data directory.");
+				System.exit(1);
+			}
+
 			//instantiate the evaluator
-			Evaluator evaluator = new Evaluator("/home/ted/java/IPredict/datasets");
+			Evaluator evaluator = new Evaluator(args[0]);
 			
 			//Loading data set
 			evaluator.addDataset("BMS", 		5000);
@@ -41,7 +48,6 @@ public class MainController {
 			
 			//Start the experiment
 			StatsLogger results = evaluator.Start(Evaluator.KFOLD, 14 , true, true, true);
-			
 	}
 
 }
