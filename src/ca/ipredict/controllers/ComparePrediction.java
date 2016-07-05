@@ -7,9 +7,11 @@ import java.util.List;
 import ca.ipredict.database.Item;
 import ca.ipredict.database.Sequence;
 import ca.ipredict.predictor.Predictor;
+import ca.ipredict.predictor.CPT.CPTPlus.CPTPlusPredictor;
 import ca.ipredict.predictor.DG.DGPredictor;
 import ca.ipredict.predictor.Markov.MarkovAllKPredictor;
 import ca.ipredict.predictor.Markov.MarkovFirstOrderPredictor;
+import ca.ipredict.predictor.profile.DefaultProfile;
 
 /**
  * This controller demonstrates how to train multiple models and compare
@@ -41,12 +43,17 @@ public class ComparePrediction {
 	
 	
 	public static void main(String...args) {
-		
+				
 		//Initializing the predictors
 		HashMap<String, Predictor> predictors = new HashMap<String, Predictor>();
 		predictors.put("All-k-order Markov", new MarkovAllKPredictor("akom", "order:1"));
 		predictors.put("First Order Markov", new MarkovFirstOrderPredictor("fos"));
 		predictors.put("Dependency Graph", new DGPredictor("dg", "lookahead:4"));
+		predictors.put("CPT+", new CPTPlusPredictor("cpt+"));
+		
+		//setting the experiment parameters
+		DefaultProfile profile = new DefaultProfile();
+		profile.Apply();
 		
 		//generating the training set
 		List<Sequence> trainingSet = new ArrayList<Sequence>();

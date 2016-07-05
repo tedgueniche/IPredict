@@ -5,7 +5,8 @@ import java.util.List;
 
 import ca.ipredict.database.Item;
 import ca.ipredict.database.Sequence;
-import ca.ipredict.predictor.Markov.MarkovAllKPredictor;
+import ca.ipredict.predictor.CPT.CPTPlus.CPTPlusPredictor;
+import ca.ipredict.predictor.profile.DefaultProfile;
 
 /**
  * This controller demonstrates how to train a single model
@@ -39,8 +40,12 @@ public class MakePrediction {
 	
 	public static void main(String...args) {
 		
-		//All K order Markov, with order=1
-		MarkovAllKPredictor akom = new MarkovAllKPredictor("akom", "order:1");
+		//initializing the CPT Plus predictor 
+		CPTPlusPredictor akom = new CPTPlusPredictor();
+		
+		//setting the experiment parameters
+		DefaultProfile profile = new DefaultProfile();
+		profile.Apply();
 		
 		//generating the training set
 		List<Sequence> trainingSet = new ArrayList<Sequence>();
