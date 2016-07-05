@@ -14,7 +14,25 @@ import ca.ipredict.predictor.Markov.MarkovFirstOrderPredictor;
 import ca.ipredict.predictor.TDAG.TDAGPredictor;
 
 /**
- * Main controller to compare all the predictors
+ * This controller demonstrates how to compare all the predictors.
+ * The results are expressed with various performance measures:
+ * 
+ * Success: is the ratio of successful predictions against the number of
+ * wrong predictions, it is defined as (Number of success) / (Number of success +
+ * number of failure)
+ * 
+ * Failure: is the inverse of the local accuracy: 1 - (Success)
+ * 
+ * No Match: is the ratio of unsuccessful prediction against the total num-
+ * ber of tested sequences: (Number of sequence without prediction) / (number of
+ * sequence)
+ * 
+ * Too Small: is the ratio of sequences too small to be used in the experimentation, it counts 
+ * any sequence with a length smaller than the parameter consequentSize.
+ * 
+ * Overall: is our main measure to evaluates the accuracy of a given
+ * predictor. It is the number of successful prediction against the total number of
+ * tested sequences. (Number of success) / ( number of sequence)
  */
 public class MainController {
 
@@ -27,7 +45,7 @@ public class MainController {
 			//instantiate the evaluator
 			Evaluator evaluator = new Evaluator(args[0]);
 			
-			//Loading data set
+			//Loading datasets
 			evaluator.addDataset("BMS", 		5000);
 			evaluator.addDataset("SIGN", 		1000);
 			evaluator.addDataset("MSNBC", 		5000);
@@ -40,7 +58,6 @@ public class MainController {
 			evaluator.addPredictor(new DGPredictor("DG", "lookahead:4"));
 			evaluator.addPredictor(new TDAGPredictor());
 			evaluator.addPredictor(new CPTPlusPredictor("CPT+",		"CCF:true CBS:true"));
-//			evaluator.addPredictor(new CPTPlusPredictor("CPT++",		"CCF:false CBS:true"));
 			evaluator.addPredictor(new CPTPredictor());
 			evaluator.addPredictor(new MarkovFirstOrderPredictor());
 			evaluator.addPredictor(new MarkovAllKPredictor());
