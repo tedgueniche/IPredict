@@ -1,10 +1,13 @@
 package ca.ipredict.predictor.LZ78;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
-public class LZNode {
+public class LZNode implements Serializable {
+
+	private static final long serialVersionUID = 6683917387605870777L;
 
 	/**
 	 * Label of the node

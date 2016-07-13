@@ -1,5 +1,6 @@
 package ca.ipredict.predictor.DG;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -14,8 +15,10 @@ import ca.ipredict.predictor.Predictor;
  *
  * Source: V. N. Padmanabhan and J. C. Mogul, "Using predictive prefetching to improve world wide web latency"  ACM SIGCOMM Computer Communication Review, vol. 26, pp. 22-36, 1996. 
  */
-public class DGPredictor extends Predictor {
+public class DGPredictor extends Predictor implements Serializable {
 	
+	private static final long serialVersionUID = 4064645372814670495L;
+
 	private HashMap<Integer, DGNode> mDictionary; //link unique items to their node in a DG
 	
 	public Paramable parameters;

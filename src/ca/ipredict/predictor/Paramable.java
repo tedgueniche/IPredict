@@ -1,10 +1,11 @@
 package ca.ipredict.predictor;
 
+import java.io.Serializable;
 import java.util.HashMap;
 
 import ca.ipredict.predictor.profile.Profile;
 
-public class Paramable {
+public class Paramable implements Serializable {
 
 	HashMap<String, String> parameters;
 	

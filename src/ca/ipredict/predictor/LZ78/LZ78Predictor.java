@@ -1,5 +1,6 @@
 package ca.ipredict.predictor.LZ78;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -18,8 +19,10 @@ import ca.ipredict.predictor.Predictor;
  * K. Gopalratnam and D. J. Cook. Active Lezi: An incremental parsing algorithm for sequential prediction. 
  * In Proceedings of the Florida Artiﬁcial Intelligence Research Symposium, 2003.
  */
-public class LZ78Predictor extends Predictor {
-	
+public class LZ78Predictor extends Predictor implements Serializable {
+
+	private static final long serialVersionUID = 4653613493481192897L;
+
 	/**
 	 * Number of nodes in the predictor
 	 */

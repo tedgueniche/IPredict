@@ -1,5 +1,6 @@
 package ca.ipredict.predictor.Markov;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 
@@ -15,7 +16,9 @@ import ca.ipredict.predictor.Predictor;
  * Source: J. G. Cleary and I. Witten, "Data compression using adaptive coding and partial string matching"  Communications, IEEE Transactions on, vol. 32, pp. 396-402, 1984. 
  * Source: J. Pitkow and P. Pirolli, "Mining longest repeating subsequences to predict world wide web surfing" in Proc. USENIX Symp. on Internet Technologies and Systems, 1999, pp. 1.
  */
-public class MarkovFirstOrderPredictor extends Predictor {
+public class MarkovFirstOrderPredictor extends Predictor implements Serializable {
+
+	private static final long serialVersionUID = -4801796583385392872L;
 
 	/**
 	 * List of unique items and their state in the Markov model

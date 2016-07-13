@@ -1,5 +1,6 @@
 package ca.ipredict.predictor.LZ78;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -17,7 +18,9 @@ import ca.ipredict.predictor.Predictor;
  * 
  * Not implemented yet
  */
-public class ALZ extends Predictor {
+public class ALZ extends Predictor implements Serializable {
+
+	private static final long serialVersionUID = -5976132591876875727L;
 
 	/**
 	 * Number of nodes in the predictor

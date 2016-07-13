@@ -1,5 +1,6 @@
 package ca.ipredict.predictor.TDAG;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -19,7 +20,9 @@ import ca.ipredict.predictor.Predictor;
  * 
  * Source:  P. Laird and R. Saul, "Discrete sequence prediction and its applications"  Mach. Learning, vol. 15, pp. 43-68, 1994. 
  */
-public class TDAGPredictor extends Predictor {
+public class TDAGPredictor extends Predictor implements Serializable{
+
+	private static final long serialVersionUID = -2326834780277423168L;
 
 	/**
 	 * FIFO used during training to remember the last Node inserted in the tree

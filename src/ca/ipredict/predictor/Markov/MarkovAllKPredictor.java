@@ -1,5 +1,6 @@
 package ca.ipredict.predictor.Markov;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -14,7 +15,7 @@ import ca.ipredict.predictor.Predictor;
  * 
  * Source: J. Pitkow and P. Pirolli, "Mining longest repeating subsequences to predict world wide web surfing" in Proc. USENIX Symp. on Internet Technologies and Systems, 1999, pp. 1.
  */
-public class MarkovAllKPredictor extends Predictor {
+public class MarkovAllKPredictor extends Predictor implements Serializable {
 	
 	/**
 	 * order of the model (default value)

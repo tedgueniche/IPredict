@@ -1,10 +1,13 @@
 package ca.ipredict.predictor.Markov;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
 
-public class MarkovState {
+public class MarkovState implements Serializable {
+
+	private static final long serialVersionUID = -8819363846752644204L;
 
 	/**
 	 * Number of transitions for this state

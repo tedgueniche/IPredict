@@ -1,13 +1,16 @@
 package ca.ipredict.predictor.DG;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Represents a node in a DG
  */
-public class DGNode {
+public class DGNode implements Serializable {
 
+	private static final long serialVersionUID = 7718487181871055891L;
+	
 	public int value; //value of this node
 	public List<DGArc> arcs; //list of outgoing arcs from this node
 	public int totalSupport;

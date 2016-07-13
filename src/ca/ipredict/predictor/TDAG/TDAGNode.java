@@ -1,10 +1,13 @@
 package ca.ipredict.predictor.TDAG;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class TDAGNode {
+public class TDAGNode implements Serializable {
+
+	private static final long serialVersionUID = -3367728092022370936L;
 
 	/**
 	 * Symbol of the Node
