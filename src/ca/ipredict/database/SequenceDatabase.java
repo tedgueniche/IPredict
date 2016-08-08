@@ -145,10 +145,8 @@ public class SequenceDatabase {
 					for (String value : split) {
 						int intVal = Integer.valueOf(value);
 						
-						// PHIL08: J'ai ajout� le choix de la m�thode
-						// pour enlever les duplicats.
-						//  2 = tous les duplicats
-						//  1 = seulement les duplicats cons�cutifs 
+						//If removeDuplicatesMethod==2 , then any duplicates is removed
+						//eg: 1 1 2 3 3 4 1 2 -> 1 2 3 4
 						if(Profile.paramInt("removeDuplicatesMethod") == 2){
 							
 							if(alreadySeen.contains(intVal)){
@@ -156,7 +154,11 @@ public class SequenceDatabase {
 							}else{
 								alreadySeen.add(intVal);
 							}
-						}else if(Profile.paramInt("removeDuplicatesMethod") == 1){
+						
+						}
+						//If removeDuplicatesMethod==1 , then only consecutive repetitions are trimmed
+						//eg: 1 1 2 3 3 4 1 2 -> 1 2 3 4 1 2
+						else if(Profile.paramInt("removeDuplicatesMethod") == 1){
 							//approach B
 							if(lastValue == intVal) {
 								continue;
