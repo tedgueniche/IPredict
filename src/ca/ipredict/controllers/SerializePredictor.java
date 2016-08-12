@@ -18,28 +18,6 @@ import ca.ipredict.predictor.profile.DefaultProfile;
 public class SerializePredictor {
 
 	/**
-	 * Converts a string into a Sequence
-	 * @param sequenceId id of the sequence to create
-	 * @param input A string containing space separated integers. Eg: "1 4 7 1" 
-	 * @return A sequence
-	 */
-	public static Sequence stringToSequence(int sequenceId, String input) {
-		
-		Sequence sequence = new Sequence(sequenceId);
-		
-		//splitting the string by space characters
-		String[] items = input.split("\\s+");
-		
-		//parsing each item of the string
-		//adding them in the sequence
-		for(String item : items) {	
-			sequence.addItem(new Item(Integer.parseInt(item)));
-		}
-		
-		return sequence;
-	}
-	
-	/**
 	 * Save the model to disk
 	 * @param model
 	 * @throws IOException
@@ -76,10 +54,10 @@ public class SerializePredictor {
 		
 		//generating the training set
 		List<Sequence> trainingSet = new ArrayList<Sequence>();
-		trainingSet.add(stringToSequence(1, "1 4 2 5 3"));
-		trainingSet.add(stringToSequence(2, "1 3 5 2 3 2 1 5 3"));
-		trainingSet.add(stringToSequence(3, "1 5 3"));
-		trainingSet.add(stringToSequence(4, "1 5 2 3"));
+		trainingSet.add(Sequence.fromString(1, "1 4 2 5 3"));
+		trainingSet.add(Sequence.fromString(2, "1 3 5 2 3 2 1 5 3"));
+		trainingSet.add(Sequence.fromString(3, "1 5 3"));
+		trainingSet.add(Sequence.fromString(4, "1 5 2 3"));
 		
 		//training the model
 		akom.Train(trainingSet);
@@ -96,7 +74,7 @@ public class SerializePredictor {
 		akom = (MarkovAllKPredictor) load("/home/ted/akom.ser");
 		
 		//predicting a sequence
-		Sequence predicted = akom.Predict(stringToSequence(5, "1 4 3 2"));
+		Sequence predicted = akom.Predict(Sequence.fromString(5, "1 4 3 2"));
 		
 		//output prediction
 		System.out.println("Predicted symbol: "+ predicted);

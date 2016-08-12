@@ -33,6 +33,34 @@ public class Sequence {
 		this.items = (items != null) ? items : new ArrayList<Item>();
 	}
 	
+	/**
+	 * Generate a sequence from a space separated string. Where each
+	 * item in the string is an integer.
+	 * @param sequenceId Id of the sequence to generate
+	 * @param input Space separated string to parse
+	 * @return A sequence representing the [input] or an empty sequence if
+	 * the [input] is null or empty
+	 */
+	public static Sequence fromString(int sequenceId, String input) {
+		
+		//generate empty sequence
+		Sequence sequence = new Sequence(sequenceId);
+		
+		if(input != null && input.length() > 0) {
+		
+			//splitting the string by space characters
+			String[] items = input.split("\\s+");
+			
+			//parsing each item of the string
+			//adding them in the sequence
+			for(String item : items) {	
+				sequence.addItem(new Item(Integer.parseInt(item)));
+			}
+		}
+		
+		return sequence;
+	}
+	
 	public int getId() {
 		return id;
 	}
@@ -58,8 +86,11 @@ public class Sequence {
 	}
 	
 	/**
-	 * return the last [length] items from this sequence as a sequence
-	 * @return [length] or less (if not enough items) items as a sequence or NULL on error
+	 * return the last [length] items from this sequence as a sequence. The [offset] parameters
+	 * skips the last [offset] items from the sequence.
+	 * @param length number of items to return
+	 * @param offset number of items to skip
+	 * @return [length] or less (if not enough items) items as a sequence. Returns NULL on error
 	 */
 	public Sequence getLastItems(int length, int offset) {
 		
@@ -72,53 +103,17 @@ public class Sequence {
 		}
 		else if(length > size) {
 			//creating new sequence with truncated list
-			// PHIL08: HERE I MODIFIED TO MAKE A COPY OF THE LIST RETURNED BY SUBLIST 
-			// BECAUSE BY DEFAULT SUBLIST MAKE POINTERS TO THE ORIGINAL LIST AND IF 
-			// WE MODIFY THE LIST WE MAY GET A CONCURRENT ACCESS EXCEPTION (I was getting one!)
-//		    //  new ArrayList(...)
 			List<Item> truncatedList = new ArrayList<Item>(items.subList( 0, size ));
 			truncatedSequence.setItems(truncatedList);
 		}
 		else {
 			//splitting list
-			// PHIL08: HERE I MODIFIED TO MAKE A COPY OF THE LIST RETURNED BY SUBLIST 
-			// BECAUSE BY DEFAULT SUBLIST MAKE POINTERS TO THE ORIGINAL LIST AND IF 
-			// WE MODIFY THE LIST WE MAY GET A CONCURRENT ACCESS EXCEPTION (I was getting one!)
-			//  new ArrayList(...)
 			List<Item> truncatedList = new ArrayList<Item>(items.subList( (size - length), (size) ));
 			truncatedSequence.setItems(truncatedList);
 		}
 		
 		return truncatedSequence;
-		/*
-		//TODO: this is way too too strict, let it loose
-		int size = size() - offset;
-		if(length <= size) {
-			//splitting list
-			List<Item> truncatedList = items.subList( (size - length), (size) );
-			
-			//creating new sequence with truncated list
-			Sequence truncatedSequence = new Sequence(0);
-			truncatedSequence.setItems(truncatedList);
-			
-			return truncatedSequence;
-		}
-		else {
-			return null; //should never happen! it would cause the algo to not work properly
-			//TODO: throw exception or maybe return empty sequence
-		}
-		*/
 	}
-	
-	//adjust sequence to keep only the "length" items at the end of the sequence
-	/*
-	public void keepOnlyLastItems(int length) {
-		if(length < size()) {
-			//Sequence 
-			//items = items.subList(size() - length, size()); //sketchy
-		}
-	}
-	*/
 	
 	public void print() {
 		System.out.print(toString());
